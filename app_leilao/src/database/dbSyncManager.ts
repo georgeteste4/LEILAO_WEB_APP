@@ -32,7 +32,7 @@ export async function syncDatabaseFromGitHub(onProgress?: (progress: number, tot
 
 export async function exportDatabaseToJson(): Promise<string> {
   const db = await getDatabase();
-  const rows = await db.getAllAsync<Imovel>('SELECT * FROM imoveis ORDER BY id DESC');
+  const rows: any[] = (await db.getAllAsync('SELECT * FROM imoveis ORDER BY id DESC')) || [];
   return JSON.stringify(rows, null, 2);
 }
 

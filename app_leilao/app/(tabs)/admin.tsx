@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Alert, TextInput, Modal, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FiltroSalvo, LogCron } from '../../src/types';
-import { getFiltros } from '../../src/database/filtrosRepository';
+import { getFiltros, salvarFiltro, excluirFiltro } from '../../src/database/filtrosRepository';
 import { getLogs } from '../../src/database/logsRepository';
 import { executeFiltroCapture } from '../../src/services/syncService';
 import { Card } from '../../src/components/ui/Card';
 import { Button } from '../../src/components/ui/Button';
-import { Play, RotateCcw, Clock, CheckCircle, Database } from 'lucide-react-native';
+import { Play, Plus, Trash2, CheckCircle, Database, Layers, Activity, Clock, X } from 'lucide-react-native';
 
 export default function AdminScreen() {
   const [filtros, setFiltros] = useState<FiltroSalvo[]>([]);
   const [logs, setLogs] = useState<LogCron[]>([]);
   const [runningId, setRunningId] = useState<number | null>(null);
   const [progressText, setProgressText] = useState<string | null>(null);
+
+  // Modal Novo Filtro
+  const [newModalVisible, setNewModalVisible] = useState(false);
+  const [novoNome, setNovoNome] = useState('');
+  const [novaUf, setNovaUf] = useState('MA');
+  const [novoMunicipio, setNovoMunicipio] = useState('');
+  const [novoTipo, setNovoTipo] = useState('');
 
   const loadData = async () => {
     try {
@@ -35,7 +42,7 @@ export default function AdminScreen() {
     setProgressText(`Executando captura para ${filtro.nome}...`);
     try {
       const res = await executeFiltroCapture(filtro, (pag, novos) => {
-        setProgressText(`Página ${pag} processada (${novos} novos)`);
+        setProgressText(`Página ${pag} processada (${novos} novos salvos no SQLite)`);
       });
       Alert.alert(
         'Execução Concluída!',
@@ -50,31 +57,98 @@ export default function AdminScreen() {
     }
   };
 
+  const handleCriarFiltro = async () => {
+    if (!novoNome.trim() || !novaUf.trim()) {
+      Alert.alert('Aviso', 'Nome e UF são obrigatórios.');
+      return;
+    }
+    try {
+      await salvarFiltro({
+        nome: novoNome.trim(),
+        uf: novaUf.trim().toUpperCase(),
+        municipio: novoMunicipio.trim() || null,
+        tipo: novoTipo.trim() || null,
+        ativo: 1
+      });
+      setNewModalVisible(false);
+      setNovoNome('');
+      setNovoMunicipio('');
+      setNovoTipo('');
+      await loadData();
+    } catch (e: any) {
+      Alert.alert('Erro', e.message);
+    }
+  };
+
+  const handleExcluir = async (id: number) => {
+    Alert.alert('Confirmar Exclusão', 'Deseja remover esta rotina de captura?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          await excluirFiltro(id);
+          await loadData();
+        }
+      }
+    ]);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Painel de Administração & Rotinas</Text>
-        <Text style={styles.headerSubtitle}>Gerencie e execute rotinas de captura de imóveis</Text>
+        <Text style={styles.headerSubtitle}>Gerenciamento de extração e captura de leilões</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Filtros de Captura */}
-        <Text style={styles.sectionTitle}>Rotinas de Captura Cadastradas</Text>
+        {/* Cards de Métricas */}
+        <View style={styles.metricsGrid}>
+          <Card style={styles.metricCard}>
+            <Layers size={16} color="#38bdf8" />
+            <Text style={styles.metricValue}>{filtros.length}</Text>
+            <Text style={styles.metricLabel}>Rotinas Ativas</Text>
+          </Card>
+          <Card style={styles.metricCard}>
+            <Activity size={16} color="#34d399" />
+            <Text style={styles.metricValue}>{logs.length}</Text>
+            <Text style={styles.metricLabel}>Execuções Gravadas</Text>
+          </Card>
+        </View>
+
+        {/* Header de Rotinas */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Rotinas de Captura</Text>
+          <Button
+            title="+ Nova Rotina"
+            size="sm"
+            variant="secondary"
+            onPress={() => setNewModalVisible(true)}
+          />
+        </View>
+
+        {/* Lista de Rotinas */}
         {filtros.map((f) => (
           <Card key={f.id} style={styles.filtroCard}>
             <View style={styles.filtroHeader}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.filtroNome}>{f.nome}</Text>
-                <Text style={styles.filtroMeta}>UF: {f.uf} • {f.municipio ? `Cidade: ${f.municipio}` : 'Todos os Municípios'}</Text>
+                <Text style={styles.filtroMeta}>UF: {f.uf} • {f.municipio ? `Cidade: ${f.municipio}` : 'Todos os Municípios'} {f.tipo ? `• Tipo: ${f.tipo}` : ''}</Text>
               </View>
-              <Button
-                title={runningId === f.id ? 'Baixando...' : 'Baixar Tudo'}
-                size="sm"
-                variant="primary"
-                loading={runningId === f.id}
-                icon={<Play size={13} color="#ffffff" />}
-                onPress={() => handleExecuteFiltro(f)}
-              />
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Button
+                  title={runningId === f.id ? 'Baixando...' : 'Baixar Tudo'}
+                  size="sm"
+                  variant="primary"
+                  loading={runningId === f.id}
+                  icon={<Play size={12} color="#ffffff" />}
+                  onPress={() => handleExecuteFiltro(f)}
+                  style={{ marginRight: 6 }}
+                />
+                <TouchableOpacity onPress={() => handleExcluir(f.id)} style={{ padding: 6 }}>
+                  <Trash2 size={16} color="#fb7185" />
+                </TouchableOpacity>
+              </View>
             </View>
           </Card>
         ))}
@@ -100,6 +174,61 @@ export default function AdminScreen() {
           </Card>
         ))}
       </ScrollView>
+
+      {/* Modal Criar Rotina */}
+      <Modal visible={newModalVisible} transparent animationType="slide" onRequestClose={() => setNewModalVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Cadastrar Nova Rotina</Text>
+              <TouchableOpacity onPress={() => setNewModalVisible(false)}>
+                <X size={20} color="#94a3b8" />
+              </TouchableOpacity>
+            </View>
+
+            <TextInput
+              placeholder="Nome da rotina (ex: São Luís - Casas)"
+              placeholderTextColor="#64748b"
+              value={novoNome}
+              onChangeText={setNovoNome}
+              style={styles.input}
+            />
+
+            <TextInput
+              placeholder="Estado UF (ex: MA, SP, RJ)"
+              placeholderTextColor="#64748b"
+              value={novaUf}
+              onChangeText={setNovaUf}
+              style={styles.input}
+              maxLength={2}
+            />
+
+            <TextInput
+              placeholder="Município (Opcional - ex: Sao Luis)"
+              placeholderTextColor="#64748b"
+              value={novoMunicipio}
+              onChangeText={setNovoMunicipio}
+              style={styles.input}
+            />
+
+            <TextInput
+              placeholder="Tipo (Opcional - ex: apartamento, casa)"
+              placeholderTextColor="#64748b"
+              value={novoTipo}
+              onChangeText={setNovoTipo}
+              style={styles.input}
+            />
+
+            <Button
+              title="Salvar Rotina de Captura"
+              variant="primary"
+              size="md"
+              onPress={handleCriarFiltro}
+              style={{ marginTop: 10 }}
+            />
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -128,11 +257,37 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
   },
+  metricsGrid: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 16,
+  },
+  metricCard: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 12,
+  },
+  metricValue: {
+    color: '#f8fafc',
+    fontSize: 20,
+    fontWeight: '800',
+    marginTop: 4,
+  },
+  metricLabel: {
+    color: '#94a3b8',
+    fontSize: 11,
+    marginTop: 2,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   sectionTitle: {
     color: '#f8fafc',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '700',
-    marginBottom: 10,
   },
   filtroCard: {
     marginBottom: 10,
@@ -189,4 +344,41 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 4,
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'flex-end',
+  },
+  modalSheet: {
+    backgroundColor: '#090d16',
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#1e293b',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  modalTitle: {
+    color: '#f8fafc',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  input: {
+    backgroundColor: '#0f172a',
+    borderWidth: 1,
+    borderColor: '#1e293b',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    color: '#f8fafc',
+    fontSize: 13,
+    marginBottom: 10,
+  },
 });
+
+

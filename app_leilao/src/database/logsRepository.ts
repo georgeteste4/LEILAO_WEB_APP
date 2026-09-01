@@ -3,13 +3,13 @@ import { LogCron } from '../types';
 
 export async function getLogs(): Promise<LogCron[]> {
   const db = await getDatabase();
-  const rows = await db.getAllAsync<any>(`
+  const rows: any[] = (await db.getAllAsync(`
     SELECT l.*, COALESCE(f.nome, 'Rotina Manual') as filtro_nome
     FROM logs_cron l
     LEFT JOIN filtros_salvos f ON f.id = l.filtro_id
     ORDER BY l.id DESC
     LIMIT 50
-  `);
+  `)) || [];
   return rows;
 }
 

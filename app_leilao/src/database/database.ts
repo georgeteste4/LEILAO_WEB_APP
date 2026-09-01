@@ -1,4 +1,3 @@
-import * as SQLite from 'expo-sqlite';
 import { Platform } from 'react-native';
 import { CREATE_TABLES_SQL } from './schema';
 import seedImoveis from '../../data/seed_imoveis.json';
@@ -18,21 +17,21 @@ class WebSqlFallback {
     app_settings: []
   };
 
-  async execAsync(sql: string) {
+  async execAsync(sql: string): Promise<boolean> {
     return true;
   }
 
-  async getAllAsync<T = any>(sql: string, params: any[] = []): Promise<T[]> {
-    if (sql.includes('FROM imoveis')) return this.tables.imoveis as any;
-    if (sql.includes('FROM filtros_salvos')) return this.tables.filtros_salvos as any;
-    if (sql.includes('FROM fontes_dados')) return this.tables.fontes_dados as any;
-    if (sql.includes('FROM logs_cron')) return this.tables.logs_cron as any;
-    if (sql.includes('FROM config_tokens')) return this.tables.config_tokens as any;
-    return [] as T[];
+  async getAllAsync(sql: string, params: any[] = []): Promise<any[]> {
+    if (sql.includes('FROM imoveis')) return this.tables.imoveis;
+    if (sql.includes('FROM filtros_salvos')) return this.tables.filtros_salvos;
+    if (sql.includes('FROM fontes_dados')) return this.tables.fontes_dados;
+    if (sql.includes('FROM logs_cron')) return this.tables.logs_cron;
+    if (sql.includes('FROM config_tokens')) return this.tables.config_tokens;
+    return [];
   }
 
-  async getFirstAsync<T = any>(sql: string, params: any[] = []): Promise<T | null> {
-    const list = await this.getAllAsync<T>(sql, params);
+  async getFirstAsync(sql: string, params: any[] = []): Promise<any> {
+    const list = await this.getAllAsync(sql, params);
     return list.length > 0 ? list[0] : null;
   }
 
@@ -47,7 +46,7 @@ class WebSqlFallback {
   }
 }
 
-export async function getDatabase() {
+export async function getDatabase(): Promise<any> {
   if (dbInstance) return dbInstance;
 
   if (Platform.OS === 'web') {
@@ -58,11 +57,12 @@ export async function getDatabase() {
   }
 
   try {
+    const SQLite = require('expo-sqlite');
     const db = await SQLite.openDatabaseAsync('leilao_app.db');
     await db.execAsync('PRAGMA journal_mode = WAL;');
     await db.execAsync(CREATE_TABLES_SQL);
 
-    const countRow = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM imoveis');
+    const countRow: any = await db.getFirstAsync('SELECT COUNT(*) as count FROM imoveis');
     if (!countRow || countRow.count === 0) {
       await seedDatabase(db);
     }
@@ -70,13 +70,14 @@ export async function getDatabase() {
     dbInstance = db;
     return dbInstance;
   } catch (error) {
-    console.error('Erro ao inicializar SQLite:', error);
+    console.error('Erro ao inicializar SQLite nativo, fallback ativado:', error);
     const webDb = new WebSqlFallback();
     webDb.setSeedData(seedImoveis, seedFontes, seedFiltros);
     dbInstance = webDb;
     return dbInstance;
   }
 }
+
 
 export async function seedDatabase(db: any) {
   console.log('🌱 Inicializando banco SQLite com dados de seed...');

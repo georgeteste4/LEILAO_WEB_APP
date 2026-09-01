@@ -3,7 +3,8 @@ import { ScraperToken } from '../types';
 
 export async function getTokens(): Promise<ScraperToken[]> {
   const db = await getDatabase();
-  return await db.getAllAsync<ScraperToken>('SELECT * FROM config_tokens ORDER BY id DESC');
+  const rows: any[] = (await db.getAllAsync('SELECT * FROM config_tokens ORDER BY id DESC')) || [];
+  return rows;
 }
 
 export async function addToken(provider: 'scrape_do' | 'firecrawl', token: string) {

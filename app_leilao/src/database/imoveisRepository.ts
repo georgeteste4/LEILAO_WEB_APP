@@ -67,8 +67,8 @@ export async function getImoveisOffline(options: GetImoveisOptions) {
   const whereClause = where.join(" AND ");
 
   const countSql = "SELECT COUNT(*) as total FROM imoveis WHERE " + whereClause;
-  const countRes = await db.getFirstAsync<{ total: number }>(countSql, params);
-  const total = countRes ? countRes.total : 0;
+  const countRes: any = await db.getFirstAsync(countSql, params);
+  const total = countRes ? Number(countRes.total) : 0;
 
   let orderBy = "COALESCE(desconto, 0) DESC, id DESC";
   switch (ordem) {
@@ -84,14 +84,15 @@ export async function getImoveisOffline(options: GetImoveisOptions) {
 
   const selectSql = "SELECT * FROM imoveis WHERE " + whereClause + " ORDER BY " + orderBy + " LIMIT ? OFFSET ?";
   const pageParams = [...params, limit, offset];
-  const rows = await db.getAllAsync<Imovel>(selectSql, pageParams);
+  const rowsRaw = (await db.getAllAsync(selectSql, pageParams)) as any[];
+  const rows: Imovel[] = rowsRaw || [];
 
   const totalPages = Math.ceil(total / limit);
 
   return {
     success: true,
     origem: 'banco_sqlite',
-    data: rows.map(r => ({ ...r, link: r.link_original || r.link })),
+    data: rows.map((r: any) => ({ ...r, link: r.link_original || r.link })),
     total,
     pagina_atual: pagina,
     total_paginas: Math.max(1, totalPages),
@@ -106,7 +107,7 @@ export async function upsertImovel(imovel: Imovel, filtroId?: number | null) {
 
   const hash = imovel.hash_imovel || 'hash_' + Math.abs(Array.from(link).reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0));
 
-  const existing = await db.getFirstAsync<{ id: number }>('SELECT id FROM imoveis WHERE hash_imovel = ? LIMIT 1', [hash]);
+  const existing: any = await db.getFirstAsync('SELECT id FROM imoveis WHERE hash_imovel = ? LIMIT 1', [hash]);
 
   if (existing) {
     await db.runAsync(
@@ -143,7 +144,7 @@ export async function upsertImovel(imovel: Imovel, filtroId?: number | null) {
     );
     return { action: 'updated', id: existing.id };
   } else {
-    const res = await db.runAsync(
+    const res: any = await db.runAsync(
       `INSERT INTO imoveis (
         hash_imovel, fonte_slug, filtro_id, titulo, tipo, endereco, cidade, uf,
         valor_avaliacao, valor_leilao, desconto, modalidade, data_encerramento,
