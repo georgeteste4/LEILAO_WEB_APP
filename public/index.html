@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leilão de Imóveis — Portal de Oportunidades</title>
+    
+    <!-- Tipografia Institucional: Manrope & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS & DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: ["class", '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Manrope"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+                    },
+                    colors: {
+                        surface: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        :root {
+            --bg-canvas: #f8fafc;
+            --bg-surface: #ffffff;
+            --border-subtle: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        [data-theme="dark"] {
+            --bg-canvas: #090d16;
+            --bg-surface: #0f172a;
+            --border-subtle: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-main);
+            letter-spacing: -0.011em;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.02em;
+        }
+
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Scrollbar Minimalista */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+
+        /* Tags Sóbrias e Profissionais */
+        .app-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.18rem 0.45rem;
+            border-radius: 0.375rem;
+            font-size: 0.72rem;
+            font-weight: 500;
+            line-height: 1.25;
+            background: rgba(100, 116, 139, 0.08);
+            color: #475569;
+            border: 1px solid rgba(100, 116, 139, 0.15);
+        }
+
+        [data-theme="dark"] .app-tag {
+            background: rgba(148, 163, 184, 0.1);
+            color: #cbd5e1;
+            border-color: rgba(148, 163, 184, 0.18);
+        }
+
+        .app-tag-accent {
+            background: rgba(2, 132, 199, 0.1);
+            color: #0284c7;
+            border-color: rgba(2, 132, 199, 0.25);
+        }
+
+        [data-theme="dark"] .app-tag-accent {
+            background: rgba(56, 189, 248, 0.12);
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.25);
+        }
+
+        .app-tag-discount {
+            background: rgba(225, 29, 72, 0.08);
+            color: #e11d48;
+            border-color: rgba(225, 29, 72, 0.2);
+        }
+
+        [data-theme="dark"] .app-tag-discount {
+            background: rgba(251, 113, 133, 0.12);
+            color: #fb7185;
+            border-color: rgba(251, 113, 133, 0.25);
+        }
+
+        /* Card Transition */
+        .app-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 0.75rem;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .app-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            border-color: rgba(2, 132, 199, 0.4);
+        }
+        [data-theme="dark"] .app-card:hover {
+            box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.5);
+            border-color: rgba(56, 189, 248, 0.35);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- ==================== HEADER DA APLICAÇÃO ==================== -->
+    <header class="bg-base-100/90 border-b border-base-300 px-4 lg:px-8 py-3 sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            
+            <!-- Logo & Título Institucional -->
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="flex items-center gap-2.5 font-bold text-base tracking-tight text-base-content hover:opacity-85 transition-opacity">
+                    <div class="w-7 h-7 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex items-center justify-center font-black text-xs">
+                        L
+                    </div>
+                    <span>Leilão de Imóveis</span>
+                </a>
+            </div>
+
+            <!-- Controles do Topo -->
+            <div class="flex items-center gap-2">
+                <!-- Atalho de Busca -->
+                <button class="btn btn-xs btn-ghost gap-2 font-normal text-xs border border-base-300 text-base-content/70 hover:bg-base-200 px-3 h-8 rounded-lg" onclick="focusSearchInput()" title="Pressione Ctrl+K para buscar">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    <span class="hidden sm:inline">Buscar...</span>
+                    <kbd class="kbd kbd-xs py-0.5 px-1.5 text-[10px] font-mono opacity-50 bg-base-200 border-base-300">Ctrl K</kbd>
+                </button>
+
+                <!-- Painel Administrativo -->
+                <a href="admin.html" class="btn btn-xs btn-ghost gap-1.5 font-medium text-xs border border-base-300 hover:bg-base-200 h-8 px-2.5 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    <span class="hidden md:inline">Administração</span>
+                </a>
+
+                <!-- Status dos Provedores -->
+                <button class="btn btn-xs btn-ghost gap-1.5 text-xs font-medium border border-base-300 h-8 px-2.5 rounded-lg hidden sm:flex" onclick="openTokenStatusModal()">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>Status</span>
+                </button>
+
+                <!-- Alternador de Tema -->
+                <label class="swap swap-rotate btn btn-ghost btn-circle btn-xs h-8 w-8">
+                    <input type="checkbox" id="theme-toggle" />
+                    <svg class="swap-on fill-current w-4 h-4 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/></svg>
+                    <svg class="swap-off fill-current w-4 h-4 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.69Z"/></svg>
+                </label>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ==================== CONTEÚDO PRINCIPAL ==================== -->
+    <main class="flex-1 max-w-7xl mx-auto w-full p-4 lg:p-6 space-y-4">
+        
+        <!-- Título da Página & Controles -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 pb-2 border-b border-base-300">
+            <div>
+                <h1 class="font-bold text-xl lg:text-2xl text-base-content tracking-tight">
+                    Catálogo de Imóveis em Leilão
+                </h1>
+                <p class="text-xs opacity-70 font-normal mt-0.5">
+                    Consulta estruturada de ativos com documentação de edital e matrícula.
+                </p>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="text-xs font-mono font-medium opacity-80">
+                    <span id="total-results" class="font-bold tabular-nums">0</span> imóveis listados
+                </div>
+
+                <!-- Toggle Modo Local / Online -->
+                <div class="flex items-center gap-2 bg-base-100 px-3 py-1 rounded-lg border border-base-300 text-xs font-medium">
+                    <span class="cursor-pointer select-none text-[11px]" id="label-modo-dados" onclick="toggleModoDadosClick()">
+                        Base Local
+                    </span>
+                    <input type="checkbox" id="toggle-modo-online" class="toggle toggle-xs" />
+                    <span class="badge badge-xs font-mono font-semibold" id="badge-modo-online">OFFLINE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== BARRA DE FILTROS E VISUALIZAÇÃO ==================== -->
+        <div class="bg-base-100 rounded-xl border border-base-300 p-3.5 space-y-3 shadow-sm">
+            
+            <!-- Abas de Visualização & Ordenação -->
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-200 pb-2.5">
+                
+                <div class="flex items-center gap-1 text-xs">
+                    <button class="btn btn-xs gap-1.5 font-medium rounded-md px-2.5 h-7 transition-all bg-base-200 text-base-content border-base-300" id="btn-view-gallery" onclick="switchView('gallery')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                        <span>Grade</span>
+                    </button>
+                    <button class="btn btn-xs btn-ghost gap-1.5 font-medium rounded-md px-2.5 h-7 opacity-70 hover:opacity-100" id="btn-view-table" onclick="switchView('table')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                        <span>Tabela</span>
+                    </button>
+                    <button class="btn btn-xs btn-ghost gap-1.5 font-medium rounded-md px-2.5 h-7 opacity-70 hover:opacity-100" id="btn-view-list" onclick="switchView('list')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" /></svg>
+                        <span>Lista</span>
+                    </button>
+                </div>
+
+                <!-- Ordenação -->
+                <div class="dropdown ml-auto">
+                    <div tabindex="0" role="button" class="btn btn-xs btn-ghost gap-1.5 border border-base-300 font-medium h-7 px-2.5 rounded-md hover:bg-base-200 text-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" /></svg>
+                        <span id="label-ordem-selected">Maior Desconto</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                    <ul tabindex="0" class="dropdown-content z-30 menu p-1.5 shadow-lg bg-base-100 rounded-xl border border-base-300 w-60 mt-1 text-xs right-0 font-medium">
+                        <li><a onclick="setOrdem('desconto_desc')" class="font-semibold">Maior Desconto %</a></li>
+                        <li><a onclick="setOrdem('desconto_asc')">Menor Desconto %</a></li>
+                        <li><a onclick="setOrdem('valor_asc')">Menor Preço</a></li>
+                        <li><a onclick="setOrdem('valor_desc')">Maior Preço</a></li>
+                        <li><a onclick="setOrdem('avaliacao_desc')">Maior Valor de Avaliação</a></li>
+                        <li><a onclick="setOrdem('encerramento_asc')">Encerramento Mais Próximo</a></li>
+                        <li><a onclick="setOrdem('recentes')">Mais Recentes</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Controles de Filtros -->
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+                
+                <!-- Campo de Pesquisa -->
+                <div class="relative flex-1 min-w-[200px] max-w-xs">
+                    <input type="text" id="filter-search" placeholder="Filtrar por endereço, leiloeiro..." class="input input-xs input-bordered w-full pl-2.5 pr-7 font-normal focus:input-primary text-xs rounded-md h-7" />
+                    <button class="absolute right-2 top-1.5 opacity-40 hover:opacity-100 text-xs" onclick="document.getElementById('filter-search').value=''; debounceSearch();">✕</button>
+                </div>
+
+                <!-- Estado (UF) -->
+                <div class="dropdown">
+                    <div tabindex="0" role="button" class="btn btn-xs btn-ghost gap-1.5 border border-base-300 font-medium h-7 rounded-md hover:bg-base-200 text-xs">
+                        <span id="label-uf-selected">UF: MA</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                    <ul tabindex="0" class="dropdown-content z-30 menu p-1.5 shadow-lg bg-base-100 rounded-xl border border-base-300 w-52 max-h-60 overflow-y-auto mt-1 text-xs" id="dropdown-uf-options">
+                        <!-- Injetado via JS -->
+                    </ul>
+                </div>
+
+                <!-- Municípios -->
+                <div class="dropdown" id="dropdown-municipios-wrapper">
+                    <div tabindex="0" role="button" class="btn btn-xs btn-ghost gap-1.5 border border-base-300 font-medium h-7 rounded-md hover:bg-base-200 text-xs" id="btn-dropdown-municipios" onclick="onOpenMunicipiosDropdown()">
+                        <span id="label-municipios-selected">Cidades (Todas)</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                    <div tabindex="0" class="dropdown-content z-30 p-3 shadow-xl bg-base-100 rounded-xl border border-base-300 w-80 sm:w-96 mt-1 space-y-2.5">
+                        
+                        <div class="flex items-center justify-between pb-1.5 border-b border-base-200 text-xs">
+                            <span class="font-semibold opacity-70">Municípios</span>
+                            <div class="flex items-center gap-2 text-[11px]">
+                                <button type="button" class="text-primary hover:underline font-medium" onclick="selecionarTodosMunicipiosVisiveis()">Marcar Visíveis</button>
+                                <span class="opacity-30">|</span>
+                                <button type="button" class="opacity-60 hover:opacity-100 hover:underline" onclick="limparSelecaoMunicipios()">Limpar</button>
+                            </div>
+                        </div>
+
+                        <!-- Busca de Município -->
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                placeholder="Digite para filtrar cidade... (Enter para marcar)" 
+                                class="input input-xs input-bordered w-full text-xs rounded-md pl-2 pr-6" 
+                                id="busca-municipio-input" 
+                                oninput="filtrarListaMunicipios(this.value)" 
+                                onkeydown="handleMunicipioInputKey(event)"
+                            />
+                            <button class="absolute right-2 top-1 opacity-40 hover:opacity-100 text-xs" onclick="document.getElementById('busca-municipio-input').value=''; filtrarListaMunicipios(''); document.getElementById('busca-municipio-input').focus();">✕</button>
+                        </div>
+
+                        <!-- Chips Selecionados -->
+                        <div id="popover-selected-chips" class="flex flex-wrap gap-1 max-h-16 overflow-y-auto empty:hidden py-0.5"></div>
+
+                        <!-- Sugestões Principais -->
+                        <div id="popover-top-suggestions" class="space-y-1 text-[11px]">
+                            <span class="opacity-50 text-[10px] uppercase font-semibold">Cidades principais:</span>
+                            <div class="flex flex-wrap gap-1" id="popover-suggestions-pills"></div>
+                        </div>
+
+                        <!-- Lista de Checkboxes -->
+                        <div class="max-h-48 overflow-y-auto space-y-0.5 text-xs pr-1 border-t border-base-200 pt-1.5" id="municipios-checkbox-list"></div>
+
+                        <div class="flex items-center justify-between pt-1.5 border-t border-base-200 text-[11px] opacity-70">
+                            <span id="popover-status-text">Todas selecionadas</span>
+                            <button type="button" class="btn btn-xs btn-neutral font-medium px-2.5 rounded" onclick="fecharMunicipiosDropdown()">
+                                Concluir
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Tipo de Imóvel -->
+                <div class="dropdown">
+                    <div tabindex="0" role="button" class="btn btn-xs btn-ghost gap-1.5 border border-base-300 font-medium h-7 rounded-md hover:bg-base-200 text-xs">
+                        <span id="label-tipo-selected">Tipo: Todos</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                    <ul tabindex="0" class="dropdown-content z-30 menu p-1.5 shadow-lg bg-base-100 rounded-xl border border-base-300 w-52 mt-1 text-xs font-medium">
+                        <li><a onclick="setTipoFiltro('')">Todos os tipos</a></li>
+                        <li><a onclick="setTipoFiltro('apartamento')">Apartamento</a></li>
+                        <li><a onclick="setTipoFiltro('casa')">Casa</a></li>
+                        <li><a onclick="setTipoFiltro('terreno')">Terreno</a></li>
+                        <li><a onclick="setTipoFiltro('rural')">Rural / Fazenda</a></li>
+                        <li><a onclick="setTipoFiltro('comercial')">Comercial / Sala</a></li>
+                        <li><a onclick="setTipoFiltro('galpao')">Galpão</a></li>
+                    </ul>
+                </div>
+
+                <!-- Fonte de Dados / Portal Multi-Site -->
+                <div class="dropdown" id="dropdown-fontes-wrapper">
+                    <div tabindex="0" role="button" class="btn btn-xs btn-ghost gap-1.5 border border-base-300 font-medium h-7 rounded-md hover:bg-base-200 text-xs">
+                        <span id="label-fonte-selected">Fonte: Todas</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                    <ul tabindex="0" class="dropdown-content z-30 menu p-1.5 shadow-lg bg-base-100 rounded-xl border border-base-300 w-56 mt-1 text-xs font-medium" id="dropdown-fontes-options">
+                        <li><a onclick="setFonteFiltro('', 'Todas as Fontes')">Todas as Fontes</a></li>
+                    </ul>
+                </div>
+
+                <!-- Data Final -->
+                <div class="flex items-center gap-1.5 bg-base-200/60 px-2.5 py-0.5 rounded-md border border-base-300 h-7 text-xs">
+                    <span class="opacity-50 text-[11px]">Até:</span>
+                    <input type="date" id="filter-data-final" class="bg-transparent text-xs font-normal focus:outline-none border-none p-0 cursor-pointer text-base-content" onchange="debounceSearch()" />
+                </div>
+
+                <!-- Limpar Filtros -->
+                <button class="btn btn-xs btn-ghost text-neutral-500 hover:text-error text-xs h-7 rounded-md ml-auto font-normal" onclick="clearFilters()">
+                    Limpar
+                </button>
+
+            </div>
+
+            <!-- Chips de Filtros Ativos -->
+            <div id="active-filter-chips" class="flex flex-wrap items-center gap-1.5 empty:hidden border-t border-base-200 pt-2 text-xs"></div>
+
+        </div>
+
+        <!-- ==================== ALERTA DE ERRO ==================== -->
+        <div id="error-state" class="alert alert-error hidden shadow-sm rounded-xl text-xs font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-4 w-4" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <div class="flex-1">
+                <span class="font-bold">Aviso: </span>
+                <span id="error-message">Erro ao processar requisição.</span>
+            </div>
+            <button class="btn btn-xs btn-outline bg-base-100 font-bold" onclick="retryLastAction()">Tentar Novamente</button>
+        </div>
+
+        <!-- ==================== CONTAINER DE VISUALIZAÇÕES ==================== -->
+        <div id="viewport-container">
+            
+            <!-- 1. GRADE (CARDS) -->
+            <div id="gallery-view" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <!-- Injetado via JS -->
+            </div>
+
+            <!-- 2. TABELA -->
+            <div id="table-view" class="hidden overflow-x-auto bg-base-100 rounded-xl border border-base-300 shadow-sm">
+                <table class="table table-xs table-pin-rows table-pin-cols w-full">
+                    <thead>
+                        <tr class="text-[11px] font-mono uppercase tracking-wider opacity-60 border-b border-base-300 bg-base-200/40">
+                            <th class="py-2.5">Imóvel</th>
+                            <th>Fonte</th>
+                            <th>Tipo</th>
+                            <th>Localização</th>
+                            <th class="text-right">Avaliação</th>
+                            <th class="text-right">Preço de Leilão</th>
+                            <th class="text-center">Desconto</th>
+                            <th>Encerramento</th>
+                            <th class="text-center">Docs</th>
+                            <th class="text-right">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-view-body" class="divide-y divide-base-200 text-xs">
+                        <!-- Injetado via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 3. LISTA -->
+            <div id="list-view" class="hidden space-y-2">
+                <!-- Injetado via JS -->
+            </div>
+
+        </div>
+
+        <!-- ==================== ESTADO VAZIO ==================== -->
+        <div id="empty-state" class="hidden flex flex-col items-center justify-center py-16 bg-base-100 rounded-xl border border-base-300 text-center p-6 space-y-2.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 opacity-30 text-base-content" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+            <h3 class="font-bold text-base">Nenhum imóvel encontrado</h3>
+            <p class="opacity-60 text-xs max-w-sm" id="empty-state-desc">
+                Tente ajustar os filtros selecionados ou alternar para o modo online.
+            </p>
+            <div class="flex gap-2 pt-1">
+                <button class="btn btn-neutral btn-xs font-medium rounded" onclick="ativarModoOnlineEBuscar()">
+                    Buscar Online
+                </button>
+                <button class="btn btn-ghost btn-xs font-normal rounded" onclick="clearFilters()">Limpar Filtros</button>
+            </div>
+        </div>
+
+        <!-- ==================== PAGINAÇÃO ==================== -->
+        <div class="flex items-center justify-between pt-2 pb-6 text-xs" id="pagination-wrapper">
+            <div class="opacity-60 text-[11px] font-mono" id="pagination-info">Página 1</div>
+            <div class="join shadow-sm bg-base-100 border border-base-300 rounded-lg overflow-hidden" id="pagination-container">
+                <!-- Injetado via JS -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ==================== MODAL DE DETALHES ==================== -->
+    <dialog id="property_modal" class="modal">
+        <div class="modal-box max-w-2xl bg-base-100 border border-base-300 shadow-2xl rounded-xl p-6">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-3.5 top-3.5">✕</button>
+            </form>
+            
+            <div id="property-modal-content" class="space-y-4">
+                <div class="flex flex-col items-center justify-center py-10 gap-2">
+                    <span class="loading loading-spinner loading-md text-primary"></span>
+                    <span class="text-xs opacity-60">Consultando documentos oficiais...</span>
+                </div>
+            </div>
+
+            <div class="modal-action border-t border-base-200 pt-3">
+                <form method="dialog">
+                    <button class="btn btn-sm btn-neutral font-medium text-xs rounded-lg">Fechar</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- ==================== MODAL DE STATUS & CHAVES DE SCRAPING ==================== -->
+    <dialog id="token_modal" class="modal">
+        <div class="modal-box max-w-2xl bg-base-100 border border-base-300 shadow-2xl rounded-2xl p-6 space-y-5 text-xs">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 opacity-70 hover:opacity-100">✕</button>
+            </form>
+            
+            <div class="flex items-center justify-between border-b border-base-200 pb-3.5 pr-8">
+                <div>
+                    <h3 class="font-bold text-sm text-base-content flex items-center gap-2">
+                        <span>Status dos Scrapers & Gestão de Chaves</span>
+                    </h3>
+                    <p class="opacity-60 text-[11px] mt-0.5">Cadastre, edite, pause ou exclua chaves de API do Scrape.do e Firecrawl.</p>
+                </div>
+            </div>
+
+            <!-- Formulário de Cadastro de Nova Chave -->
+            <div class="bg-base-200/50 p-3.5 rounded-xl border border-base-300 space-y-2.5">
+                <div class="font-semibold text-xs text-base-content flex items-center justify-between">
+                    <span>Adicionar Nova Chave ao Pool</span>
+                    <span class="text-[10px] opacity-60 font-mono">Failover Automático Ativo</span>
+                </div>
+                <form id="form-cadastrar-token" onsubmit="cadastrarNovoToken(event)" class="space-y-2.5">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+                        <div class="md:col-span-1">
+                            <select id="token-provider-select" class="select select-sm select-bordered w-full rounded-lg text-xs font-medium bg-base-100">
+                                <option value="scrape_do">Scrape.do</option>
+                                <option value="firecrawl">Firecrawl</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3">
+                            <input type="text" id="token-input-val" required placeholder="Cole a chave da API (ex: 40a83... ou fc-...)" class="input input-sm input-bordered w-full rounded-lg text-xs font-mono bg-base-100" />
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-0.5">
+                        <span class="text-[10px] opacity-50">Novas chaves entram automaticamente no balanceamento de carga.</span>
+                        <button type="submit" class="btn btn-xs btn-neutral font-medium rounded-lg px-3.5 h-7 gap-1.5 shadow-sm" id="btn-salvar-token">
+                            <span>+ Adicionar Chave</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Listagem de Chaves e Status (Sem barra de rolagem interna) -->
+            <div id="token-status-content" class="space-y-3.5 text-xs">
+                <div class="flex justify-center py-6"><span class="loading loading-spinner loading-md"></span></div>
+            </div>
+
+            <div class="modal-action border-t border-base-200 pt-3.5 flex items-center justify-between m-0">
+                <button type="button" class="btn btn-xs btn-ghost border border-base-300 font-medium rounded-lg px-3 h-7 gap-1.5" onclick="loadTokenStatus()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    <span>Atualizar Lista</span>
+                </button>
+                <form method="dialog"><button class="btn btn-xs btn-neutral font-medium rounded-lg px-4 h-7">Concluído</button></form>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Toast de Notificação -->
+    <div id="toast-container" class="toast toast-end toast-bottom z-[99999] pointer-events-auto hidden fixed">
+        <div class="alert alert-neutral text-xs font-medium py-2 px-3.5 shadow-2xl border border-neutral-700/60 rounded-lg backdrop-blur-md" id="toast-msg"></div>
+    </div>
+
+    <!-- ==================== LÓGICA JAVASCRIPT ==================== -->
+    <script>
+        const API_BASE = '../api/index.php';
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast-container');
+            const toastMsg = document.getElementById('toast-msg');
+            if (!toast || !toastMsg) return;
+
+            // Se houver um dialog aberto na Top Layer do navegador, anexar o toast a ele
+            const openModal = document.querySelector('dialog[open]');
+            if (openModal && toast.parentElement !== openModal) {
+                openModal.appendChild(toast);
+            } else if (!openModal && toast.parentElement !== document.body) {
+                document.body.appendChild(toast);
+            }
+
+            toastMsg.textContent = msg;
+            toastMsg.className = `alert ${isError ? 'alert-error' : 'alert-neutral'} text-xs font-medium py-2 px-3.5 shadow-2xl border border-neutral-700/60 rounded-lg backdrop-blur-md`;
+            toast.style.zIndex = '999999';
+            toast.classList.remove('hidden');
+
+            clearTimeout(window.__toastTimer);
+            window.__toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatFonteNome(fonteSlug) {
+            if (!fonteSlug) return 'Leilão Imóvel';
+            const map = {
+                'leilaoimovel': 'Leilão Imóvel',
+                'caixa': 'Caixa Econômica',
+                'smartleiloescaixa': 'Smart Leilões Caixa',
+                'bancodobrasil': 'Banco do Brasil',
+                'santander': 'Santander',
+                'bradesco': 'Bradesco',
+                'itau': 'Itaú',
+                'bancointer': 'Banco Inter',
+                'sicredi': 'Sicredi',
+                'zukerman': 'Portal Zuk',
+                'megaleiloes': 'Mega Leilões',
+                'sodresantoro': 'Sodré Santoro'
+            };
+            return map[fonteSlug.toLowerCase()] || escapeHtml(fonteSlug);
+        }
+
+        let currentState = {
+            uf: 'ma',
+            municipiosSelecionados: [],
+            municipiosListaCompleta: [],
+            tipo: '',
+            fonte: '',
+            dataFinalLeilao: '',
+            busca: '',
+            ordem: 'desconto_desc',
+            pagina: 1,
+            totalPages: 1,
+            modoOnline: false,
+            currentView: 'gallery',
+            lastAction: null,
+            loadedItems: []
+        };
+
+        let debounceTimer;
+
+        // Elementos DOM
+        const elGallery = document.getElementById('gallery-view');
+        const elTable = document.getElementById('table-view');
+        const elTableBody = document.getElementById('table-view-body');
+        const elList = document.getElementById('list-view');
+        const elTotal = document.getElementById('total-results');
+        const elError = document.getElementById('error-state');
+        const elErrorMsg = document.getElementById('error-message');
+        const elEmpty = document.getElementById('empty-state');
+        const elEmptyDesc = document.getElementById('empty-state-desc');
+        const elPagination = document.getElementById('pagination-container');
+        const elPaginationInfo = document.getElementById('pagination-info');
+        const elActiveChips = document.getElementById('active-filter-chips');
+        const elSearch = document.getElementById('filter-search');
+        const elDataFinal = document.getElementById('filter-data-final');
+        const elToggleOnline = document.getElementById('toggle-modo-online');
+        const elBadgeModo = document.getElementById('badge-modo-online');
+        const elLabelModo = document.getElementById('label-modo-dados');
+        const elThemeToggle = document.getElementById('theme-toggle');
+
+        // Inicialização de Tema
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        elThemeToggle.checked = savedTheme === 'light';
+        elThemeToggle.addEventListener('change', (e) => {
+            const newTheme = e.target.checked ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', async () => {
+            setupKeyboardShortcuts();
+            setupEventListeners();
+            await Promise.all([
+                loadEstados(),
+                loadFontes()
+            ]);
+            buscarImoveis();
+        });
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    focusSearchInput();
+                }
+            });
+        }
+
+        function focusSearchInput() {
+            elSearch.focus();
+            elSearch.select();
+        }
+
+        function setupEventListeners() {
+            elToggleOnline.addEventListener('change', (e) => {
+                currentState.modoOnline = e.target.checked;
+                atualizarVisualModo();
+                currentState.pagina = 1;
+                buscarImoveis();
+            });
+
+            elSearch.addEventListener('input', (e) => {
+                currentState.busca = e.target.value;
+                currentState.pagina = 1;
+                debounceSearch();
+            });
+        }
+
+        function toggleModoDadosClick() {
+            elToggleOnline.checked = !elToggleOnline.checked;
+            currentState.modoOnline = elToggleOnline.checked;
+            atualizarVisualModo();
+            currentState.pagina = 1;
+            buscarImoveis();
+        }
+
+        function atualizarVisualModo() {
+            if (currentState.modoOnline) {
+                elBadgeModo.textContent = 'ONLINE';
+                elBadgeModo.className = 'badge badge-xs font-mono font-semibold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30';
+                elLabelModo.innerHTML = 'Modo Online';
+                showToast('Modo Online ativado.');
+            } else {
+                elBadgeModo.textContent = 'OFFLINE';
+                elBadgeModo.className = 'badge badge-xs font-mono font-semibold opacity-70';
+                elLabelModo.innerHTML = 'Base Local';
+            }
+        }
+
+        function ativarModoOnlineEBuscar() {
+            elToggleOnline.checked = true;
+            currentState.modoOnline = true;
+            atualizarVisualModo();
+            buscarImoveis();
+        }
+
+        function debounceSearch() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => buscarImoveis(), 350);
+        }
+
+        // ==================== ALTERNADOR DE VISUALIZAÇÃO ====================
+        function switchView(viewName) {
+            currentState.currentView = viewName;
+            
+            document.getElementById('btn-view-gallery').className = `btn btn-xs gap-1.5 font-medium rounded-md px-2.5 h-7 transition-all ${viewName === 'gallery' ? 'bg-base-200 text-base-content border-base-300' : 'btn-ghost opacity-70'}`;
+            document.getElementById('btn-view-table').className = `btn btn-xs gap-1.5 font-medium rounded-md px-2.5 h-7 transition-all ${viewName === 'table' ? 'bg-base-200 text-base-content border-base-300' : 'btn-ghost opacity-70'}`;
+            document.getElementById('btn-view-list').className = `btn btn-xs gap-1.5 font-medium rounded-md px-2.5 h-7 transition-all ${viewName === 'list' ? 'bg-base-200 text-base-content border-base-300' : 'btn-ghost opacity-70'}`;
+
+            elGallery.classList.toggle('hidden', viewName !== 'gallery');
+            elTable.classList.toggle('hidden', viewName !== 'table');
+            elList.classList.toggle('hidden', viewName !== 'list');
+
+            if (currentState.loadedItems.length > 0) {
+                renderCurrentView(currentState.loadedItems);
+            }
+        }
+
+        async function fetchAPI(url, options = {}) {
+            const response = await fetch(url, options);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.json();
+        }
+
+        // ==================== ESTADOS & MUNICÍPIOS ====================
+        async function loadEstados() {
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=estados`);
+                const estados = res.data || [];
+                const elUl = document.getElementById('dropdown-uf-options');
+
+                elUl.innerHTML = estados.map(est => `
+                    <li><a onclick="setEstadoFiltro('${est.sigla}')" class="font-normal ${est.sigla.toLowerCase() === currentState.uf ? 'active font-semibold' : ''}">
+                        ${est.sigla.toUpperCase()} — ${est.nome}
+                    </a></li>
+                `).join('');
+
+                await loadMunicipios(currentState.uf);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function setEstadoFiltro(uf) {
+            currentState.uf = uf.toLowerCase();
+            document.getElementById('label-uf-selected').textContent = `UF: ${uf.toUpperCase()}`;
+            currentState.municipiosSelecionados = [];
+            currentState.pagina = 1;
+            await loadMunicipios(currentState.uf);
+            buscarImoveis();
+        }
+
+        function onOpenMunicipiosDropdown() {
+            setTimeout(() => {
+                const input = document.getElementById('busca-municipio-input');
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 60);
+        }
+
+        function fecharMunicipiosDropdown() {
+            const el = document.activeElement;
+            if (el) el.blur();
+        }
+
+        function handleMunicipioInputKey(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const firstCb = document.querySelector('#municipios-checkbox-list input[type="checkbox"]');
+                if (firstCb) {
+                    firstCb.checked = !firstCb.checked;
+                    toggleMunicipioCheckbox(firstCb.value, firstCb.checked);
+                    const input = document.getElementById('busca-municipio-input');
+                    input.value = '';
+                    filtrarListaMunicipios('');
+                    input.focus();
+                }
+            } else if (e.key === 'Escape') {
+                fecharMunicipiosDropdown();
+            }
+        }
+
+        async function loadMunicipios(uf) {
+            const container = document.getElementById('municipios-checkbox-list');
+            container.innerHTML = '<div class="text-center py-4 opacity-50 text-[11px]"><span class="loading loading-spinner loading-xs"></span> Carregando cidades...</div>';
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=municipios&uf=${uf}`);
+                currentState.municipiosListaCompleta = res.data || [];
+                renderizarCheckboxesMunicipios(currentState.municipiosListaCompleta);
+                renderizarSugestoesPrincipais(currentState.municipiosListaCompleta);
+                atualizarLabelMunicipios();
+            } catch (e) {
+                container.innerHTML = '<div class="text-xs text-error text-center py-2">Erro ao carregar cidades.</div>';
+            }
+        }
+
+        function renderizarSugestoesPrincipais(lista) {
+            const container = document.getElementById('popover-suggestions-pills');
+            const wrapper = document.getElementById('popover-top-suggestions');
+            if (!container) return;
+
+            if (lista.length === 0) {
+                wrapper.classList.add('hidden');
+                return;
+            }
+
+            wrapper.classList.remove('hidden');
+            const top = lista.slice(0, 5);
+            container.innerHTML = top.map(m => {
+                const isSelected = currentState.municipiosSelecionados.includes(m.slug);
+                return `
+                <button type="button" onclick="toggleMunicipioCheckbox('${m.slug}', ${!isSelected})" class="app-tag ${isSelected ? 'app-tag-accent font-semibold' : 'hover:bg-base-200'} cursor-pointer text-[10.5px]">
+                    ${isSelected ? '✓ ' : '+ '}${m.nome}
+                </button>
+                `;
+            }).join('');
+        }
+
+        function renderizarCheckboxesMunicipios(lista, termo = '') {
+            const container = document.getElementById('municipios-checkbox-list');
+            if (lista.length === 0) {
+                container.innerHTML = '<div class="text-center py-4 opacity-50 text-[11px]">Nenhuma cidade encontrada.</div>';
+                return;
+            }
+
+            container.innerHTML = lista.map(m => {
+                const isChecked = currentState.municipiosSelecionados.includes(m.slug) ? 'checked' : '';
+                let displayName = m.nome_exibicao || m.nome;
+
+                if (termo && termo.length > 1) {
+                    const regex = new RegExp(`(${termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                    displayName = displayName.replace(regex, '<span class="font-bold underline text-primary">$1</span>');
+                }
+
+                return `
+                <label class="flex items-center gap-2 p-1.5 rounded hover:bg-base-200/80 cursor-pointer select-none transition-colors">
+                    <input type="checkbox" value="${m.slug}" ${isChecked} onchange="toggleMunicipioCheckbox('${m.slug}', this.checked)" class="checkbox checkbox-xs checkbox-primary" />
+                    <span class="truncate flex-1 text-[11.5px] font-normal">${displayName}</span>
+                </label>
+                `;
+            }).join('');
+        }
+
+        function filtrarListaMunicipios(termo) {
+            const t = termo.toLowerCase().trim();
+            const filtrados = currentState.municipiosListaCompleta.filter(m => (m.nome && m.nome.toLowerCase().includes(t)) || (m.slug && m.slug.toLowerCase().includes(t)));
+            renderizarCheckboxesMunicipios(filtrados, t);
+        }
+
+        function toggleMunicipioCheckbox(slug, isChecked) {
+            if (isChecked) {
+                if (!currentState.municipiosSelecionados.includes(slug)) currentState.municipiosSelecionados.push(slug);
+            } else {
+                currentState.municipiosSelecionados = currentState.municipiosSelecionados.filter(s => s !== slug);
+            }
+            atualizarLabelMunicipios();
+            renderizarSugestoesPrincipais(currentState.municipiosListaCompleta);
+            renderizarCheckboxesMunicipios(currentState.municipiosListaCompleta, document.getElementById('busca-municipio-input')?.value || '');
+            debounceSearch();
+        }
+
+        function selecionarTodosMunicipiosVisiveis() {
+            const cbs = document.querySelectorAll('#municipios-checkbox-list input[type="checkbox"]');
+            cbs.forEach(cb => {
+                cb.checked = true;
+                if (!currentState.municipiosSelecionados.includes(cb.value)) currentState.municipiosSelecionados.push(cb.value);
+            });
+            atualizarLabelMunicipios();
+            renderizarSugestoesPrincipais(currentState.municipiosListaCompleta);
+            debounceSearch();
+        }
+
+        function limparSelecaoMunicipios() {
+            const cbs = document.querySelectorAll('#municipios-checkbox-list input[type="checkbox"]');
+            cbs.forEach(cb => cb.checked = false);
+            currentState.municipiosSelecionados = [];
+            atualizarLabelMunicipios();
+            renderizarSugestoesPrincipais(currentState.municipiosListaCompleta);
+            debounceSearch();
+        }
+
+        function atualizarLabelMunicipios() {
+            const count = currentState.municipiosSelecionados.length;
+            const label = document.getElementById('label-municipios-selected');
+            const chipsContainer = document.getElementById('popover-selected-chips');
+            const popoverStatus = document.getElementById('popover-status-text');
+
+            if (count === 0) {
+                label.textContent = 'Cidades (Todas)';
+                if (popoverStatus) popoverStatus.textContent = 'Todas as cidades selecionadas';
+                if (chipsContainer) chipsContainer.innerHTML = '';
+            } else {
+                label.textContent = `${count} cidade(s)`;
+                if (popoverStatus) popoverStatus.textContent = `${count} selecionada(s)`;
+
+                if (chipsContainer) {
+                    chipsContainer.innerHTML = currentState.municipiosSelecionados.map(slug => {
+                        const m = currentState.municipiosListaCompleta.find(x => x.slug === slug);
+                        return `
+                        <span class="app-tag app-tag-accent text-[10.5px]">
+                            <span>${m ? m.nome : slug}</span>
+                            <button type="button" onclick="toggleMunicipioCheckbox('${slug}', false)" class="hover:opacity-75 font-bold ml-0.5">✕</button>
+                        </span>
+                        `;
+                    }).join('');
+                }
+            }
+            renderizarChipsFiltrosAtivos();
+        }
+
+        function setTipoFiltro(tipo) {
+            currentState.tipo = tipo;
+            document.getElementById('label-tipo-selected').textContent = tipo ? `Tipo: ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}` : 'Tipo: Todos';
+            currentState.pagina = 1;
+            buscarImoveis();
+        }
+
+        // ==================== FONTES DE DADOS ====================
+        async function loadFontes() {
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=fontes_listar`);
+                const fontes = res.data || [];
+                const elUl = document.getElementById('dropdown-fontes-options');
+                if (!elUl) return;
+
+                let html = `<li><a onclick="setFonteFiltro('', 'Todas as Fontes')" class="${currentState.fonte === '' ? 'active font-semibold' : ''}">Todas as Fontes</a></li>`;
+                
+                fontes.forEach(f => {
+                    if (Boolean(Number(f.ativo))) {
+                        const isSelected = currentState.fonte === f.slug ? 'active font-semibold' : '';
+                        html += `<li><a onclick="setFonteFiltro('${f.slug}', '${escapeHtml(f.nome)}')" class="${isSelected}">${escapeHtml(f.nome)} (${Number(f.total_imoveis || 0)})</a></li>`;
+                    }
+                });
+
+                elUl.innerHTML = html;
+            } catch (e) {
+                console.error('Erro ao carregar fontes:', e);
+            }
+        }
+
+        function setFonteFiltro(slug, nome) {
+            currentState.fonte = slug;
+            document.getElementById('label-fonte-selected').textContent = slug ? `Fonte: ${nome}` : 'Fonte: Todas';
+            currentState.pagina = 1;
+            loadFontes();
+            buscarImoveis();
+        }
+
+        function setOrdem(ordem) {
+            currentState.ordem = ordem;
+            const labels = {
+                'desconto_desc': 'Maior Desconto',
+                'desconto_asc': 'Menor Desconto',
+                'valor_asc': 'Menor Preço',
+                'valor_desc': 'Maior Preço',
+                'avaliacao_desc': 'Maior Avaliação',
+                'encerramento_asc': 'Encerramento Próximo',
+                'recentes': 'Mais Recentes'
+            };
+            document.getElementById('label-ordem-selected').textContent = labels[ordem] || 'Ordenar';
+            currentState.pagina = 1;
+            buscarImoveis();
+        }
+
+        function clearFilters() {
+            currentState.uf = 'ma';
+            currentState.municipiosSelecionados = [];
+            currentState.tipo = '';
+            currentState.fonte = '';
+            currentState.dataFinalLeilao = '';
+            currentState.busca = '';
+            currentState.ordem = 'desconto_desc';
+            currentState.pagina = 1;
+
+            elSearch.value = '';
+            elDataFinal.value = '';
+            document.getElementById('label-uf-selected').textContent = 'UF: MA';
+            document.getElementById('label-tipo-selected').textContent = 'Tipo: Todos';
+            document.getElementById('label-fonte-selected').textContent = 'Fonte: Todas';
+            document.getElementById('label-ordem-selected').textContent = 'Maior Desconto';
+
+            loadMunicipios('ma');
+            loadFontes();
+            buscarImoveis();
+        }
+
+        // ==================== CHIPS ATIVOS ====================
+        function renderizarChipsFiltrosAtivos() {
+            let chips = [];
+
+            // UF
+            chips.push(`
+                <span class="app-tag font-semibold">
+                    <span>UF: ${currentState.uf.toUpperCase()}</span>
+                </span>
+            `);
+
+            // Fonte
+            if (currentState.fonte) {
+                chips.push(`
+                    <span class="app-tag app-tag-accent">
+                        <span>Fonte: ${currentState.fonte}</span>
+                        <button onclick="setFonteFiltro('', 'Todas as Fontes')" class="hover:opacity-75">✕</button>
+                    </span>
+                `);
+            }
+
+            // Cidades
+            if (currentState.municipiosSelecionados.length > 0) {
+                if (currentState.municipiosSelecionados.length <= 2) {
+                    currentState.municipiosSelecionados.forEach(slug => {
+                        const m = currentState.municipiosListaCompleta.find(x => x.slug === slug);
+                        chips.push(`
+                            <span class="app-tag app-tag-accent">
+                                <span>${m ? m.nome : slug}</span>
+                                <button onclick="toggleMunicipioCheckbox('${slug}', false)" class="hover:opacity-75">✕</button>
+                            </span>
+                        `);
+                    });
+                } else {
+                    chips.push(`
+                        <span class="app-tag app-tag-accent">
+                            <span>${currentState.municipiosSelecionados.length} cidades</span>
+                            <button onclick="limparSelecaoMunicipios()" class="hover:opacity-75">✕</button>
+                        </span>
+                    `);
+                }
+            }
+
+            // Tipo
+            if (currentState.tipo) {
+                chips.push(`
+                    <span class="app-tag">
+                        <span>${currentState.tipo}</span>
+                        <button onclick="setTipoFiltro('')" class="hover:opacity-75">✕</button>
+                    </span>
+                `);
+            }
+
+            // Data Final
+            if (elDataFinal.value) {
+                chips.push(`
+                    <span class="app-tag">
+                        <span>Até ${elDataFinal.value}</span>
+                        <button onclick="elDataFinal.value=''; debounceSearch();" class="hover:opacity-75">✕</button>
+                    </span>
+                `);
+            }
+
+            // Busca
+            if (currentState.busca) {
+                chips.push(`
+                    <span class="app-tag">
+                        <span>"${currentState.busca}"</span>
+                        <button onclick="elSearch.value=''; currentState.busca=''; debounceSearch();" class="hover:opacity-75">✕</button>
+                    </span>
+                `);
+            }
+
+            elActiveChips.innerHTML = chips.join('');
+        }
+
+        // ==================== BUSCA ====================
+        async function buscarImoveis(page = null) {
+            if (page) currentState.pagina = page;
+
+            showLoading();
+            renderizarChipsFiltrosAtivos();
+            elError.classList.add('hidden');
+            elEmpty.classList.add('hidden');
+
+            currentState.lastAction = () => buscarImoveis(page);
+
+            const params = new URLSearchParams({
+                action: 'imoveis',
+                uf: currentState.uf,
+                pagina: currentState.pagina,
+                ordem: currentState.ordem,
+                origem: currentState.modoOnline ? 'online' : 'offline'
+            });
+
+            if (currentState.fonte) {
+                params.append('fonte', currentState.fonte);
+            }
+            if (currentState.municipiosSelecionados.length > 0) {
+                params.append('municipio', currentState.municipiosSelecionados.join(','));
+            }
+            if (currentState.tipo) params.append('tipo', currentState.tipo);
+            if (elDataFinal.value) params.append('data_final_leilao', elDataFinal.value);
+            if (currentState.busca) params.append('s', currentState.busca);
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?${params.toString()}`);
+
+                if (!res.success) {
+                    showError(res.error || 'Falha ao carregar imóveis.');
+                    return;
+                }
+
+                currentState.loadedItems = res.data || [];
+                const total = res.total || currentState.loadedItems.length;
+                currentState.totalPages = res.total_paginas || 1;
+
+                elTotal.textContent = total.toLocaleString('pt-BR');
+                elPaginationInfo.textContent = `Página ${currentState.pagina} de ${currentState.totalPages}`;
+
+                if (currentState.loadedItems.length === 0) {
+                    showEmpty();
+                } else {
+                    renderCurrentView(currentState.loadedItems);
+                    renderPagination(currentState.pagina, currentState.totalPages);
+                }
+            } catch (err) {
+                showError('Erro ao comunicar com o servidor.');
+            }
+        }
+
+        function retryLastAction() {
+            if (currentState.lastAction) currentState.lastAction();
+        }
+
+        // ==================== RENDERIZAÇÃO ====================
+        function renderCurrentView(items) {
+            if (currentState.currentView === 'gallery') renderGalleryView(items);
+            else if (currentState.currentView === 'table') renderTableView(items);
+            else if (currentState.currentView === 'list') renderListView(items);
+        }
+
+        // 1. GRADE (CARDS)
+        function renderGalleryView(items) {
+            elGallery.innerHTML = items.map((imovel, index) => {
+                const imgUrl = imovel.imagem || 'https://placehold.co/600x400/0f172a/94a3b8?text=Sem+Foto';
+                const valAvaliacao = parseFloat(imovel.valor_avaliacao || 0);
+                const valLeilao = parseFloat(imovel.valor_leilao || 0);
+                const desconto = imovel.desconto ? parseFloat(imovel.desconto) : (valAvaliacao > valLeilao ? Math.round(((valAvaliacao - valLeilao) / valAvaliacao) * 100) : 0);
+                const economia = (valAvaliacao > valLeilao && valLeilao > 0) ? (valAvaliacao - valLeilao) : 0;
+
+                return `
+                <article class="app-card overflow-hidden flex flex-col justify-between group">
+                    <div>
+                        <!-- Capa / Imagem -->
+                        <div class="relative h-44 w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900 cursor-pointer" onclick="openPropertyModalByIndex(${index})">
+                            <img src="${imgUrl}" alt="${imovel.tipo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                            
+                            <!-- BADGE DE DESCONTO EM DESTAQUE -->
+                            ${desconto > 0 ? `
+                            <div class="absolute top-2.5 right-2.5 bg-rose-600 text-white font-mono font-extrabold text-xs px-2.5 py-1 rounded shadow-md tracking-tight">
+                                -${desconto}% OFF
+                            </div>` : ''}
+
+                            <div class="absolute bottom-2.5 left-2.5 flex items-center gap-1.5">
+                                <span class="app-tag bg-base-100/90 text-base-content backdrop-blur-sm font-medium">
+                                    ${imovel.tipo || 'Imóvel'}
+                                </span>
+                                <span class="app-tag bg-neutral-900/80 text-white text-[10px] backdrop-blur-sm font-medium border-neutral-700">
+                                    ${formatFonteNome(imovel.fonte_slug)}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Conteúdo -->
+                        <div class="p-3.5 space-y-2">
+                            <div class="flex items-center justify-between text-[11px] opacity-70">
+                                <span class="font-semibold text-primary">${imovel.cidade || ''}/${imovel.uf || ''}</span>
+                                <div class="flex items-center gap-1">
+                                    <span class="opacity-80">${imovel.modalidade || 'Leilão'}</span>
+                                </div>
+                            </div>
+
+                            <h3 class="font-semibold text-xs leading-snug line-clamp-2 hover:text-primary cursor-pointer transition-colors" onclick="openPropertyModalByIndex(${index})">
+                                ${imovel.titulo}
+                            </h3>
+
+                            <div class="text-[11px] opacity-60 line-clamp-1">
+                                ${imovel.endereco || 'Endereço disponível na ficha técnica'}
+                            </div>
+
+                            <!-- Atalhos de Documentos -->
+                            <div class="flex flex-wrap gap-1 pt-0.5">
+                                ${imovel.edital ? `<a href="${imovel.edital}" target="_blank" class="app-tag text-[10.5px] hover:underline">Edital</a>` : ''}
+                                ${imovel.link_matricula ? `<a href="${imovel.link_matricula}" target="_blank" class="app-tag text-[10.5px] hover:underline">Matrícula PDF</a>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rodapé do Card -->
+                    <div class="p-3.5 pt-0 mt-auto">
+                        <div class="border-t border-base-200 pt-2.5 space-y-1">
+                            
+                            ${economia > 0 ? `
+                            <div class="flex items-center justify-between text-[10.5px]">
+                                <span class="opacity-50 line-through font-mono tabular-nums">${formatCurrency(valAvaliacao)}</span>
+                                <span class="text-rose-500 font-semibold font-mono tabular-nums">Economia: ${formatCurrency(economia)}</span>
+                            </div>` : (valAvaliacao > 0 ? `<div class="text-[10px] opacity-50 line-through font-mono tabular-nums">${formatCurrency(valAvaliacao)}</div>` : '')}
+
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <div class="text-[10px] opacity-50 uppercase tracking-wider font-semibold">Lance Inicial</div>
+                                    <div class="font-mono font-bold text-base text-emerald-600 dark:text-emerald-400 tabular-nums">
+                                        ${valLeilao > 0 ? formatCurrency(valLeilao) : 'Consulte'}
+                                    </div>
+                                </div>
+                                <button onclick="openPropertyModalByIndex(${index})" class="btn btn-xs btn-neutral font-medium text-[11px] rounded px-3">
+                                    Ver Ficha
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </article>
+                `;
+            }).join('');
+        }
+
+        // 2. TABELA
+        function renderTableView(items) {
+            elTableBody.innerHTML = items.map((imovel, index) => {
+                const valAvaliacao = parseFloat(imovel.valor_avaliacao || 0);
+                const valLeilao = parseFloat(imovel.valor_leilao || 0);
+                const desconto = imovel.desconto ? parseFloat(imovel.desconto) : 0;
+
+                return `
+                <tr class="hover:bg-base-200/40 transition-colors">
+                    <td class="font-medium max-w-xs truncate cursor-pointer hover:text-primary py-2.5" onclick="openPropertyModalByIndex(${index})">
+                        ${imovel.titulo}
+                    </td>
+                    <td><span class="app-tag text-[10.5px] font-medium">${formatFonteNome(imovel.fonte_slug)}</span></td>
+                    <td><span class="app-tag">${imovel.tipo || 'Imóvel'}</span></td>
+                    <td class="opacity-75">${imovel.cidade || '-'}/${imovel.uf || ''}</td>
+                    <td class="text-right opacity-60 font-mono tabular-nums">${valAvaliacao > 0 ? formatCurrency(valAvaliacao) : '-'}</td>
+                    <td class="text-right font-mono font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">${valLeilao > 0 ? formatCurrency(valLeilao) : 'Consulte'}</td>
+                    <td class="text-center">
+                        ${desconto > 0 ? `
+                        <span class="bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25 font-mono font-bold text-[11px] px-2 py-0.5 rounded">
+                            -${desconto}%
+                        </span>` : '-'}
+                    </td>
+                    <td class="opacity-75 text-[11px] font-mono tabular-nums">${imovel.data_encerramento || '-'}</td>
+                    <td class="text-center">
+                        <div class="flex items-center justify-center gap-1">
+                            ${imovel.edital ? `<a href="${imovel.edital}" target="_blank" class="app-tag text-[10px]" title="Edital">Edital</a>` : ''}
+                            ${imovel.link_matricula ? `<a href="${imovel.link_matricula}" target="_blank" class="app-tag text-[10px]" title="Matrícula">Matrícula</a>` : ''}
+                        </div>
+                    </td>
+                    <td class="text-right">
+                        <button onclick="openPropertyModalByIndex(${index})" class="btn btn-xs btn-ghost border border-base-300 rounded">
+                            Detalhes
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // 3. LISTA
+        function renderListView(items) {
+            elList.innerHTML = items.map((imovel, index) => {
+                const valAvaliacao = parseFloat(imovel.valor_avaliacao || 0);
+                const valLeilao = parseFloat(imovel.valor_leilao || 0);
+                const desconto = imovel.desconto ? parseFloat(imovel.desconto) : 0;
+                const economia = (valAvaliacao > valLeilao && valLeilao > 0) ? (valAvaliacao - valLeilao) : 0;
+
+                return `
+                <div class="bg-base-100 rounded-lg border border-base-300 p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-primary/40 transition-colors">
+                    <div class="min-w-0 flex-1">
+                        <div class="font-semibold text-xs truncate hover:text-primary cursor-pointer" onclick="openPropertyModalByIndex(${index})">
+                            ${imovel.titulo}
+                        </div>
+                        <div class="flex items-center gap-2 text-[11px] opacity-65 mt-1">
+                            <span class="font-medium">${imovel.cidade}/${imovel.uf}</span>
+                            <span>•</span>
+                            <span class="app-tag text-[10px] font-medium">${formatFonteNome(imovel.fonte_slug)}</span>
+                            <span>•</span>
+                            <span class="app-tag text-[10px]">${imovel.tipo}</span>
+                            ${imovel.data_encerramento ? `<span class="font-mono">• Encerramento: ${imovel.data_encerramento}</span>` : ''}
+                            ${economia > 0 ? `<span class="text-rose-500 font-mono font-medium">• Economia: ${formatCurrency(economia)}</span>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 shrink-0 self-end sm:self-center">
+                        ${desconto > 0 ? `
+                        <span class="bg-rose-600 text-white font-mono font-bold text-xs px-2 py-0.5 rounded shadow-sm">
+                            -${desconto}% OFF
+                        </span>` : ''}
+                        <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400 tabular-nums text-sm">
+                            ${valLeilao > 0 ? formatCurrency(valLeilao) : 'Consulte'}
+                        </div>
+                        <button onclick="openPropertyModalByIndex(${index})" class="btn btn-xs btn-neutral rounded font-medium px-3">
+                            Ver
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== MODAL DE DETALHES COMPLETO ====================
+        async function openPropertyModalByIndex(index) {
+            const imovel = currentState.loadedItems[index];
+            if (!imovel) return;
+
+            const modal = document.getElementById('property_modal');
+            const content = document.getElementById('property-modal-content');
+            modal.showModal();
+
+            const valAvaliacao = parseFloat(imovel.valor_avaliacao || 0);
+            const valLeilao = parseFloat(imovel.valor_leilao || 0);
+            const desconto = imovel.desconto ? parseFloat(imovel.desconto) : (valAvaliacao > valLeilao ? Math.round(((valAvaliacao - valLeilao) / valAvaliacao) * 100) : 0);
+            const economia = (valAvaliacao > valLeilao && valLeilao > 0) ? (valAvaliacao - valLeilao) : 0;
+            const imgUrl = imovel.imagem || 'https://placehold.co/800x500/0f172a/94a3b8?text=Sem+Foto';
+
+            // Renderização imediata dos dados cadastrados
+            content.innerHTML = `
+                <div class="space-y-4 text-xs">
+                    
+                    <!-- Foto de Capa & Badges -->
+                    <div class="relative h-56 w-full rounded-lg overflow-hidden bg-neutral-900 border border-base-300">
+                        <img src="${imgUrl}" alt="${imovel.titulo}" class="w-full h-full object-cover" />
+                        ${desconto > 0 ? `
+                        <div class="absolute top-3 right-3 bg-rose-600 text-white font-mono font-black text-sm px-3 py-1 rounded shadow-lg tracking-tight">
+                            -${desconto}% OFF
+                        </div>` : ''}
+                        <div class="absolute bottom-3 left-3 flex items-center gap-1.5">
+                            <span class="app-tag bg-base-100/95 backdrop-blur-md text-base-content font-semibold text-xs px-2.5 py-1 shadow">
+                                ${imovel.tipo || 'Imóvel'} • ${imovel.cidade || ''}/${imovel.uf || ''}
+                            </span>
+                            <span class="app-tag bg-neutral-900/90 backdrop-blur-md text-white font-semibold text-xs px-2.5 py-1 shadow border-neutral-700">
+                                Fonte: ${formatFonteNome(imovel.fonte_slug)}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Título & Endereço -->
+                    <div>
+                        <h3 class="font-bold text-base text-base-content leading-snug">${imovel.titulo}</h3>
+                        <div class="opacity-70 text-xs mt-1 flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 opacity-60 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            <span>${imovel.endereco || 'Endereço completo disponível no edital oficial'}</span>
+                        </div>
+                    </div>
+
+                    <!-- Resumo Financeiro em Grade -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-base-200/50 p-3 rounded-lg border border-base-300 text-center">
+                        <div class="p-1">
+                            <div class="text-[10px] uppercase font-semibold opacity-60">Avaliação</div>
+                            <div class="font-mono font-semibold text-xs opacity-75 tabular-nums mt-0.5">${valAvaliacao > 0 ? formatCurrency(valAvaliacao) : '-'}</div>
+                        </div>
+                        <div class="p-1 border-l border-base-300">
+                            <div class="text-[10px] uppercase font-semibold opacity-60">Lance Inicial</div>
+                            <div class="font-mono font-bold text-sm text-emerald-600 dark:text-emerald-400 tabular-nums mt-0.5">${valLeilao > 0 ? formatCurrency(valLeilao) : 'Consulte'}</div>
+                        </div>
+                        <div class="p-1 border-l border-base-300">
+                            <div class="text-[10px] uppercase font-semibold opacity-60">Desconto</div>
+                            <div class="font-mono font-bold text-xs text-rose-500 tabular-nums mt-0.5">${desconto > 0 ? `-${desconto}%` : '-'}</div>
+                        </div>
+                        <div class="p-1 border-l border-base-300">
+                            <div class="text-[10px] uppercase font-semibold opacity-60">Economia</div>
+                            <div class="font-mono font-bold text-xs text-emerald-600 dark:text-emerald-400 tabular-nums mt-0.5">${economia > 0 ? formatCurrency(economia) : '-'}</div>
+                        </div>
+                    </div>
+
+                    <!-- Ficha Técnica Estruturada -->
+                    <div class="bg-base-100 rounded-lg border border-base-300 divide-y divide-base-200">
+                        <div class="grid grid-cols-3 p-2.5">
+                            <span class="opacity-60 font-medium">Fonte de Origem</span>
+                            <span class="col-span-2 font-semibold flex items-center gap-1.5">
+                                <span class="app-tag text-[11px] font-semibold">${formatFonteNome(imovel.fonte_slug)}</span>
+                                ${imovel.fonte_slug ? `<span class="opacity-50 text-[10px] font-mono">(${escapeHtml(imovel.fonte_slug)})</span>` : ''}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-3 p-2.5">
+                            <span class="opacity-60 font-medium">Modalidade</span>
+                            <span class="col-span-2 font-semibold">${imovel.modalidade || 'Leilão Público'}</span>
+                        </div>
+                        <div class="grid grid-cols-3 p-2.5">
+                            <span class="opacity-60 font-medium">Encerramento</span>
+                            <span class="col-span-2 font-mono font-semibold tabular-nums">${imovel.data_encerramento || 'Consulte o edital'}</span>
+                        </div>
+                        <div class="grid grid-cols-3 p-2.5">
+                            <span class="opacity-60 font-medium">Data de Inclusão</span>
+                            <span class="col-span-2 font-mono font-medium tabular-nums" id="modal-data-inclusao">${imovel.data_inclusao || '<span class="loading loading-dots loading-xs"></span>'}</span>
+                        </div>
+                        <div class="grid grid-cols-3 p-2.5">
+                            <span class="opacity-60 font-medium">Leiloeiro Oficial</span>
+                            <span class="col-span-2 font-medium" id="modal-leiloeiro">${imovel.nome_leiloeiro || '<span class="loading loading-dots loading-xs"></span>'}</span>
+                        </div>
+                        <div class="grid grid-cols-3 p-2.5">
+                            <span class="opacity-60 font-medium">Nº da Matrícula</span>
+                            <span class="col-span-2 font-mono font-medium" id="modal-matricula">${imovel.numero_matricula || '<span class="loading loading-dots loading-xs"></span>'}</span>
+                        </div>
+                    </div>
+
+                    <!-- Documentação & Ações -->
+                    <div class="space-y-2 pt-1">
+                        <div class="font-semibold text-xs opacity-70">Documentos Oficiais</div>
+                        <div class="flex flex-wrap gap-2" id="modal-botoes-docs">
+                            ${imovel.edital ? `
+                            <a href="${imovel.edital}" target="_blank" class="btn btn-xs btn-outline gap-1.5 font-medium rounded">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                <span>Acessar Edital Oficial</span>
+                            </a>` : ''}
+
+                            ${imovel.link_matricula ? `
+                            <a href="${imovel.link_matricula}" target="_blank" class="btn btn-xs btn-outline gap-1.5 font-medium rounded">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                <span>Baixar Matrícula (PDF)</span>
+                            </a>` : ''}
+
+                            ${imovel.link_leiloeiro ? `
+                            <a href="${imovel.link_leiloeiro}" target="_blank" class="btn btn-xs btn-ghost border border-base-300 gap-1.5 font-medium rounded">
+                                <span>Página do Leiloeiro</span>
+                            </a>` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Link para Anúncio Oficial -->
+                    <div class="pt-1">
+                        <a href="${imovel.link}" target="_blank" class="btn btn-xs btn-neutral w-full gap-2 font-medium h-8 rounded-lg">
+                            <span>Abrir Anúncio Oficial</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                        </a>
+                    </div>
+
+                </div>
+            `;
+
+            // Se faltarem dados de enriquecimento (edital, matricula ou inclusao), consultar a API em segundo plano
+            if (!imovel.data_inclusao || !imovel.link_matricula || !imovel.edital || !imovel.nome_leiloeiro) {
+                try {
+                    const res = await fetchAPI(`${API_BASE}?action=detalhes&url=${encodeURIComponent(imovel.link)}`);
+                    if (res.success) {
+                        // Atualizar campos no objeto local
+                        imovel.data_inclusao = res.data_inclusao || imovel.data_inclusao;
+                        imovel.edital = res.edital || imovel.edital;
+                        imovel.link_matricula = res.link_matricula || imovel.link_matricula;
+                        imovel.numero_matricula = res.numero_matricula || imovel.numero_matricula;
+                        imovel.link_leiloeiro = res.link_leiloeiro || imovel.link_leiloeiro;
+                        imovel.nome_leiloeiro = res.nome_leiloeiro || imovel.nome_leiloeiro;
+
+                        // Atualizar na interface
+                        const elInc = document.getElementById('modal-data-inclusao');
+                        const elLei = document.getElementById('modal-leiloeiro');
+                        const elMat = document.getElementById('modal-matricula');
+                        const elDocs = document.getElementById('modal-botoes-docs');
+
+                        if (elInc) elInc.textContent = imovel.data_inclusao || 'Não informada';
+                        if (elLei) elLei.textContent = imovel.nome_leiloeiro || 'Caixa / Leiloeiro Oficial';
+                        if (elMat) elMat.textContent = imovel.numero_matricula || 'Disponível no PDF da Matrícula';
+
+                        if (elDocs) {
+                            let docsHtml = '';
+                            if (imovel.edital) docsHtml += `<a href="${imovel.edital}" target="_blank" class="btn btn-xs btn-outline gap-1.5 font-medium rounded"><span>Acessar Edital Oficial</span></a>`;
+                            if (imovel.link_matricula) docsHtml += `<a href="${imovel.link_matricula}" target="_blank" class="btn btn-xs btn-outline gap-1.5 font-medium rounded"><span>Baixar Matrícula (PDF)</span></a>`;
+                            if (imovel.link_leiloeiro) docsHtml += `<a href="${imovel.link_leiloeiro}" target="_blank" class="btn btn-xs btn-ghost border border-base-300 gap-1.5 font-medium rounded"><span>Página do Leiloeiro</span></a>`;
+                            if (!docsHtml) docsHtml = '<span class="text-xs opacity-50">Documentos disponíveis no site do leiloeiro</span>';
+                            elDocs.innerHTML = docsHtml;
+                        }
+                    }
+                } catch (e) {
+                    const elInc = document.getElementById('modal-data-inclusao');
+                    if (elInc && elInc.innerHTML.includes('loading')) elInc.textContent = 'Não informada';
+                }
+            }
+        }
+
+        // ==================== PAGINAÇÃO ====================
+        function renderPagination(current, total) {
+            let html = '';
+            html += `<button class="join-item btn btn-xs ${current === 1 ? 'btn-disabled' : ''}" onclick="buscarImoveis(${current - 1})">«</button>`;
+
+            let start = Math.max(1, current - 2);
+            let end = Math.min(total, start + 4);
+            if (end - start < 4) start = Math.max(1, end - 4);
+
+            for (let i = start; i <= end; i++) {
+                html += `<button class="join-item btn btn-xs font-mono font-medium tabular-nums ${i === current ? 'btn-neutral' : ''}" onclick="buscarImoveis(${i})">${i}</button>`;
+            }
+
+            html += `<button class="join-item btn btn-xs ${current === total ? 'btn-disabled' : ''}" onclick="buscarImoveis(${current + 1})">»</button>`;
+            elPagination.innerHTML = html;
+        }
+
+        // ==================== FEEDBACK ====================
+        function showLoading() {
+            elGallery.innerHTML = Array(8).fill(0).map(() => `
+                <div class="app-card p-3 space-y-2.5 animate-pulse">
+                    <div class="skeleton h-40 w-full rounded-lg"></div>
+                    <div class="skeleton h-4 w-3/4"></div>
+                    <div class="skeleton h-3 w-1/2"></div>
+                    <div class="skeleton h-5 w-1/3 mt-2"></div>
+                </div>
+            `).join('');
+        }
+
+        function showEmpty() {
+            elGallery.innerHTML = '';
+            elTableBody.innerHTML = '';
+            elList.innerHTML = '';
+            elEmpty.classList.remove('hidden');
+        }
+
+        function showError(msg) {
+            elGallery.innerHTML = '';
+            elErrorMsg.textContent = msg;
+            elError.classList.remove('hidden');
+        }
+
+        function formatCurrency(value) {
+            if (!value || isNaN(value)) return 'R$ 0,00';
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+
+        // ==================== STATUS SCRAPERS ====================
+        async function openTokenStatusModal() {
+            document.getElementById('token_modal').showModal();
+            await loadTokenStatus();
+        }
+
+        async function loadTokenStatus() {
+            const content = document.getElementById('token-status-content');
+            content.innerHTML = `<div class="flex justify-center py-8"><span class="loading loading-spinner loading-md"></span></div>`;
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=tokens_status`);
+                const d = res.data || {};
+                let html = '';
+
+                // Provedores suportados
+                const provedoresConfig = [
+                    { id: 'scrape_do', nome: 'Scrape.do', tokens: d.scrape_do || [] },
+                    { id: 'firecrawl', nome: 'Firecrawl', tokens: d.firecrawl || [] }
+                ];
+
+                provedoresConfig.forEach(p => {
+                    const tokens = p.tokens;
+                    const activeCount = tokens.filter(t => t.status === 'ativo' && t.active).length;
+
+                    html += `
+                        <div class="bg-base-200/50 p-4 rounded-xl border border-base-300 space-y-3">
+                            <div class="font-semibold text-xs text-base-content flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full ${activeCount > 0 ? 'bg-emerald-500 shadow-sm' : 'bg-amber-500'}"></span>
+                                    <span class="text-sm">${escapeHtml(p.nome)}</span>
+                                </span>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="badge badge-sm badge-neutral font-mono text-[10.5px]">${tokens.length} chaves</span>
+                                    <span class="badge badge-xs ${activeCount > 0 ? 'badge-success' : 'badge-warning'} text-[9.5px] font-mono font-medium">${activeCount} ativas</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2.5">
+                    `;
+
+                    if (tokens.length === 0) {
+                        html += `<div class="text-[11px] opacity-50 italic py-2 text-center bg-base-100/50 rounded-lg border border-dashed border-base-300">Nenhuma chave cadastrada para este provedor.</div>`;
+                    } else {
+                        tokens.forEach(t => {
+                            const isAtivo = t.status === 'ativo';
+                            const isPausado = t.status === 'pausado';
+                            const isDesativado = t.status === 'desativado';
+
+                            html += `
+                                <div class="bg-base-100 p-3 rounded-xl border border-base-300 shadow-sm space-y-2 transition-all hover:border-base-content/20" id="token-card-${p.id}-${t.token_hash}">
+                                    <div class="flex flex-wrap items-center justify-between gap-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-mono text-xs font-semibold select-all bg-base-200/70 px-2 py-0.5 rounded border border-base-300 text-base-content">
+                                                ${escapeHtml(t.token)}
+                                            </span>
+                                            ${t.is_custom ? '<span class="badge badge-xs badge-ghost text-[9px]">Custom</span>' : '<span class="badge badge-xs badge-ghost text-[9px] opacity-60">Padrão</span>'}
+                                            <button type="button" class="btn btn-ghost btn-xs h-6 px-1.5 text-base-content/70 hover:text-primary gap-1" title="Editar Chave" onclick="iniciarEdicaoToken('${p.id}', '${escapeHtml(t.token_hash)}', '${escapeHtml(t.token_full || t.token)}')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                                <span>Editar</span>
+                                            </button>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <!-- Seletor de Estado -->
+                                            <select onchange="alterarStatusTokenAPI('${p.id}', '${escapeHtml(t.token_hash)}', this.value)" class="select select-bordered select-xs text-[11px] font-medium h-6 min-h-0 py-0 px-2 rounded-md ${isAtivo ? 'text-emerald-500 font-semibold' : (isPausado ? 'text-amber-500 font-semibold' : 'text-rose-500 font-semibold')}">
+                                                <option value="ativo" ${isAtivo ? 'selected' : ''}>🟢 Ativa</option>
+                                                <option value="pausado" ${isPausado ? 'selected' : ''}>🟡 Pausada</option>
+                                                <option value="desativado" ${isDesativado ? 'selected' : ''}>🔴 Desativada</option>
+                                            </select>
+
+                                            <button type="button" class="btn btn-ghost btn-xs h-6 min-h-0 px-2 text-[10.5px] border border-base-300 hover:bg-base-200" onclick="testarTokenAPI('${p.id}', '${escapeHtml(t.token_hash)}')">
+                                                ⚡ Testar
+                                            </button>
+
+                                            <button type="button" class="btn btn-ghost btn-xs text-rose-500 h-6 min-h-0 px-1.5 hover:bg-rose-500/10" title="Excluir Chave" onclick="removerTokenAPI('${p.id}', '${escapeHtml(t.token_hash)}')">
+                                                ✕
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Container de Edição Inline -->
+                                    <div id="token-edit-box-${p.id}-${t.token_hash}" class="hidden pt-2 border-t border-base-200 space-y-2">
+                                        <div class="flex items-center gap-2">
+                                            <input type="text" id="token-edit-input-${p.id}-${t.token_hash}" class="input input-xs input-bordered w-full font-mono text-xs rounded-lg" value="${escapeHtml(t.token_full || '')}" placeholder="Cole a nova chave..." />
+                                            <button type="button" class="btn btn-xs btn-neutral rounded-lg px-2.5" onclick="salvarEdicaoToken('${p.id}', '${escapeHtml(t.token_hash)}')">Salvar</button>
+                                            <button type="button" class="btn btn-xs btn-ghost border border-base-300 rounded-lg" onclick="cancelarEdicaoToken('${p.id}', '${escapeHtml(t.token_hash)}')">Cancelar</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-[10px] opacity-60 flex items-center justify-between font-mono pt-0.5">
+                                        <span>Status: <b>${escapeHtml(t.details)}</b></span>
+                                        <span>Pool: ${isAtivo ? 'Disponível' : (isPausado ? 'Pausada' : 'Desativada')}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    html += `</div></div>`;
+                });
+
+                content.innerHTML = html;
+            } catch (err) {
+                content.innerHTML = `<div class="alert alert-error text-xs">Erro ao consultar status dos scrapers.</div>`;
+            }
+        }
+
+        function iniciarEdicaoToken(provider, tokenHash, tokenFull) {
+            const editBox = document.getElementById(`token-edit-box-${provider}-${tokenHash}`);
+            const input = document.getElementById(`token-edit-input-${provider}-${tokenHash}`);
+            if (editBox && input) {
+                editBox.classList.remove('hidden');
+                input.value = tokenFull;
+                input.focus();
+                input.select();
+            }
+        }
+
+        function cancelarEdicaoToken(provider, tokenHash) {
+            const editBox = document.getElementById(`token-edit-box-${provider}-${tokenHash}`);
+            if (editBox) editBox.classList.add('hidden');
+        }
+
+        async function salvarEdicaoToken(provider, tokenHash) {
+            const input = document.getElementById(`token-edit-input-${provider}-${tokenHash}`);
+            if (!input) return;
+            const newToken = input.value.trim();
+            if (!newToken) {
+                showToast('Informe a nova chave.', true);
+                return;
+            }
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=tokens_editar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, old_token: tokenHash, new_token: newToken })
+                });
+
+                if (res.success) {
+                    showToast(res.message || 'Chave atualizada com sucesso!');
+                    loadTokenStatus();
+                } else {
+                    showToast(res.error || 'Erro ao atualizar chave.', true);
+                }
+            } catch (e) {
+                showToast('Erro ao salvar alteração da chave.', true);
+            }
+        }
+
+        async function alterarStatusTokenAPI(provider, tokenHash, status) {
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=tokens_alterar_status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, token: tokenHash, status })
+                });
+
+                if (res.success) {
+                    showToast(res.message || `Chave ${status} com sucesso!`);
+                    loadTokenStatus();
+                } else {
+                    showToast(res.error || 'Erro ao alterar status.', true);
+                }
+            } catch (e) {
+                showToast('Erro de conexão ao alterar status.', true);
+            }
+        }
+
+        async function cadastrarNovoToken(event) {
+            event.preventDefault();
+            const provider = document.getElementById('token-provider-select').value;
+            const inputEl = document.getElementById('token-input-val');
+            const token = inputEl.value.trim();
+
+            if (!token) return;
+
+            const btn = document.getElementById('btn-salvar-token');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loading loading-spinner loading-xs"></span><span>Salvando...</span>`;
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=tokens_adicionar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, token })
+                });
+
+                if (res.success) {
+                    showToast(res.message || 'Chave cadastrada com sucesso!');
+                    inputEl.value = '';
+                    loadTokenStatus();
+                } else {
+                    showToast(res.error || 'Erro ao cadastrar chave.', true);
+                }
+            } catch (e) {
+                showToast('Erro de conexão ao salvar chave.', true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>+ Adicionar Chave</span>`;
+            }
+        }
+
+        async function removerTokenAPI(provider, tokenHash) {
+            if (!confirm('Deseja realmente excluir esta chave de API?')) return;
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=tokens_remover`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, token: tokenHash })
+                });
+
+                if (res.success) {
+                    showToast(res.message || 'Chave removida!');
+                    loadTokenStatus();
+                } else {
+                    showToast(res.error || 'Erro ao remover chave.', true);
+                }
+            } catch (e) {
+                showToast('Erro ao remover chave.', true);
+            }
+        }
+
+        async function testarTokenAPI(provider, tokenHash) {
+            showToast('Testando conexão com a chave de API...', false);
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=tokens_testar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, token: tokenHash })
+                });
+
+                if (res.success) {
+                    showToast(`✅ ${res.message}`, false);
+                } else {
+                    showToast(`❌ ${res.error}`, true);
+                }
+            } catch (e) {
+                showToast('Erro ao testar chave.', true);
+            }
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast-container');
+            const toastMsg = document.getElementById('toast-msg');
+            toastMsg.textContent = msg;
+            toastMsg.className = `alert ${isError ? 'alert-error' : 'alert-neutral'} text-xs font-medium py-2 px-3.5 shadow-xl rounded-lg`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3500);
+        }
+    </script>
+</body>
+</html>

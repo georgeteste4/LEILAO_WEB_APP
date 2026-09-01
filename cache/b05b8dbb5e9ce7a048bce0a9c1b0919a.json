@@ -1,0 +1,22 @@
+{
+    "created_at": "2026-08-30 20:13:00",
+    "expires_at": 1788122580,
+    "key": "detalhe_v1_db1c5550082de713a2141d2ca11fcc94",
+    "data": {
+        "success": true,
+        "url": "https:\/\/www.megaleiloes.com.br\/imoveis\/casas\/ma\/barra-do-corda\/casa-128-m2-barra-do-corda-ma-rua-milao-esquina-com-rua-verona-lt-01-da-qd-c-park-italia-x128395?utm_source=megaleiloes&utm_medium=link&utm_campaign=casa-128-m2-barra-do-corda-ma-rua-milao-esquina-com-rua-verona-lt-01-da-qd-c-park-italia-x128395&utm_term=X128395&utm_content=link",
+        "data_inclusao": null,
+        "edital": "https:\/\/cdn1.megaleiloes.com.br\/batches\/128395\/megaleiloes_edital_X128395_260820-111106.pdf",
+        "link_matricula": "https:\/\/cdn1.megaleiloes.com.br\/batches\/128395\/megaleiloes_matricula_X128395_260820-111106.pdf",
+        "numero_matricula": null,
+        "link_leiloeiro": null,
+        "nome_leiloeiro": null,
+        "area_util": null,
+        "area_terreno": null,
+        "quartos": null,
+        "vagas": null,
+        "imagens": [
+            "https:\/\/cdn1.megaleiloes.com.br\/batches\/128395\/e59988ab990acdf8c98dc6bbd9ff195e_670x380.jpg"
+        ]
+    }
+}

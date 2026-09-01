@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração — Leilão de Imóveis & Cron</title>
+    
+    <!-- Tipografia Institucional: Manrope & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS & DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ["class", '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Manrope"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-canvas: #f8fafc;
+            --bg-surface: #ffffff;
+            --border-subtle: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        [data-theme="dark"] {
+            --bg-canvas: #090d16;
+            --bg-surface: #0f172a;
+            --border-subtle: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-main);
+            letter-spacing: -0.011em;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.02em;
+        }
+
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+
+        /* Tags Sóbrias */
+        .app-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.15rem 0.45rem;
+            border-radius: 0.375rem;
+            font-size: 0.72rem;
+            font-weight: 500;
+            line-height: 1.25;
+            background: rgba(100, 116, 139, 0.08);
+            color: #475569;
+            border: 1px solid rgba(100, 116, 139, 0.15);
+        }
+
+        [data-theme="dark"] .app-tag {
+            background: rgba(148, 163, 184, 0.1);
+            color: #cbd5e1;
+            border-color: rgba(148, 163, 184, 0.18);
+        }
+
+        .app-tag-accent {
+            background: rgba(2, 132, 199, 0.1);
+            color: #0284c7;
+            border-color: rgba(2, 132, 199, 0.25);
+        }
+
+        [data-theme="dark"] .app-tag-accent {
+            background: rgba(56, 189, 248, 0.12);
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.25);
+        }
+
+        .app-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 0.75rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+    
+    <!-- ==================== HEADER ==================== -->
+    <header class="bg-base-100/90 border-b border-base-300 px-4 lg:px-8 py-3 sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            
+            <div class="flex items-center gap-3">
+                <a href="admin.html" class="flex items-center gap-2.5 font-bold text-base tracking-tight text-base-content hover:opacity-85 transition-opacity">
+                    <div class="w-7 h-7 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex items-center justify-center font-black text-xs">
+                        L
+                    </div>
+                    <span>Painel de Administração & Tarefas</span>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <!-- Status dos Provedores / Gestão de Chaves -->
+                <button class="btn btn-xs btn-ghost gap-1.5 text-xs font-medium border border-base-300 h-8 px-2.5 rounded-lg flex items-center" onclick="openTokenStatusModal()">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>Status dos Scrapers</span>
+                </button>
+
+                <a href="index.html" class="btn btn-xs btn-outline border-base-300 gap-1.5 font-medium h-8 px-3 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                    <span>Ir para Catálogo</span>
+                </a>
+
+                <!-- Alternador de Tema -->
+                <label class="swap swap-rotate btn btn-ghost btn-circle btn-xs h-8 w-8">
+                    <input type="checkbox" id="theme-toggle" />
+                    <svg class="swap-on fill-current w-4 h-4 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/></svg>
+                    <svg class="swap-off fill-current w-4 h-4 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.69Z"/></svg>
+                </label>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ==================== CONTEÚDO PRINCIPAL ==================== -->
+    <main class="flex-1 max-w-7xl mx-auto w-full p-4 lg:p-8 space-y-6">
+        
+        <!-- Barra de Métricas -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <div class="app-card p-4 space-y-1">
+                <div class="text-[11px] font-mono uppercase tracking-wider opacity-60">Imóveis no Banco</div>
+                <div class="font-bold text-2xl text-base-content tabular-nums" id="stat-imoveis">0</div>
+                <div class="text-[11px] opacity-50">Tabela local <code>imoveis</code></div>
+            </div>
+
+            <div class="app-card p-4 space-y-1">
+                <div class="text-[11px] font-mono uppercase tracking-wider opacity-60">Filtros Cadastrados</div>
+                <div class="font-bold text-2xl text-base-content tabular-nums" id="stat-filtros">0</div>
+                <div class="text-[11px] opacity-50">Rotinas de captura ativas</div>
+            </div>
+
+            <div class="app-card p-4 space-y-1">
+                <div class="text-[11px] font-mono uppercase tracking-wider opacity-60">Execuções de Rotina</div>
+                <div class="font-bold text-2xl text-base-content tabular-nums" id="stat-execucoes">0</div>
+                <div class="text-[11px] opacity-50">Total de sincronizações</div>
+            </div>
+
+            <div class="app-card p-4 space-y-1">
+                <div class="text-[11px] font-mono uppercase tracking-wider opacity-60">Última Sincronização</div>
+                <div class="font-mono font-semibold text-sm text-base-content mt-1.5 truncate" id="stat-ultima-execucao">-</div>
+                <div class="text-[11px] opacity-50">Histórico de execução</div>
+            </div>
+
+        </div>
+
+        <!-- ==================== FORMULÁRIO DE FILTRO ==================== -->
+        <div class="app-card p-5 space-y-4">
+            
+            <div class="flex items-center justify-between border-b border-base-200 pb-3">
+                <div>
+                    <h2 class="font-semibold text-base text-base-content">
+                        Cadastrar Novo Filtro de Captura
+                    </h2>
+                    <p class="text-xs opacity-60 font-normal mt-0.5">
+                        Defina os parâmetros para download completo de páginas e persistência no banco de dados.
+                    </p>
+                </div>
+            </div>
+
+            <form id="form-filtro" onsubmit="salvarFiltro(event)" class="space-y-4">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                    
+                    <!-- Nome -->
+                    <div class="form-control w-full">
+                        <label class="label pb-1">
+                            <span class="label-text font-medium text-xs">Identificador do Filtro *</span>
+                        </label>
+                        <input type="text" id="filtro-nome" required placeholder="Ex: Maranhão - Todos os Apartamentos" class="input input-sm input-bordered w-full font-normal rounded-md text-xs focus:input-primary" />
+                    </div>
+
+                    <!-- Estado (UF) -->
+                    <div class="form-control w-full">
+                        <label class="label pb-1">
+                            <span class="label-text font-medium text-xs">Estado (UF) *</span>
+                        </label>
+                        <select id="filtro-uf" required class="select select-sm select-bordered w-full font-medium rounded-md text-xs focus:select-primary" onchange="carregarMunicipiosAdmin(this.value)">
+                            <option value="">Carregando estados...</option>
+                        </select>
+                    </div>
+
+                    <!-- Municípios -->
+                    <div class="form-control w-full">
+                        <label class="label pb-1 flex justify-between items-center">
+                            <span class="label-text font-medium text-xs">Municípios</span>
+                            <span class="text-[11px] opacity-60 font-mono" id="admin-contador-cidades-label">Todas</span>
+                        </label>
+                        
+                        <div class="dropdown w-full" id="admin-dropdown-municipios">
+                            <div tabindex="0" role="button" class="btn btn-sm btn-outline border-base-300 w-full justify-between font-normal text-xs h-8 rounded-md bg-base-100" id="btn-admin-municipios-trigger">
+                                <span class="truncate" id="btn-admin-municipios-text">Todas as cidades</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                            
+                            <div tabindex="0" class="dropdown-content z-30 p-3 shadow-xl bg-base-100 rounded-xl border border-base-300 w-80 sm:w-96 mt-1 space-y-2">
+                                
+                                <div class="flex items-center justify-between pb-1 border-b border-base-200 text-xs">
+                                    <span class="font-semibold opacity-70">Municípios</span>
+                                    <div class="flex gap-2 text-[11px]">
+                                        <button type="button" class="text-primary hover:underline font-medium" onclick="marcarTodasCidadesAdmin()">Marcar Visíveis</button>
+                                        <span class="opacity-30">|</span>
+                                        <button type="button" class="opacity-60 hover:opacity-100 hover:underline" onclick="limparCidadesAdmin()">Limpar</button>
+                                    </div>
+                                </div>
+
+                                <div class="relative">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Filtrar cidade... (Enter para marcar)" 
+                                        class="input input-xs input-bordered w-full rounded-md text-xs pl-2 pr-6" 
+                                        id="busca-admin-municipio-input" 
+                                        oninput="filtrarCidadesAdmin(this.value)" 
+                                        onkeydown="handleAdminMunicipioKey(event)"
+                                    />
+                                </div>
+
+                                <div id="admin-popover-selected-chips" class="flex flex-wrap gap-1 max-h-16 overflow-y-auto empty:hidden py-0.5"></div>
+
+                                <div id="admin-popover-suggestions" class="space-y-1 text-[11px]">
+                                    <span class="opacity-50 text-[10px] uppercase font-semibold">Cidades principais:</span>
+                                    <div class="flex flex-wrap gap-1" id="admin-suggestions-pills"></div>
+                                </div>
+
+                                <div class="max-h-48 overflow-y-auto space-y-0.5 text-xs pr-1 border-t border-base-200 pt-1.5" id="admin-municipios-checkbox-list">
+                                    <div class="text-center py-2 opacity-50 text-[11px]">Selecione um estado</div>
+                                </div>
+
+                                <div class="flex items-center justify-between pt-1 border-t border-base-200 text-[11px] opacity-70">
+                                    <span id="admin-popover-status-text">Todas selecionadas</span>
+                                    <button type="button" class="btn btn-xs btn-neutral font-medium px-2.5 rounded" onclick="document.activeElement.blur()">
+                                        Concluir
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Tipo de Imóvel -->
+                    <div class="form-control w-full">
+                        <label class="label pb-1">
+                            <span class="label-text font-medium text-xs">Tipo de Imóvel</span>
+                        </label>
+                        <select id="filtro-tipo" class="select select-sm select-bordered w-full font-normal rounded-md text-xs focus:select-primary">
+                            <option value="">Todos os tipos de imóveis</option>
+                            <option value="apartamento">Apartamento</option>
+                            <option value="casa">Casa</option>
+                            <option value="terreno">Terreno</option>
+                            <option value="rural">Rural / Fazenda</option>
+                            <option value="comercial">Comercial / Sala</option>
+                            <option value="galpao">Galpão</option>
+                            <option value="garagem">Garagem / Vaga</option>
+                        </select>
+                    </div>
+
+                    <!-- Data Final -->
+                    <div class="form-control w-full">
+                        <label class="label pb-1">
+                            <span class="label-text font-medium text-xs">Data Final do Leilão (Até)</span>
+                        </label>
+                        <input type="date" id="filtro-data-final" class="input input-sm input-bordered w-full font-normal rounded-md text-xs focus:input-primary" />
+                    </div>
+
+                    <!-- Palavra-Chave -->
+                    <div class="form-control w-full">
+                        <label class="label pb-1">
+                            <span class="label-text font-medium text-xs">Palavra-Chave / Termo</span>
+                        </label>
+                        <input type="text" id="filtro-termo" placeholder="Ex: Centro, Turu, Caixa..." class="input input-sm input-bordered w-full font-normal rounded-md text-xs focus:input-primary" />
+                    </div>
+
+                </div>
+
+                <!-- Seleção Multi-Fontes de Dados -->
+                <div class="form-control w-full bg-base-200/40 p-3.5 rounded-lg border border-base-300 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label class="label p-0">
+                            <span class="label-text font-semibold text-xs text-base-content flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                                Fontes de Captura de Dados * (Selecione uma ou mais)
+                            </span>
+                        </label>
+                        <div class="flex gap-2 text-[11px]">
+                            <button type="button" class="text-primary hover:underline font-medium" onclick="marcarTodasFontesFiltro(true)">Marcar Todas</button>
+                            <span class="opacity-30">|</span>
+                            <button type="button" class="opacity-60 hover:opacity-100 hover:underline" onclick="marcarTodasFontesFiltro(false)">Desmarcar</button>
+                        </div>
+                    </div>
+                    <p class="text-[11px] opacity-60">
+                        O scraper executará a extração simultânea ou sequencial em todas as fontes marcadas abaixo para este filtro.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 pt-1" id="filtro-fontes-checkboxes">
+                        <div class="text-center py-2 opacity-50 text-[11px] col-span-full">Carregando fontes disponíveis...</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-base-200">
+                    <button type="reset" class="btn btn-xs btn-ghost text-xs rounded" onclick="limparFormularioFiltro()">Limpar</button>
+                    <button type="submit" class="btn btn-xs btn-neutral gap-1.5 font-medium text-xs rounded px-4 h-8">
+                        <span>Salvar Filtro & Gerar Link</span>
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- ==================== TABELA DE FILTROS CADASTRADOS ==================== -->
+        <div class="app-card p-5 space-y-4">
+            
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-base-200 pb-3">
+                <div>
+                    <h2 class="font-semibold text-base text-base-content">
+                        Filtros Cadastrados & Rotinas de Cron
+                    </h2>
+                    <p class="text-xs opacity-60 font-normal mt-0.5">
+                        Cada configuração gera uma URL para chamada automatizada via agendador de tarefas.
+                    </p>
+                </div>
+                <button class="btn btn-xs btn-outline border-base-300 gap-1.5 font-medium rounded" onclick="executarTodosFiltros()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>Executar Todos os Filtros</span>
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="table table-xs w-full text-xs">
+                    <thead>
+                        <tr class="bg-base-200/40 text-[11px] font-mono uppercase tracking-wider opacity-60 border-b border-base-300">
+                            <th>#</th>
+                            <th>Filtro</th>
+                            <th>Critérios</th>
+                            <th>No Banco</th>
+                            <th>Última Execução</th>
+                            <th class="text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-filtros-body" class="divide-y divide-base-200">
+                        <tr>
+                            <td colspan="6" class="text-center py-6">
+                                <span class="loading loading-spinner loading-md text-primary"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ==================== FONTES DE DADOS & SCRAPERS MULTI-SITE ==================== -->
+        <div class="app-card p-5 space-y-4">
+            
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-base-200 pb-3">
+                <div>
+                    <h2 class="font-semibold text-base text-base-content">
+                        Fontes de Dados & Scrapers Multi-Site
+                    </h2>
+                    <p class="text-xs opacity-60 font-normal mt-0.5">
+                        Gerencie portais de leilão conectados, pause ou ative coletas e cadastre novos scrapers.
+                    </p>
+                </div>
+                <button class="btn btn-xs btn-neutral gap-1.5 font-medium rounded h-8 px-3" onclick="abrirModalNovaFonte()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+                    <span>Conectar Nova Fonte</span>
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="table table-xs w-full text-xs">
+                    <thead>
+                        <tr class="bg-base-200/40 text-[11px] font-mono uppercase tracking-wider opacity-60 border-b border-base-300">
+                            <th>Fonte / Portal</th>
+                            <th>Slug</th>
+                            <th>Driver de Extração</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-right">Imóveis Coletados</th>
+                            <th>Última Coleta</th>
+                            <th class="text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-fontes-body" class="divide-y divide-base-200">
+                        <tr>
+                            <td colspan="7" class="text-center py-6">
+                                <span class="loading loading-spinner loading-md text-primary"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ==================== HISTÓRICO DE LOGS ==================== -->
+        <div class="app-card p-5 space-y-4">
+            
+            <div class="flex items-center justify-between border-b border-base-200 pb-3">
+                <div>
+                    <h2 class="font-semibold text-base text-base-content">
+                        Histórico de Execuções
+                    </h2>
+                    <p class="text-xs opacity-60 font-normal mt-0.5">
+                        Registro de processamento de páginas, tempo decorrido e itens persistidos.
+                    </p>
+                </div>
+                <button class="btn btn-xs btn-ghost gap-1 border border-base-300 rounded text-xs font-normal" onclick="carregarLogsCron()">
+                    <span>Atualizar</span>
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="table table-xs w-full text-xs">
+                    <thead>
+                        <tr class="bg-base-200/40 text-[11px] font-mono uppercase tracking-wider opacity-60 border-b border-base-300">
+                            <th>Data/Hora</th>
+                            <th>Filtro</th>
+                            <th>Status</th>
+                            <th>Páginas</th>
+                            <th>Total Imóveis</th>
+                            <th>Novos</th>
+                            <th>Atualizados</th>
+                            <th>Duração</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-logs-body" class="divide-y divide-base-200">
+                        <tr>
+                            <td colspan="8" class="text-center py-4 opacity-50 font-mono text-[11px]">Carregando histórico...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ==================== MODAL DE CADASTRO/EDIÇÃO DE FONTE ==================== -->
+    <dialog id="modal-fonte" class="modal">
+        <div class="modal-box max-w-lg bg-base-100 border border-base-300 shadow-2xl rounded-xl p-5 space-y-4 text-xs">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3">✕</button>
+            </form>
+            
+            <div>
+                <h3 class="font-bold text-sm text-base-content" id="modal-fonte-titulo">Conectar Nova Fonte de Dados</h3>
+                <p class="opacity-60 text-[11px] mt-0.5">Configure as credenciais e o driver de scraping do portal de leilão.</p>
+            </div>
+
+            <form id="form-fonte" onsubmit="salvarFonteAdmin(event)" class="space-y-3">
+                <input type="hidden" id="fonte-id" />
+
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span class="label-text font-medium text-xs">Nome do Portal / Fonte *</span></label>
+                    <input type="text" id="fonte-nome" required placeholder="Ex: Mega Leilões, Sodré Santoro..." class="input input-sm input-bordered w-full rounded-md text-xs" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="form-control w-full">
+                        <label class="label pb-1"><span class="label-text font-medium text-xs">Slug Identificador *</span></label>
+                        <input type="text" id="fonte-slug" required placeholder="Ex: megaleiloes" class="input input-sm input-bordered w-full rounded-md text-xs font-mono" />
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label pb-1"><span class="label-text font-medium text-xs">Driver de Extração *</span></label>
+                        <select id="fonte-driver" class="select select-sm select-bordered w-full rounded-md text-xs font-medium">
+                            <option value="GenericSource">GenericSource (Universal)</option>
+                            <option value="LeilaoImovelSource">LeilaoImovelSource</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span class="label-text font-medium text-xs">URL Base do Portal *</span></label>
+                    <input type="url" id="fonte-url" required placeholder="https://www.megaleiloes.com.br" class="input input-sm input-bordered w-full rounded-md text-xs font-mono" />
+                </div>
+
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span class="label-text font-medium text-xs">Descrição / Observações</span></label>
+                    <input type="text" id="fonte-desc" placeholder="Portal de leilões com foco em imóveis de bancos..." class="input input-sm input-bordered w-full rounded-md text-xs" />
+                </div>
+
+                <div class="form-control">
+                    <label class="label cursor-pointer justify-start gap-3 py-1">
+                        <input type="checkbox" id="fonte-ativo" class="toggle toggle-primary toggle-sm" checked />
+                        <span class="label-text text-xs font-medium">Fonte de Dados Ativa para Captura</span>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-base-200">
+                    <button type="button" class="btn btn-xs btn-ghost rounded" onclick="document.getElementById('modal-fonte').close()">Cancelar</button>
+                    <button type="submit" class="btn btn-xs btn-neutral font-medium rounded px-4 h-8">
+                        <span>Salvar Fonte</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- ==================== MODAL DE STATUS & CHAVES DE SCRAPING ==================== -->
+    <dialog id="token_modal" class="modal">
+        <div class="modal-box max-w-2xl bg-base-100 border border-base-300 shadow-2xl rounded-2xl p-6 space-y-5 text-xs">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 opacity-70 hover:opacity-100">✕</button>
+            </form>
+            
+            <div class="flex items-center justify-between border-b border-base-200 pb-3.5 pr-8">
+                <div>
+                    <h3 class="font-bold text-sm text-base-content flex items-center gap-2">
+                        <span>Status dos Scrapers & Gestão de Chaves</span>
+                    </h3>
+                    <p class="opacity-60 text-[11px] mt-0.5">Cadastre, edite, pause ou exclua chaves de API do Scrape.do e Firecrawl.</p>
+                </div>
+            </div>
+
+            <!-- Formulário de Cadastro de Nova Chave -->
+            <div class="bg-base-200/50 p-3.5 rounded-xl border border-base-300 space-y-2.5">
+                <div class="font-semibold text-xs text-base-content flex items-center justify-between">
+                    <span>Adicionar Nova Chave ao Pool</span>
+                    <span class="text-[10px] opacity-60 font-mono">Failover Automático Ativo</span>
+                </div>
+                <form id="form-cadastrar-token" onsubmit="cadastrarNovoToken(event)" class="space-y-2.5">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+                        <div class="md:col-span-1">
+                            <select id="token-provider-select" class="select select-sm select-bordered w-full rounded-lg text-xs font-medium bg-base-100">
+                                <option value="scrape_do">Scrape.do</option>
+                                <option value="firecrawl">Firecrawl</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3">
+                            <input type="text" id="token-input-val" required placeholder="Cole a chave da API (ex: 40a83... ou fc-...)" class="input input-sm input-bordered w-full rounded-lg text-xs font-mono bg-base-100" />
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-0.5">
+                        <span class="text-[10px] opacity-50">Novas chaves entram automaticamente no balanceamento de carga.</span>
+                        <button type="submit" class="btn btn-xs btn-neutral font-medium rounded-lg px-3.5 h-7 gap-1.5 shadow-sm" id="btn-salvar-token">
+                            <span>+ Adicionar Chave</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Listagem de Chaves e Status (Sem barra de rolagem interna) -->
+            <div id="token-status-content" class="space-y-3.5 text-xs">
+                <div class="flex justify-center py-6"><span class="loading loading-spinner loading-md"></span></div>
+            </div>
+
+            <div class="modal-action border-t border-base-200 pt-3.5 flex items-center justify-between m-0">
+                <button type="button" class="btn btn-xs btn-ghost border border-base-300 font-medium rounded-lg px-3 h-7 gap-1.5" onclick="loadTokenStatus()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    <span>Atualizar Lista</span>
+                </button>
+                <form method="dialog"><button class="btn btn-xs btn-neutral font-medium rounded-lg px-4 h-7">Concluído</button></form>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Toast Notification -->
+    <div id="toast-container" class="toast toast-end toast-bottom z-[99999] pointer-events-auto hidden fixed">
+        <div class="alert alert-neutral text-xs font-medium py-2 px-3.5 shadow-2xl border border-neutral-700/60 rounded-lg backdrop-blur-md" id="toast-msg"></div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT ADMIN LOGIC ==================== -->
+    <script>
+        const API_BASE = '../api/index.php';
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast-container');
+            const toastMsg = document.getElementById('toast-msg');
+            if (!toast || !toastMsg) return;
+
+            // Se houver um dialog aberto na Top Layer do navegador, anexar o toast a ele
+            const openModal = document.querySelector('dialog[open]');
+            if (openModal && toast.parentElement !== openModal) {
+                openModal.appendChild(toast);
+            } else if (!openModal && toast.parentElement !== document.body) {
+                document.body.appendChild(toast);
+            }
+
+            toastMsg.textContent = msg;
+            toastMsg.className = `alert ${isError ? 'alert-error' : 'alert-neutral'} text-xs font-medium py-2 px-3.5 shadow-2xl border border-neutral-700/60 rounded-lg backdrop-blur-md`;
+            toast.style.zIndex = '999999';
+            toast.classList.remove('hidden');
+
+            clearTimeout(window.__toastTimer);
+            window.__toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        let adminState = {
+            cidadesListaCompleta: [],
+            cidadesSelecionadas: [],
+            fontesDisponiveis: [],
+            fontesSelecionadasFiltro: ['leilaoimovel'],
+        };
+
+        // Theme Initialization
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        const elThemeToggle = document.getElementById('theme-toggle');
+        elThemeToggle.checked = savedTheme === 'light';
+        elThemeToggle.addEventListener('change', (e) => {
+            const newTheme = e.target.checked ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // App Initialization
+        document.addEventListener('DOMContentLoaded', async () => {
+            await Promise.all([
+                carregarEstados(),
+                carregarDashboardStats(),
+                carregarFiltros(),
+                carregarFontesAdmin(),
+                carregarLogsCron()
+            ]);
+        });
+
+        async function fetchAPI(url, options = {}) {
+            const response = await fetch(url, options);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.json();
+        }
+
+        // ==================== ESTADOS & MUNICÍPIOS ====================
+        async function carregarEstados() {
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=estados`);
+                const estados = res.data || [];
+                const elUf = document.getElementById('filtro-uf');
+                
+                elUf.innerHTML = '<option value="">Selecione o Estado (UF)...</option>' + 
+                    estados.map(est => {
+                        const isMA = est.sigla.toLowerCase() === 'ma' ? 'selected' : '';
+                        const label = est.nome_completo || `${est.nome} (${est.sigla.toUpperCase()})`;
+                        return `<option value="${est.sigla}" ${isMA}>${label}</option>`;
+                    }).join('');
+
+                await carregarMunicipiosAdmin('ma');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function carregarMunicipiosAdmin(uf) {
+            const container = document.getElementById('admin-municipios-checkbox-list');
+            if (!uf) {
+                container.innerHTML = '<div class="text-center py-2 opacity-50 text-[11px]">Selecione um estado</div>';
+                adminState.cidadesListaCompleta = [];
+                adminState.cidadesSelecionadas = [];
+                atualizarVisualCidadesAdmin();
+                return;
+            }
+
+            container.innerHTML = '<div class="text-center py-2 opacity-50 text-[11px]"><span class="loading loading-spinner loading-xs"></span> Carregando...</div>';
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=municipios&uf=${uf}`);
+                adminState.cidadesListaCompleta = res.data || [];
+                adminState.cidadesSelecionadas = [];
+                renderizarCheckboxesCidadesAdmin(adminState.cidadesListaCompleta);
+                renderizarSugestoesCidadesAdmin(adminState.cidadesListaCompleta);
+                atualizarVisualCidadesAdmin();
+            } catch (e) {
+                container.innerHTML = '<div class="text-xs text-error text-center py-2">Erro ao carregar cidades.</div>';
+            }
+        }
+
+        function renderizarCheckboxesCidadesAdmin(lista, termo = '') {
+            const container = document.getElementById('admin-municipios-checkbox-list');
+            if (lista.length === 0) {
+                container.innerHTML = '<div class="text-center py-2 opacity-50 text-[11px]">Nenhuma cidade encontrada.</div>';
+                return;
+            }
+
+            container.innerHTML = lista.map(m => {
+                const isChecked = adminState.cidadesSelecionadas.includes(m.slug) ? 'checked' : '';
+                let displayName = m.nome_exibicao || m.nome;
+
+                if (termo && termo.length > 1) {
+                    const regex = new RegExp(`(${termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                    displayName = displayName.replace(regex, '<span class="font-bold underline text-primary">$1</span>');
+                }
+
+                return `
+                <label class="flex items-center gap-2 p-1 rounded hover:bg-base-200/80 cursor-pointer select-none transition-colors">
+                    <input type="checkbox" value="${m.slug}" ${isChecked} onchange="toggleCidadeAdminCheckbox('${m.slug}', this.checked)" class="checkbox checkbox-xs checkbox-primary" />
+                    <span class="truncate flex-1 text-[11.5px] font-normal">${displayName}</span>
+                </label>
+                `;
+            }).join('');
+        }
+
+        function renderizarSugestoesCidadesAdmin(lista) {
+            const container = document.getElementById('admin-suggestions-pills');
+            const wrapper = document.getElementById('admin-popover-suggestions');
+            if (!container) return;
+
+            if (lista.length === 0) {
+                wrapper.classList.add('hidden');
+                return;
+            }
+
+            wrapper.classList.remove('hidden');
+            const top = lista.slice(0, 5);
+            container.innerHTML = top.map(m => {
+                const isSelected = adminState.cidadesSelecionadas.includes(m.slug);
+                return `
+                <button type="button" onclick="toggleCidadeAdminCheckbox('${m.slug}', ${!isSelected})" class="app-tag ${isSelected ? 'app-tag-accent font-semibold' : 'hover:bg-base-200'} cursor-pointer text-[10.5px]">
+                    ${isSelected ? '✓ ' : '+ '}${m.nome}
+                </button>
+                `;
+            }).join('');
+        }
+
+        function filtrarCidadesAdmin(termo) {
+            const t = termo.toLowerCase().trim();
+            const filtrados = adminState.cidadesListaCompleta.filter(m => (m.nome && m.nome.toLowerCase().includes(t)) || (m.slug && m.slug.toLowerCase().includes(t)));
+            renderizarCheckboxesCidadesAdmin(filtrados, t);
+        }
+
+        function handleAdminMunicipioKey(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const firstCb = document.querySelector('#admin-municipios-checkbox-list input[type="checkbox"]');
+                if (firstCb) {
+                    firstCb.checked = !firstCb.checked;
+                    toggleCidadeAdminCheckbox(firstCb.value, firstCb.checked);
+                    const input = document.getElementById('busca-admin-municipio-input');
+                    input.value = '';
+                    filtrarCidadesAdmin('');
+                    input.focus();
+                }
+            }
+        }
+
+        function toggleCidadeAdminCheckbox(slug, isChecked) {
+            if (isChecked) {
+                if (!adminState.cidadesSelecionadas.includes(slug)) adminState.cidadesSelecionadas.push(slug);
+            } else {
+                adminState.cidadesSelecionadas = adminState.cidadesSelecionadas.filter(s => s !== slug);
+            }
+            atualizarVisualCidadesAdmin();
+            renderizarSugestoesCidadesAdmin(adminState.cidadesListaCompleta);
+            renderizarCheckboxesCidadesAdmin(adminState.cidadesListaCompleta, document.getElementById('busca-admin-municipio-input')?.value || '');
+        }
+
+        function marcarTodasCidadesAdmin() {
+            const cbs = document.querySelectorAll('#admin-municipios-checkbox-list input[type="checkbox"]');
+            cbs.forEach(cb => {
+                cb.checked = true;
+                if (!adminState.cidadesSelecionadas.includes(cb.value)) adminState.cidadesSelecionadas.push(cb.value);
+            });
+            atualizarVisualCidadesAdmin();
+            renderizarSugestoesCidadesAdmin(adminState.cidadesListaCompleta);
+        }
+
+        function limparCidadesAdmin() {
+            const cbs = document.querySelectorAll('#admin-municipios-checkbox-list input[type="checkbox"]');
+            cbs.forEach(cb => cb.checked = false);
+            adminState.cidadesSelecionadas = [];
+            atualizarVisualCidadesAdmin();
+            renderizarSugestoesCidadesAdmin(adminState.cidadesListaCompleta);
+        }
+
+        function atualizarVisualCidadesAdmin() {
+            const count = adminState.cidadesSelecionadas.length;
+            const btnText = document.getElementById('btn-admin-municipios-text');
+            const labelCount = document.getElementById('admin-contador-cidades-label');
+            const popoverStatus = document.getElementById('admin-popover-status-text');
+            const chipsContainer = document.getElementById('admin-popover-selected-chips');
+
+            if (count === 0) {
+                btnText.textContent = 'Todas as cidades';
+                labelCount.textContent = 'Todas';
+                popoverStatus.textContent = 'Todas as cidades selecionadas';
+                if (chipsContainer) chipsContainer.innerHTML = '';
+            } else {
+                btnText.textContent = `${count} cidade(s) selecionada(s)`;
+                labelCount.textContent = `${count} marcada(s)`;
+                popoverStatus.textContent = `${count} cidade(s) selecionada(s)`;
+
+                if (chipsContainer) {
+                    chipsContainer.innerHTML = adminState.cidadesSelecionadas.map(slug => {
+                        const m = adminState.cidadesListaCompleta.find(x => x.slug === slug);
+                        return `
+                        <span class="app-tag app-tag-accent text-[10.5px]">
+                            <span>${m ? m.nome : slug}</span>
+                            <button type="button" onclick="toggleCidadeAdminCheckbox('${slug}', false)" class="hover:opacity-75 font-bold ml-0.5">✕</button>
+                        </span>
+                        `;
+                    }).join('');
+                }
+            }
+        }
+
+        function limparFormularioFiltro() {
+            adminState.cidadesSelecionadas = [];
+            atualizarVisualCidadesAdmin();
+            carregarMunicipiosAdmin('ma');
+        }
+
+        // ==================== DASHBOARD STATS ====================
+        async function carregarDashboardStats() {
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=dashboard_stats`);
+                const d = res.data || {};
+                document.getElementById('stat-imoveis').textContent = (d.total_imoveis_banco || 0).toLocaleString('pt-BR');
+                document.getElementById('stat-filtros').textContent = d.total_filtros_salvos || 0;
+                document.getElementById('stat-execucoes').textContent = d.total_execucoes_cron || 0;
+                document.getElementById('stat-ultima-execucao').textContent = d.ultima_execucao || 'Nenhuma';
+            } catch (err) {
+                console.error('Erro stats:', err);
+            }
+        }
+
+        // ==================== SELEÇÃO DE FONTES NO FILTRO ====================
+        function renderizarCheckboxesFontesFiltro() {
+            const container = document.getElementById('filtro-fontes-checkboxes');
+            if (!container) return;
+
+            if (adminState.fontesDisponiveis.length === 0) {
+                container.innerHTML = `<div class="text-center py-2 opacity-50 text-[11px] col-span-full">Nenhuma fonte disponível cadastrada.</div>`;
+                return;
+            }
+
+            container.innerHTML = adminState.fontesDisponiveis.map(f => {
+                const isChecked = adminState.fontesSelecionadasFiltro.includes(f.slug) ? 'checked' : '';
+                const isAtivo = Boolean(Number(f.ativo));
+                const badgeStatus = isAtivo ? `<span class="badge badge-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-none font-mono text-[9.5px]">ON</span>` : `<span class="badge badge-xs opacity-50 font-mono text-[9.5px]">OFF</span>`;
+
+                return `
+                <label class="flex items-center gap-2 p-2 rounded-md bg-base-100 border border-base-300 hover:border-primary/50 cursor-pointer select-none transition-all ${!isAtivo ? 'opacity-60' : ''}">
+                    <input 
+                        type="checkbox" 
+                        value="${f.slug}" 
+                        ${isChecked} 
+                        onchange="toggleFonteFiltroCheckbox('${f.slug}', this.checked)" 
+                        class="checkbox checkbox-xs checkbox-primary" 
+                    />
+                    <div class="flex flex-col min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1">
+                            <span class="truncate font-semibold text-xs text-base-content">${escapeHtml(f.nome)}</span>
+                            ${badgeStatus}
+                        </div>
+                        <span class="text-[10px] font-mono opacity-50 truncate">${escapeHtml(f.slug)} • ${Number(f.total_imoveis || 0)} imov.</span>
+                    </div>
+                </label>
+                `;
+            }).join('');
+        }
+
+        function toggleFonteFiltroCheckbox(slug, isChecked) {
+            if (isChecked) {
+                if (!adminState.fontesSelecionadasFiltro.includes(slug)) adminState.fontesSelecionadasFiltro.push(slug);
+            } else {
+                adminState.fontesSelecionadasFiltro = adminState.fontesSelecionadasFiltro.filter(s => s !== slug);
+            }
+            renderizarCheckboxesFontesFiltro();
+        }
+
+        function marcarTodasFontesFiltro(status) {
+            if (status) {
+                adminState.fontesSelecionadasFiltro = adminState.fontesDisponiveis.map(f => f.slug);
+            } else {
+                adminState.fontesSelecionadasFiltro = [];
+            }
+            renderizarCheckboxesFontesFiltro();
+        }
+
+        // ==================== SALVAR FILTRO ====================
+        async function salvarFiltro(e) {
+            e.preventDefault();
+
+            if (adminState.fontesSelecionadasFiltro.length === 0) {
+                showToast('Selecione pelo menos uma fonte de dados para o filtro.', true);
+                return;
+            }
+
+            const municipioVal = adminState.cidadesSelecionadas.length > 0 ? adminState.cidadesSelecionadas.join(',') : null;
+
+            const payload = {
+                nome: document.getElementById('filtro-nome').value.trim(),
+                uf: document.getElementById('filtro-uf').value.trim(),
+                municipio: municipioVal,
+                tipo: document.getElementById('filtro-tipo').value.trim() || null,
+                data_final_leilao: document.getElementById('filtro-data-final').value.trim() || null,
+                termo_busca: document.getElementById('filtro-termo').value.trim() || null,
+                fontes: adminState.fontesSelecionadasFiltro,
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}?action=filtro_salvar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    showToast(json.message || 'Filtro salvo com sucesso!');
+                    document.getElementById('form-filtro').reset();
+                    adminState.cidadesSelecionadas = [];
+                    adminState.fontesSelecionadasFiltro = ['leilaoimovel', 'caixa', 'zukerman'];
+                    atualizarVisualCidadesAdmin();
+                    renderizarCheckboxesFontesFiltro();
+                    await carregarFiltros();
+                    await carregarDashboardStats();
+                } else {
+                    showToast(json.error || 'Erro ao salvar filtro.', true);
+                }
+            } catch (err) {
+                showToast('Falha na requisição ao salvar filtro.', true);
+            }
+        }
+
+        // ==================== LISTAR FILTROS ====================
+        async function carregarFiltros() {
+            const tbody = document.getElementById('lista-filtros-body');
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6"><span class="loading loading-spinner loading-md"></span></td></tr>`;
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=filtros_listar`);
+                const filtros = res.data || [];
+
+                if (filtros.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center py-6 opacity-50">
+                                Nenhum filtro cadastrado. Cadastre uma configuração no formulário acima.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = filtros.map(f => {
+                    const paramsList = [];
+                    paramsList.push(`<span class="app-tag font-semibold">${f.uf.toUpperCase()}</span>`);
+                    
+                    // Fontes
+                    const fontesArr = Array.isArray(f.fontes) ? f.fontes : ['leilaoimovel'];
+                    fontesArr.forEach(fonteSlug => {
+                        paramsList.push(`<span class="app-tag font-mono text-[10px] bg-base-300/80 font-medium">${fonteSlug}</span>`);
+                    });
+
+                    if (f.municipio) {
+                        const mArr = f.municipio.split(',');
+                        if (mArr.length <= 2) {
+                            mArr.forEach(m => paramsList.push(`<span class="app-tag app-tag-accent">${m.trim()}</span>`));
+                        } else {
+                            paramsList.push(`<span class="app-tag app-tag-accent" title="${f.municipio}">${mArr.length} cidades</span>`);
+                        }
+                    }
+                    if (f.tipo) paramsList.push(`<span class="app-tag">${f.tipo}</span>`);
+                    if (f.data_final_leilao) paramsList.push(`<span class="app-tag">Até ${f.data_final_leilao}</span>`);
+                    if (f.termo_busca) paramsList.push(`<span class="app-tag">"${f.termo_busca}"</span>`);
+
+                    return `
+                    <tr class="hover:bg-base-200/40 transition-colors">
+                        <td class="font-mono font-medium opacity-60">#${f.id}</td>
+                        <td>
+                            <div class="font-semibold text-xs text-base-content">${f.nome}</div>
+                            <div class="text-[11px] opacity-50 font-mono">Criado em: ${f.criado_em}</div>
+                        </td>
+                        <td>
+                            <div class="flex flex-wrap gap-1 max-w-xs">
+                                ${paramsList.join('')}
+                            </div>
+                        </td>
+                        <td class="font-mono font-semibold tabular-nums">
+                            <span class="app-tag font-mono">${(f.total_imoveis_salvos || 0).toLocaleString('pt-BR')}</span>
+                        </td>
+                        <td class="text-[11px] font-mono opacity-75 tabular-nums">
+                            ${f.ultima_execucao_em ? `<div>${f.ultima_execucao_em}</div><div class="text-[10px] opacity-50">(${f.total_execucoes}x)</div>` : '<span class="opacity-40">Nunca</span>'}
+                        </td>
+                        <td class="text-right">
+                            <div class="flex flex-wrap justify-end gap-1">
+                                <button class="btn btn-xs btn-neutral gap-1 font-medium" onclick="executarFiltro(${f.id}, '${escapeHtml(f.nome)}')" title="Executar download de todas as páginas agora">
+                                    <span>Baixar Tudo</span>
+                                </button>
+                                <button class="btn btn-xs btn-ghost border border-base-300 gap-1" onclick="copiarUrlCron('${f.cron_url}')" title="Copiar URL">
+                                    <span>URL</span>
+                                </button>
+                                <button class="btn btn-xs btn-ghost border border-base-300 gap-1" onclick="copiarCrontab('${f.crontab_exemplo}')" title="Copiar comando Crontab">
+                                    <span>Crontab</span>
+                                </button>
+                                <button class="btn btn-xs btn-ghost text-neutral-400 hover:text-error" onclick="excluirFiltro(${f.id})" title="Excluir">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-error">Erro ao carregar filtros.</td></tr>`;
+            }
+        }
+
+        // ==================== EXECUTAR FILTRO ====================
+        async function executarFiltro(filterId, nomeFiltro) {
+            if (!confirm(`Deseja iniciar o download completo de todas as páginas para o filtro "${nomeFiltro}"?\nOs registros serão salvos no banco local leilao_app.`)) {
+                return;
+            }
+
+            showToast(`Iniciando download para "${nomeFiltro}"...`);
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=filtro_executar&filter_id=${filterId}`);
+                
+                if (res.success) {
+                    const exec = (res.execucoes || [])[0] || {};
+                    showToast(`Concluído! ${exec.novos || 0} novos, ${exec.atualizados || 0} atualizados em ${exec.duracao_segundos || 0}s.`);
+                    await carregarFiltros();
+                    await carregarDashboardStats();
+                    await carregarLogsCron();
+                } else {
+                    showToast(res.error || 'Erro na execução do filtro.', true);
+                }
+            } catch (err) {
+                showToast('Falha de conexão ao executar o filtro.', true);
+            }
+        }
+
+        async function executarTodosFiltros() {
+            if (!confirm("Deseja executar TODOS os filtros cadastrados em sequência?")) {
+                return;
+            }
+
+            showToast("Iniciando execução em lote de todos os filtros...");
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=cron_run_all`);
+                if (res.success) {
+                    showToast("Todos os filtros foram executados com sucesso!");
+                    await carregarFiltros();
+                    await carregarDashboardStats();
+                    await carregarLogsCron();
+                } else {
+                    showToast(res.error || 'Erro ao executar filtros.', true);
+                }
+            } catch (err) {
+                showToast('Falha ao processar execução em lote.', true);
+            }
+        }
+
+        // ==================== EXCLUIR FILTRO ====================
+        async function excluirFiltro(id) {
+            if (!confirm(`Tem certeza que deseja excluir o filtro #${id}?`)) return;
+
+            try {
+                const res = await fetch(`${API_BASE}?action=filtro_excluir`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    showToast('Filtro excluído com sucesso!');
+                    await carregarFiltros();
+                    await carregarDashboardStats();
+                } else {
+                    showToast(json.error || 'Erro ao excluir filtro.', true);
+                }
+            } catch (err) {
+                showToast('Falha na requisição.', true);
+            }
+        }
+
+        // ==================== CARREGAR LOGS DO CRON ====================
+        async function carregarLogsCron() {
+            const tbody = document.getElementById('lista-logs-body');
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=logs_cron`);
+                const logs = res.data || [];
+
+                if (logs.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 opacity-40 font-mono text-[11px]">Nenhum registro de execução encontrado.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = logs.map(l => {
+                    const statusBadge = l.status === 'sucesso' 
+                        ? `<span class="app-tag text-emerald-500 font-semibold text-[10px]">SUCESSO</span>`
+                        : `<span class="app-tag text-rose-500 font-semibold text-[10px]">ERRO</span>`;
+
+                    return `
+                    <tr class="hover:bg-base-200/40 font-mono text-[11px]">
+                        <td class="tabular-nums opacity-75">${l.executado_em}</td>
+                        <td class="font-sans font-medium text-xs">${l.filtro_nome || `#${l.filtro_id}`}</td>
+                        <td>${statusBadge}</td>
+                        <td class="tabular-nums">${l.total_paginas}</td>
+                        <td class="tabular-nums font-semibold">${l.total_imoveis}</td>
+                        <td class="tabular-nums text-emerald-600 dark:text-emerald-400 font-semibold">+${l.novos}</td>
+                        <td class="tabular-nums opacity-75">${l.atualizados}</td>
+                        <td class="tabular-nums opacity-60">${l.tempo_segundos}s</td>
+                    </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-error text-xs">Erro ao carregar histórico.</td></tr>`;
+            }
+        }
+
+        // ==================== GESTÃO DE FONTES DE DADOS (MULTI-SITE) ====================
+        let listaFontesCache = [];
+
+        async function carregarFontesAdmin() {
+            const tbody = document.getElementById('lista-fontes-body');
+            if (!tbody) return;
+
+            try {
+                const res = await fetchAPI(`${API_BASE}?action=fontes_listar`);
+                listaFontesCache = res.data || [];
+                adminState.fontesDisponiveis = listaFontesCache;
+                renderizarCheckboxesFontesFiltro();
+
+                if (listaFontesCache.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 opacity-50 font-mono text-[11px]">Nenhuma fonte de dados configurada.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = listaFontesCache.map(f => {
+                    const isAtivo = Boolean(Number(f.ativo));
+                    const isNative = f.slug === 'leilaoimovel';
+
+                    const statusBadge = isAtivo
+                        ? `<span class="app-tag text-emerald-500 font-semibold text-[10px]">ATIVO</span>`
+                        : `<span class="app-tag text-neutral-400 font-semibold text-[10px]">PAUSADO</span>`;
+
+                    const toggleBtnText = isAtivo ? 'Pausar' : 'Ativar';
+                    const toggleBtnClass = isAtivo 
+                        ? 'btn-ghost border-base-300 text-amber-500 hover:bg-amber-500/10' 
+                        : 'btn-neutral text-emerald-400';
+
+                    return `
+                    <tr class="hover:bg-base-200/40 text-xs">
+                        <td class="font-semibold text-base-content">
+                            <div class="flex items-center gap-2">
+                                <span>${escapeHtml(f.nome)}</span>
+                                <a href="${escapeHtml(f.url_base)}" target="_blank" class="opacity-40 hover:opacity-100" title="Acessar portal">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                </a>
+                            </div>
+                            <div class="text-[11px] opacity-50 font-normal truncate max-w-xs font-mono">${escapeHtml(f.url_base)}</div>
+                        </td>
+                        <td class="font-mono text-[11px] opacity-75">${escapeHtml(f.slug)}</td>
+                        <td><span class="app-tag text-[10px] font-mono">${escapeHtml(f.driver_class || 'GenericSource')}</span></td>
+                        <td class="text-center">${statusBadge}</td>
+                        <td class="text-right font-mono tabular-nums font-bold text-sm ${Number(f.total_imoveis) > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'opacity-40'}">
+                            ${Number(f.total_imoveis).toLocaleString('pt-BR')}
+                        </td>
+                        <td class="font-mono text-[11px] opacity-60 tabular-nums">${f.ultima_coleta_em || 'Nunca'}</td>
+                        <td class="text-right">
+                            <div class="flex items-center justify-end gap-1.5">
+                                <button onclick="toggleFonteAdmin(${f.id}, ${!isAtivo}, '${escapeHtml(f.nome)}')" class="btn btn-xs ${toggleBtnClass} rounded font-medium">
+                                    ${toggleBtnText}
+                                </button>
+                                <button onclick="editarFonteAdmin(${f.id})" class="btn btn-xs btn-ghost border border-base-300 rounded font-normal" title="Editar">
+                                    Editar
+                                </button>
+                                ${!isNative ? `
+                                <button onclick="excluirFonteAdmin(${f.id}, '${escapeHtml(f.nome)}')" class="btn btn-xs btn-ghost border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 rounded font-normal" title="Excluir">
+                                    ✕
+                                </button>` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-error text-xs">Erro ao carregar fontes de dados.</td></tr>`;
+            }
+        }
+
+        function abrirModalNovaFonte() {
+            document.getElementById('form-fonte').reset();
+            document.getElementById('fonte-id').value = '';
+            document.getElementById('modal-fonte-titulo').textContent = 'Conectar Nova Fonte de Dados';
+            document.getElementById('fonte-slug').disabled = false;
+            document.getElementById('fonte-ativo').checked = true;
+            document.getElementById('modal-fonte').showModal();
+        }
+
+        function editarFonteAdmin(id) {
+            const f = listaFontesCache.find(item => Number(item.id) === Number(id));
+            if (!f) return;
+
+            document.getElementById('fonte-id').value = f.id;
+            document.getElementById('fonte-nome').value = f.nome;
+            document.getElementById('fonte-slug').value = f.slug;
+            document.getElementById('fonte-slug').disabled = true;
+            document.getElementById('fonte-url').value = f.url_base;
+            document.getElementById('fonte-driver').value = f.driver_class || 'GenericSource';
+            document.getElementById('fonte-desc').value = f.descricao || '';
+            document.getElementById('fonte-ativo').checked = Boolean(Number(f.ativo));
+
+            document.getElementById('modal-fonte-titulo').textContent = `Editar Fonte: ${f.nome}`;
+            document.getElementById('modal-fonte').showModal();
+        }
+
+        async function salvarFonteAdmin(event) {
+            event.preventDefault();
+
+            const payload = {
+                id: document.getElementById('fonte-id').value || null,
+                nome: document.getElementById('fonte-nome').value.trim(),
+                slug: document.getElementById('fonte-slug').value.trim(),
+                url_base: document.getElementById('fonte-url').value.trim(),
+                driver_class: document.getElementById('fonte-driver').value,
+                descricao: document.getElementById('fonte-desc').value.trim(),
+                ativo: document.getElementById('fonte-ativo').checked ? 1 : 0
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}?action=fonte_salvar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    showToast(json.message || 'Fonte de dados salva com sucesso!');
+                    document.getElementById('modal-fonte').close();
+                    await carregarFontesAdmin();
+                } else {
+                    showToast(json.error || 'Erro ao salvar fonte.', true);
+                }
+            } catch (err) {
+                showToast('Falha na comunicação com o servidor.', true);
+            }
+        }
+
+        async function toggleFonteAdmin(id, novoStatus, nome) {
+            try {
+                const res = await fetch(`${API_BASE}?action=fonte_toggle`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id, ativo: novoStatus })
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    showToast(`Fonte "${nome}" ${novoStatus ? 'ativada' : 'pausada'} com sucesso!`);
+                    await carregarFontesAdmin();
+                } else {
+                    showToast(json.error || 'Erro ao alternar status.', true);
+                }
+            } catch (err) {
+                showToast('Falha na requisição.', true);
+            }
+        }
+
+        async function excluirFonteAdmin(id, nome) {
+            if (!confirm(`Tem certeza que deseja excluir permanentemente a fonte "${nome}"?`)) return;
+
+            try {
+                const res = await fetch(`${API_BASE}?action=fonte_excluir`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    showToast(`Fonte "${nome}" excluída com sucesso!`);
+                    await carregarFontesAdmin();
+                } else {
+                    showToast(json.error || 'Erro ao excluir fonte.', true);
+                }
+            } catch (err) {
+                showToast('Falha na requisição.', true);
+            }
+        }
+
+        // ==================== UTILITÁRIOS ====================
+        function copiarUrlCron(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('URL copiada para a área de transferência.');
+            }).catch(() => {
+                prompt('Copie o link abaixo:', url);
+            });
+        }
+
+        function copiarCrontab(cmd) {
+            navigator.clipboard.writeText(cmd).then(() => {
+                showToast('Comando de Crontab copiado.');
+            }).catch(() => {
+                prompt('Copie o comando crontab abaixo:', cmd);
+            });
+        }
+
+        // ==================== GESTÃO DE TOKENS & SCRAPERS ====================
+        function openTokenStatusModal() {
+            const modal = document.getElementById('token_modal');
+            if (modal) {
+                modal.showModal();
+                loadTokenStatus();
+            }
+        }
+
+        async function loadTokenStatus() {
+            const content = document.getElementById('token-status-content');
+            if (!content) return;
+            content.innerHTML = `<div class="flex justify-center py-8"><span class="loading loading-spinner loading-md"></span></div>`;
+
+            try {
+                const res = await fetch(`${API_BASE}?action=tokens_status`);
+                const json = await res.json();
+                const d = json.data || {};
+                let html = '';
+
+                // Provedores suportados
+                const provedoresConfig = [
+                    { id: 'scrape_do', nome: 'Scrape.do', tokens: d.scrape_do || [] },
+                    { id: 'firecrawl', nome: 'Firecrawl', tokens: d.firecrawl || [] }
+                ];
+
+                provedoresConfig.forEach(p => {
+                    const tokens = p.tokens;
+                    const activeCount = tokens.filter(t => t.status === 'ativo' && t.active).length;
+
+                    html += `
+                        <div class="bg-base-200/50 p-4 rounded-xl border border-base-300 space-y-3">
+                            <div class="font-semibold text-xs text-base-content flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full ${activeCount > 0 ? 'bg-emerald-500 shadow-sm' : 'bg-amber-500'}"></span>
+                                    <span class="text-sm">${escapeHtml(p.nome)}</span>
+                                </span>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="badge badge-sm badge-neutral font-mono text-[10.5px]">${tokens.length} chaves</span>
+                                    <span class="badge badge-xs ${activeCount > 0 ? 'badge-success' : 'badge-warning'} text-[9.5px] font-mono font-medium">${activeCount} ativas</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2.5">
+                    `;
+
+                    if (tokens.length === 0) {
+                        html += `<div class="text-[11px] opacity-50 italic py-2 text-center bg-base-100/50 rounded-lg border border-dashed border-base-300">Nenhuma chave cadastrada para este provedor.</div>`;
+                    } else {
+                        tokens.forEach(t => {
+                            const isAtivo = t.status === 'ativo';
+                            const isPausado = t.status === 'pausado';
+                            const isDesativado = t.status === 'desativado';
+
+                            html += `
+                                <div class="bg-base-100 p-3 rounded-xl border border-base-300 shadow-sm space-y-2 transition-all hover:border-base-content/20" id="token-card-${p.id}-${t.token_hash}">
+                                    <div class="flex flex-wrap items-center justify-between gap-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-mono text-xs font-semibold select-all bg-base-200/70 px-2 py-0.5 rounded border border-base-300 text-base-content">
+                                                ${escapeHtml(t.token)}
+                                            </span>
+                                            ${t.is_custom ? '<span class="badge badge-xs badge-ghost text-[9px]">Custom</span>' : '<span class="badge badge-xs badge-ghost text-[9px] opacity-60">Padrão</span>'}
+                                            <button type="button" class="btn btn-ghost btn-xs h-6 px-1.5 text-base-content/70 hover:text-primary gap-1" title="Editar Chave" onclick="iniciarEdicaoToken('${p.id}', '${escapeHtml(t.token_hash)}', '${escapeHtml(t.token_full || t.token)}')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                                <span>Editar</span>
+                                            </button>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <!-- Seletor de Estado -->
+                                            <select onchange="alterarStatusTokenAPI('${p.id}', '${escapeHtml(t.token_hash)}', this.value)" class="select select-bordered select-xs text-[11px] font-medium h-6 min-h-0 py-0 px-2 rounded-md ${isAtivo ? 'text-emerald-500 font-semibold' : (isPausado ? 'text-amber-500 font-semibold' : 'text-rose-500 font-semibold')}">
+                                                <option value="ativo" ${isAtivo ? 'selected' : ''}>🟢 Ativa</option>
+                                                <option value="pausado" ${isPausado ? 'selected' : ''}>🟡 Pausada</option>
+                                                <option value="desativado" ${isDesativado ? 'selected' : ''}>🔴 Desativada</option>
+                                            </select>
+
+                                            <button type="button" class="btn btn-ghost btn-xs h-6 min-h-0 px-2 text-[10.5px] border border-base-300 hover:bg-base-200" onclick="testarTokenAPI('${p.id}', '${escapeHtml(t.token_hash)}')">
+                                                ⚡ Testar
+                                            </button>
+
+                                            <button type="button" class="btn btn-ghost btn-xs text-rose-500 h-6 min-h-0 px-1.5 hover:bg-rose-500/10" title="Excluir Chave" onclick="removerTokenAPI('${p.id}', '${escapeHtml(t.token_hash)}')">
+                                                ✕
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Container de Edição Inline -->
+                                    <div id="token-edit-box-${p.id}-${t.token_hash}" class="hidden pt-2 border-t border-base-200 space-y-2">
+                                        <div class="flex items-center gap-2">
+                                            <input type="text" id="token-edit-input-${p.id}-${t.token_hash}" class="input input-xs input-bordered w-full font-mono text-xs rounded-lg" value="${escapeHtml(t.token_full || '')}" placeholder="Cole a nova chave..." />
+                                            <button type="button" class="btn btn-xs btn-neutral rounded-lg px-2.5" onclick="salvarEdicaoToken('${p.id}', '${escapeHtml(t.token_hash)}')">Salvar</button>
+                                            <button type="button" class="btn btn-xs btn-ghost border border-base-300 rounded-lg" onclick="cancelarEdicaoToken('${p.id}', '${escapeHtml(t.token_hash)}')">Cancelar</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-[10px] opacity-60 flex items-center justify-between font-mono pt-0.5">
+                                        <span>Status: <b>${escapeHtml(t.details)}</b></span>
+                                        <span>Pool: ${isAtivo ? 'Disponível' : (isPausado ? 'Pausada' : 'Desativada')}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    html += `</div></div>`;
+                });
+
+                content.innerHTML = html;
+            } catch (err) {
+                content.innerHTML = `<div class="alert alert-error text-xs">Erro ao consultar status dos scrapers.</div>`;
+            }
+        }
+
+        function iniciarEdicaoToken(provider, tokenHash, tokenFull) {
+            const editBox = document.getElementById(`token-edit-box-${provider}-${tokenHash}`);
+            const input = document.getElementById(`token-edit-input-${provider}-${tokenHash}`);
+            if (editBox && input) {
+                editBox.classList.remove('hidden');
+                input.value = tokenFull;
+                input.focus();
+                input.select();
+            }
+        }
+
+        function cancelarEdicaoToken(provider, tokenHash) {
+            const editBox = document.getElementById(`token-edit-box-${provider}-${tokenHash}`);
+            if (editBox) editBox.classList.add('hidden');
+        }
+
+        async function salvarEdicaoToken(provider, tokenHash) {
+            const input = document.getElementById(`token-edit-input-${provider}-${tokenHash}`);
+            if (!input) return;
+            const newToken = input.value.trim();
+            if (!newToken) {
+                showToast('Informe a nova chave.', true);
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}?action=tokens_editar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, old_token: tokenHash, new_token: newToken })
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    showToast(json.message || 'Chave atualizada com sucesso!');
+                    loadTokenStatus();
+                } else {
+                    showToast(json.error || 'Erro ao atualizar chave.', true);
+                }
+            } catch (e) {
+                showToast('Erro ao salvar alteração da chave.', true);
+            }
+        }
+
+        async function alterarStatusTokenAPI(provider, tokenHash, status) {
+            try {
+                const res = await fetch(`${API_BASE}?action=tokens_alterar_status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, token: tokenHash, status })
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    showToast(json.message || `Chave ${status} com sucesso!`);
+                    loadTokenStatus();
+                } else {
+                    showToast(json.error || 'Erro ao alterar status.', true);
+                }
+            } catch (e) {
+                showToast('Erro de conexão ao alterar status.', true);
+            }
+        }
+
+        async function cadastrarNovoToken(event) {
+            event.preventDefault();
+            const provider = document.getElementById('token-provider-select').value;
+            const inputEl = document.getElementById('token-input-val');
+            const token = inputEl.value.trim();
+
+            if (!token) return;
+
+            const btn = document.getElementById('btn-salvar-token');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loading loading-spinner loading-xs"></span><span>Salvando...</span>`;
+
+            try {
+                const res = await fetch(`${API_BASE}?action=tokens_adicionar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, token })
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    showToast(json.message || 'Chave cadastrada com sucesso!');
+                    inputEl.value = '';
+                    loadTokenStatus();
+                } else {
+                    showToast(json.error || 'Erro ao cadastrar chave.', true);
+                }
+            } catch (e) {
+                showToast('Erro de conexão ao salvar chave.', true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>+ Adicionar Chave</span>`;
+            }
+        }
+
+        async function removerTokenAPI(provider, tokenHash) {
+            if (!confirm('Deseja realmente excluir esta chave de API?')) return;
+
+            try {
+                const res = await fetch(`${API_BASE}?action=tokens_remover`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, token: tokenHash })
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    showToast(json.message || 'Chave removida!');
+                    loadTokenStatus();
+                } else {
+                    showToast(json.error || 'Erro ao remover chave.', true);
+                }
+            } catch (e) {
+                showToast('Erro ao remover chave.', true);
+            }
+        }
+
+        async function testarTokenAPI(provider, tokenHash) {
+            showToast('Testando conexão com a chave de API...', false);
+
+            try {
+                const res = await fetch(`${API_BASE}?action=tokens_testar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, token: tokenHash })
+                });
+                const json = await res.json();
+
+                if (json.success) {
+                    showToast(`✅ ${json.message}`, false);
+                } else {
+                    showToast(`❌ ${json.error}`, true);
+                }
+            } catch (e) {
+                showToast('Erro ao testar chave.', true);
+            }
+        }
+    </script>
+</body>
+</html>

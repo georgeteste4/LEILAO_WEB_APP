@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Redirecionar requisições da API
+RewriteRule ^api/(.*)$ api/index.php [QSA,L]
+
+# Permitir acesso direto a arquivos existentes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/index.html [QSA,L]

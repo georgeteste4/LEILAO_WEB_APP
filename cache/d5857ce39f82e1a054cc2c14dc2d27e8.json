@@ -1,0 +1,231 @@
+{
+    "created_at": "2026-08-31 21:45:23",
+    "expires_at": 1788219923,
+    "key": "estados_all_v3",
+    "data": [
+        {
+            "id": 12,
+            "sigla": "ac",
+            "nome": "Acre",
+            "nome_completo": "Estado do Acre\/AC (100)",
+            "qty": 100,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/ac"
+        },
+        {
+            "id": 27,
+            "sigla": "al",
+            "nome": "Alagoas",
+            "nome_completo": "Estado de Alagoas\/AL (236)",
+            "qty": 236,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/al"
+        },
+        {
+            "id": 16,
+            "sigla": "ap",
+            "nome": "Amapá",
+            "nome_completo": "Estado do Amapá\/AP (6)",
+            "qty": 6,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/ap"
+        },
+        {
+            "id": 13,
+            "sigla": "am",
+            "nome": "Amazonas",
+            "nome_completo": "Estado do Amazonas\/AM (277)",
+            "qty": 277,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/am"
+        },
+        {
+            "id": 29,
+            "sigla": "ba",
+            "nome": "Bahia",
+            "nome_completo": "Estado da Bahia\/BA (1169)",
+            "qty": 1169,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/ba"
+        },
+        {
+            "id": 23,
+            "sigla": "ce",
+            "nome": "Ceará",
+            "nome_completo": "Estado do Ceará\/CE (1224)",
+            "qty": 1224,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/ce"
+        },
+        {
+            "id": 53,
+            "sigla": "df",
+            "nome": "Distrito Federal",
+            "nome_completo": "Estado do Distrito Federal\/DF (377)",
+            "qty": 377,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/df"
+        },
+        {
+            "id": 32,
+            "sigla": "es",
+            "nome": "Espírito Santo",
+            "nome_completo": "Estado do Espírito Santo\/ES (396)",
+            "qty": 396,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/es"
+        },
+        {
+            "id": 52,
+            "sigla": "go",
+            "nome": "Goiás",
+            "nome_completo": "Estado de Goiás\/GO (5166)",
+            "qty": 5166,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/go"
+        },
+        {
+            "id": 21,
+            "sigla": "ma",
+            "nome": "Maranhão",
+            "nome_completo": "Estado do Maranhão\/MA (362)",
+            "qty": 362,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/ma"
+        },
+        {
+            "id": 51,
+            "sigla": "mt",
+            "nome": "Mato Grosso",
+            "nome_completo": "Estado do Mato Grosso\/MT (571)",
+            "qty": 571,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/mt"
+        },
+        {
+            "id": 50,
+            "sigla": "ms",
+            "nome": "Mato Grosso do Sul",
+            "nome_completo": "Estado do Mato Grosso do Sul\/MS (563)",
+            "qty": 563,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/ms"
+        },
+        {
+            "id": 31,
+            "sigla": "mg",
+            "nome": "Minas Gerais",
+            "nome_completo": "Estado de Minas Gerais\/MG (2436)",
+            "qty": 2436,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/mg"
+        },
+        {
+            "id": 1,
+            "sigla": "na",
+            "nome": "NA",
+            "nome_completo": "Estado de Não Identificado\/NA (206)",
+            "qty": 206,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/na"
+        },
+        {
+            "id": 41,
+            "sigla": "pr",
+            "nome": "Paraná",
+            "nome_completo": "Estado do Paraná\/PR (1565)",
+            "qty": 1565,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/pr"
+        },
+        {
+            "id": 25,
+            "sigla": "pb",
+            "nome": "Paraíba",
+            "nome_completo": "Estado da Paraíba\/PB (1015)",
+            "qty": 1015,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/pb"
+        },
+        {
+            "id": 15,
+            "sigla": "pa",
+            "nome": "Pará",
+            "nome_completo": "Estado do Pará\/PA (358)",
+            "qty": 358,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/pa"
+        },
+        {
+            "id": 26,
+            "sigla": "pe",
+            "nome": "Pernambuco",
+            "nome_completo": "Estado de Pernambuco\/PE (1745)",
+            "qty": 1745,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/pe"
+        },
+        {
+            "id": 22,
+            "sigla": "pi",
+            "nome": "Piauí",
+            "nome_completo": "Estado do Piauí\/PI (865)",
+            "qty": 865,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/pi"
+        },
+        {
+            "id": 24,
+            "sigla": "rn",
+            "nome": "Rio Grande do Norte",
+            "nome_completo": "Estado do Rio Grande do Norte\/RN (871)",
+            "qty": 871,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/rn"
+        },
+        {
+            "id": 43,
+            "sigla": "rs",
+            "nome": "Rio Grande do Sul",
+            "nome_completo": "Estado do Rio Grande do Sul\/RS (3257)",
+            "qty": 3257,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/rs"
+        },
+        {
+            "id": 33,
+            "sigla": "rj",
+            "nome": "Rio de Janeiro",
+            "nome_completo": "Estado do Rio de Janeiro\/RJ (10955)",
+            "qty": 10955,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/rj"
+        },
+        {
+            "id": 11,
+            "sigla": "ro",
+            "nome": "Rondônia",
+            "nome_completo": "Estado de Rondônia\/RO (121)",
+            "qty": 121,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/ro"
+        },
+        {
+            "id": 14,
+            "sigla": "rr",
+            "nome": "Roraima",
+            "nome_completo": "Estado de Roraima\/RR (9)",
+            "qty": 9,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/rr"
+        },
+        {
+            "id": 42,
+            "sigla": "sc",
+            "nome": "Santa Catarina",
+            "nome_completo": "Estado de Santa Catarina\/SC (1138)",
+            "qty": 1138,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/sc"
+        },
+        {
+            "id": 28,
+            "sigla": "se",
+            "nome": "Sergipe",
+            "nome_completo": "Estado do Sergipe\/SE (592)",
+            "qty": 592,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/se"
+        },
+        {
+            "id": 35,
+            "sigla": "sp",
+            "nome": "São Paulo",
+            "nome_completo": "Estado de São Paulo\/SP (9104)",
+            "qty": 9104,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/sp"
+        },
+        {
+            "id": 17,
+            "sigla": "to",
+            "nome": "Tocantins",
+            "nome_completo": "Estado do Tocantins\/TO (134)",
+            "qty": 134,
+            "url": "https:\/\/www.leilaoimovel.com.br\/leilao-de-imoveis\/to"
+        }
+    ]
+}

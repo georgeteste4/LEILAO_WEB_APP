@@ -1,0 +1,20 @@
+{
+    "created_at": "2026-08-24 20:24:56",
+    "expires_at": 1787604896,
+    "key": "detalhe_v1_221ccfe60e2efa1d032a0430351e19b9",
+    "data": {
+        "success": true,
+        "url": "https:\/\/www.leilaoimovel.com.br\/imovel\/ma\/sao-luis\/residencial-apartamento-com-57-64-m-jaracaty-sao-luis-ma-imovel-bradesco-2970801",
+        "data_inclusao": "12\/08\/2026",
+        "edital": "https:\/\/armazupleilaovipprd.blob.core.windows.net\/uploads\/7e38e79c-f32b-438f-ad3b-00fe792fac98.pdf",
+        "link_matricula": "https:\/\/armazupleilaovipprd.blob.core.windows.net\/uploads\/7a99f38c-cb48-493d-9ab0-ae24f4018cb1.pdf",
+        "numero_matricula": null,
+        "link_leiloeiro": "https:\/\/www.leilaoimovel.com.br\/leiloeiro\/mega-leiloes",
+        "nome_leiloeiro": "Mega Leilões",
+        "area_util": null,
+        "area_terreno": null,
+        "quartos": null,
+        "vagas": null,
+        "imagens": []
+    }
+}

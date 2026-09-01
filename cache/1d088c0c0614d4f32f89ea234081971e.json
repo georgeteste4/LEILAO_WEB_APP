@@ -1,0 +1,1743 @@
+{
+    "created_at": "2026-08-31 21:45:27",
+    "expires_at": 1788219927,
+    "key": "municipios_v3_ma",
+    "data": [
+        {
+            "id": 2100105,
+            "slug": "afonso-cunha",
+            "nome": "Afonso Cunha",
+            "nome_exibicao": "Afonso Cunha\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2100204,
+            "slug": "alcantara",
+            "nome": "Alcântara",
+            "nome_exibicao": "Alcântara\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2100303,
+            "slug": "aldeias-altas",
+            "nome": "Aldeias Altas",
+            "nome_exibicao": "Aldeias Altas\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2100402,
+            "slug": "altamira-do-maranhao",
+            "nome": "Altamira do Maranhão",
+            "nome_exibicao": "Altamira do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2100436,
+            "slug": "alto-alegre-do-maranhao",
+            "nome": "Alto Alegre do Maranhão",
+            "nome_exibicao": "Alto Alegre do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2100477,
+            "slug": "alto-alegre-do-pindare",
+            "nome": "Alto Alegre do Pindaré",
+            "nome_exibicao": "Alto Alegre do Pindaré\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2100501,
+            "slug": "alto-parnaiba",
+            "nome": "Alto Parnaíba",
+            "nome_exibicao": "Alto Parnaíba\/MA (4)",
+            "qty": 4,
+            "uf": "ma"
+        },
+        {
+            "id": 2100550,
+            "slug": "amapa-do-maranhao",
+            "nome": "Amapá do Maranhão",
+            "nome_exibicao": "Amapá do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2100600,
+            "slug": "amarante-do-maranhao",
+            "nome": "Amarante do Maranhão",
+            "nome_exibicao": "Amarante do Maranhão\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2100709,
+            "slug": "anajatuba",
+            "nome": "Anajatuba",
+            "nome_exibicao": "Anajatuba\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2100808,
+            "slug": "anapurus",
+            "nome": "Anapurus",
+            "nome_exibicao": "Anapurus\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2100832,
+            "slug": "apicum-acu",
+            "nome": "Apicum-Açu",
+            "nome_exibicao": "Apicum-Açu\/MA (3)",
+            "qty": 3,
+            "uf": "ma"
+        },
+        {
+            "id": 2100873,
+            "slug": "araguana",
+            "nome": "Araguanã",
+            "nome_exibicao": "Araguanã\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2100907,
+            "slug": "araioses",
+            "nome": "Araioses",
+            "nome_exibicao": "Araioses\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2100956,
+            "slug": "arame",
+            "nome": "Arame",
+            "nome_exibicao": "Arame\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2101004,
+            "slug": "arari",
+            "nome": "Arari",
+            "nome_exibicao": "Arari\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2101103,
+            "slug": "axixa",
+            "nome": "Axixá",
+            "nome_exibicao": "Axixá\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2100055,
+            "slug": "acailandia",
+            "nome": "Açailândia",
+            "nome_exibicao": "Açailândia\/MA (16)",
+            "qty": 16,
+            "uf": "ma"
+        },
+        {
+            "id": 2101202,
+            "slug": "bacabal",
+            "nome": "Bacabal",
+            "nome_exibicao": "Bacabal\/MA (7)",
+            "qty": 7,
+            "uf": "ma"
+        },
+        {
+            "id": 2101251,
+            "slug": "bacabeira",
+            "nome": "Bacabeira",
+            "nome_exibicao": "Bacabeira\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2101301,
+            "slug": "bacuri",
+            "nome": "Bacuri",
+            "nome_exibicao": "Bacuri\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2101350,
+            "slug": "bacurituba",
+            "nome": "Bacurituba",
+            "nome_exibicao": "Bacurituba\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2101400,
+            "slug": "balsas",
+            "nome": "Balsas",
+            "nome_exibicao": "Balsas\/MA (5)",
+            "qty": 5,
+            "uf": "ma"
+        },
+        {
+            "id": 2101608,
+            "slug": "barra-do-corda",
+            "nome": "Barra do Corda",
+            "nome_exibicao": "Barra do Corda\/MA (3)",
+            "qty": 3,
+            "uf": "ma"
+        },
+        {
+            "id": 2101707,
+            "slug": "barreirinhas",
+            "nome": "Barreirinhas",
+            "nome_exibicao": "Barreirinhas\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2101509,
+            "slug": "barao-de-grajau",
+            "nome": "Barão de Grajaú",
+            "nome_exibicao": "Barão de Grajaú\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2101772,
+            "slug": "bela-vista-do-maranhao",
+            "nome": "Bela Vista do Maranhão",
+            "nome_exibicao": "Bela Vista do Maranhão\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2101731,
+            "slug": "belagua",
+            "nome": "Belágua",
+            "nome_exibicao": "Belágua\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2101806,
+            "slug": "benedito-leite",
+            "nome": "Benedito Leite",
+            "nome_exibicao": "Benedito Leite\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2101905,
+            "slug": "bequimao",
+            "nome": "Bequimão",
+            "nome_exibicao": "Bequimão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2101939,
+            "slug": "bernardo-do-mearim",
+            "nome": "Bernardo do Mearim",
+            "nome_exibicao": "Bernardo do Mearim\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2101970,
+            "slug": "boa-vista-do-gurupi",
+            "nome": "Boa Vista do Gurupi",
+            "nome_exibicao": "Boa Vista do Gurupi\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102002,
+            "slug": "bom-jardim",
+            "nome": "Bom Jardim",
+            "nome_exibicao": "Bom Jardim\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102036,
+            "slug": "bom-jesus-das-selvas",
+            "nome": "Bom Jesus das Selvas",
+            "nome_exibicao": "Bom Jesus das Selvas\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102077,
+            "slug": "bom-lugar",
+            "nome": "Bom Lugar",
+            "nome_exibicao": "Bom Lugar\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102101,
+            "slug": "brejo",
+            "nome": "Brejo",
+            "nome_exibicao": "Brejo\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102150,
+            "slug": "brejo-de-areia",
+            "nome": "Brejo de Areia",
+            "nome_exibicao": "Brejo de Areia\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102200,
+            "slug": "buriti",
+            "nome": "Buriti",
+            "nome_exibicao": "Buriti\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2102309,
+            "slug": "buriti-bravo",
+            "nome": "Buriti Bravo",
+            "nome_exibicao": "Buriti Bravo\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2102325,
+            "slug": "buriticupu",
+            "nome": "Buriticupu",
+            "nome_exibicao": "Buriticupu\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2102358,
+            "slug": "buritirana",
+            "nome": "Buritirana",
+            "nome_exibicao": "Buritirana\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102374,
+            "slug": "cachoeira-grande",
+            "nome": "Cachoeira Grande",
+            "nome_exibicao": "Cachoeira Grande\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102408,
+            "slug": "cajapio",
+            "nome": "Cajapió",
+            "nome_exibicao": "Cajapió\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102507,
+            "slug": "cajari",
+            "nome": "Cajari",
+            "nome_exibicao": "Cajari\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102556,
+            "slug": "campestre-do-maranhao",
+            "nome": "Campestre do Maranhão",
+            "nome_exibicao": "Campestre do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102705,
+            "slug": "cantanhede",
+            "nome": "Cantanhede",
+            "nome_exibicao": "Cantanhede\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102754,
+            "slug": "capinzal-do-norte",
+            "nome": "Capinzal do Norte",
+            "nome_exibicao": "Capinzal do Norte\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2102804,
+            "slug": "carolina",
+            "nome": "Carolina",
+            "nome_exibicao": "Carolina\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2102903,
+            "slug": "carutapera",
+            "nome": "Carutapera",
+            "nome_exibicao": "Carutapera\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2103000,
+            "slug": "caxias",
+            "nome": "Caxias",
+            "nome_exibicao": "Caxias\/MA (3)",
+            "qty": 3,
+            "uf": "ma"
+        },
+        {
+            "id": 2103109,
+            "slug": "cedral",
+            "nome": "Cedral",
+            "nome_exibicao": "Cedral\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2103125,
+            "slug": "central-do-maranhao",
+            "nome": "Central do Maranhão",
+            "nome_exibicao": "Central do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2103174,
+            "slug": "centro-novo-do-maranhao",
+            "nome": "Centro Novo do Maranhão",
+            "nome_exibicao": "Centro Novo do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2103158,
+            "slug": "centro-do-guilherme",
+            "nome": "Centro do Guilherme",
+            "nome_exibicao": "Centro do Guilherme\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2103208,
+            "slug": "chapadinha",
+            "nome": "Chapadinha",
+            "nome_exibicao": "Chapadinha\/MA (9)",
+            "qty": 9,
+            "uf": "ma"
+        },
+        {
+            "id": 2103257,
+            "slug": "cidelandia",
+            "nome": "Cidelândia",
+            "nome_exibicao": "Cidelândia\/MA (3)",
+            "qty": 3,
+            "uf": "ma"
+        },
+        {
+            "id": 2103307,
+            "slug": "codo",
+            "nome": "Codó",
+            "nome_exibicao": "Codó\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2103406,
+            "slug": "coelho-neto",
+            "nome": "Coelho Neto",
+            "nome_exibicao": "Coelho Neto\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2103505,
+            "slug": "colinas",
+            "nome": "Colinas",
+            "nome_exibicao": "Colinas\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2103554,
+            "slug": "conceicao-do-lago-acu",
+            "nome": "Conceição do Lago-Açu",
+            "nome_exibicao": "Conceição do Lago-Açu\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2103604,
+            "slug": "coroata",
+            "nome": "Coroatá",
+            "nome_exibicao": "Coroatá\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2103703,
+            "slug": "cururupu",
+            "nome": "Cururupu",
+            "nome_exibicao": "Cururupu\/MA (7)",
+            "qty": 7,
+            "uf": "ma"
+        },
+        {
+            "id": 2102606,
+            "slug": "candido-mendes",
+            "nome": "Cândido Mendes",
+            "nome_exibicao": "Cândido Mendes\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2103752,
+            "slug": "davinopolis",
+            "nome": "Davinópolis",
+            "nome_exibicao": "Davinópolis\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2103802,
+            "slug": "dom-pedro",
+            "nome": "Dom Pedro",
+            "nome_exibicao": "Dom Pedro\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2103901,
+            "slug": "duque-bacelar",
+            "nome": "Duque Bacelar",
+            "nome_exibicao": "Duque Bacelar\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104008,
+            "slug": "esperantinopolis",
+            "nome": "Esperantinópolis",
+            "nome_exibicao": "Esperantinópolis\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2104057,
+            "slug": "estreito",
+            "nome": "Estreito",
+            "nome_exibicao": "Estreito\/MA (3)",
+            "qty": 3,
+            "uf": "ma"
+        },
+        {
+            "id": 2104073,
+            "slug": "feira-nova-do-maranhao",
+            "nome": "Feira Nova do Maranhão",
+            "nome_exibicao": "Feira Nova do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104081,
+            "slug": "fernando-falcao",
+            "nome": "Fernando Falcão",
+            "nome_exibicao": "Fernando Falcão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104099,
+            "slug": "formosa-da-serra-negra",
+            "nome": "Formosa da Serra Negra",
+            "nome_exibicao": "Formosa da Serra Negra\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2104107,
+            "slug": "fortaleza-dos-nogueiras",
+            "nome": "Fortaleza dos Nogueiras",
+            "nome_exibicao": "Fortaleza dos Nogueiras\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104206,
+            "slug": "fortuna",
+            "nome": "Fortuna",
+            "nome_exibicao": "Fortuna\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104305,
+            "slug": "godofredo-viana",
+            "nome": "Godofredo Viana",
+            "nome_exibicao": "Godofredo Viana\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104404,
+            "slug": "goncalves-dias",
+            "nome": "Gonçalves Dias",
+            "nome_exibicao": "Gonçalves Dias\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104503,
+            "slug": "governador-archer",
+            "nome": "Governador Archer",
+            "nome_exibicao": "Governador Archer\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2104552,
+            "slug": "governador-edison-lobao",
+            "nome": "Governador Edison Lobão",
+            "nome_exibicao": "Governador Edison Lobão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104602,
+            "slug": "governador-eugenio-barros",
+            "nome": "Governador Eugênio Barros",
+            "nome_exibicao": "Governador Eugênio Barros\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104628,
+            "slug": "governador-luiz-rocha",
+            "nome": "Governador Luiz Rocha",
+            "nome_exibicao": "Governador Luiz Rocha\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104651,
+            "slug": "governador-newton-bello",
+            "nome": "Governador Newton Bello",
+            "nome_exibicao": "Governador Newton Bello\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104677,
+            "slug": "governador-nunes-freire",
+            "nome": "Governador Nunes Freire",
+            "nome_exibicao": "Governador Nunes Freire\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104800,
+            "slug": "grajau",
+            "nome": "Grajaú",
+            "nome_exibicao": "Grajaú\/MA (9)",
+            "qty": 9,
+            "uf": "ma"
+        },
+        {
+            "id": 2104701,
+            "slug": "graca-aranha",
+            "nome": "Graça Aranha",
+            "nome_exibicao": "Graça Aranha\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2104909,
+            "slug": "guimaraes",
+            "nome": "Guimarães",
+            "nome_exibicao": "Guimarães\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105005,
+            "slug": "humberto-de-campos",
+            "nome": "Humberto de Campos",
+            "nome_exibicao": "Humberto de Campos\/MA (5)",
+            "qty": 5,
+            "uf": "ma"
+        },
+        {
+            "id": 2105104,
+            "slug": "icatu",
+            "nome": "Icatu",
+            "nome_exibicao": "Icatu\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105203,
+            "slug": "igarape-grande",
+            "nome": "Igarapé Grande",
+            "nome_exibicao": "Igarapé Grande\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105153,
+            "slug": "igarape-do-meio",
+            "nome": "Igarapé do Meio",
+            "nome_exibicao": "Igarapé do Meio\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105302,
+            "slug": "imperatriz",
+            "nome": "Imperatriz",
+            "nome_exibicao": "Imperatriz\/MA (15)",
+            "qty": 15,
+            "uf": "ma"
+        },
+        {
+            "id": 2105351,
+            "slug": "itaipava-do-grajau",
+            "nome": "Itaipava do Grajaú",
+            "nome_exibicao": "Itaipava do Grajaú\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105401,
+            "slug": "itapecuru-mirim",
+            "nome": "Itapecuru Mirim",
+            "nome_exibicao": "Itapecuru Mirim\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105427,
+            "slug": "itinga-do-maranhao",
+            "nome": "Itinga do Maranhão",
+            "nome_exibicao": "Itinga do Maranhão\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2105450,
+            "slug": "jatoba",
+            "nome": "Jatobá",
+            "nome_exibicao": "Jatobá\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105476,
+            "slug": "jenipapo-dos-vieiras",
+            "nome": "Jenipapo dos Vieiras",
+            "nome_exibicao": "Jenipapo dos Vieiras\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105609,
+            "slug": "joselandia",
+            "nome": "Joselândia",
+            "nome_exibicao": "Joselândia\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105500,
+            "slug": "joao-lisboa",
+            "nome": "João Lisboa",
+            "nome_exibicao": "João Lisboa\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105658,
+            "slug": "junco-do-maranhao",
+            "nome": "Junco do Maranhão",
+            "nome_exibicao": "Junco do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105906,
+            "slug": "lago-verde",
+            "nome": "Lago Verde",
+            "nome_exibicao": "Lago Verde\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105708,
+            "slug": "lago-da-pedra",
+            "nome": "Lago da Pedra",
+            "nome_exibicao": "Lago da Pedra\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105807,
+            "slug": "lago-do-junco",
+            "nome": "Lago do Junco",
+            "nome_exibicao": "Lago do Junco\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105948,
+            "slug": "lago-dos-rodrigues",
+            "nome": "Lago dos Rodrigues",
+            "nome_exibicao": "Lago dos Rodrigues\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105963,
+            "slug": "lagoa-grande-do-maranhao",
+            "nome": "Lagoa Grande do Maranhão",
+            "nome_exibicao": "Lagoa Grande do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105922,
+            "slug": "lagoa-do-mato",
+            "nome": "Lagoa do Mato",
+            "nome_exibicao": "Lagoa do Mato\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2105989,
+            "slug": "lajeado-novo",
+            "nome": "Lajeado Novo",
+            "nome_exibicao": "Lajeado Novo\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2106003,
+            "slug": "lima-campos",
+            "nome": "Lima Campos",
+            "nome_exibicao": "Lima Campos\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106102,
+            "slug": "loreto",
+            "nome": "Loreto",
+            "nome_exibicao": "Loreto\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2106201,
+            "slug": "luis-domingues",
+            "nome": "Luís Domingues",
+            "nome_exibicao": "Luís Domingues\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106300,
+            "slug": "magalhaes-de-almeida",
+            "nome": "Magalhães de Almeida",
+            "nome_exibicao": "Magalhães de Almeida\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106326,
+            "slug": "maracacume",
+            "nome": "Maracaçumé",
+            "nome_exibicao": "Maracaçumé\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2106359,
+            "slug": "maraja-do-sena",
+            "nome": "Marajá do Sena",
+            "nome_exibicao": "Marajá do Sena\/MA (3)",
+            "qty": 3,
+            "uf": "ma"
+        },
+        {
+            "id": 2106375,
+            "slug": "maranhaozinho",
+            "nome": "Maranhãozinho",
+            "nome_exibicao": "Maranhãozinho\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106409,
+            "slug": "mata-roma",
+            "nome": "Mata Roma",
+            "nome_exibicao": "Mata Roma\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106508,
+            "slug": "matinha",
+            "nome": "Matinha",
+            "nome_exibicao": "Matinha\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106607,
+            "slug": "matoes",
+            "nome": "Matões",
+            "nome_exibicao": "Matões\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106631,
+            "slug": "matoes-do-norte",
+            "nome": "Matões do Norte",
+            "nome_exibicao": "Matões do Norte\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106672,
+            "slug": "milagres-do-maranhao",
+            "nome": "Milagres do Maranhão",
+            "nome_exibicao": "Milagres do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106706,
+            "slug": "mirador",
+            "nome": "Mirador",
+            "nome_exibicao": "Mirador\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106755,
+            "slug": "miranda-do-norte",
+            "nome": "Miranda do Norte",
+            "nome_exibicao": "Miranda do Norte\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106805,
+            "slug": "mirinzal",
+            "nome": "Mirinzal",
+            "nome_exibicao": "Mirinzal\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2107001,
+            "slug": "montes-altos",
+            "nome": "Montes Altos",
+            "nome_exibicao": "Montes Altos\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2106904,
+            "slug": "moncao",
+            "nome": "Monção",
+            "nome_exibicao": "Monção\/MA (5)",
+            "qty": 5,
+            "uf": "ma"
+        },
+        {
+            "id": 2107100,
+            "slug": "morros",
+            "nome": "Morros",
+            "nome_exibicao": "Morros\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2107209,
+            "slug": "nina-rodrigues",
+            "nome": "Nina Rodrigues",
+            "nome_exibicao": "Nina Rodrigues\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2107258,
+            "slug": "nova-colinas",
+            "nome": "Nova Colinas",
+            "nome_exibicao": "Nova Colinas\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2107308,
+            "slug": "nova-iorque",
+            "nome": "Nova Iorque",
+            "nome_exibicao": "Nova Iorque\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2107357,
+            "slug": "nova-olinda-do-maranhao",
+            "nome": "Nova Olinda do Maranhão",
+            "nome_exibicao": "Nova Olinda do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2107407,
+            "slug": "olho-dagua-das-cunhas",
+            "nome": "Olho d'Água das Cunhãs",
+            "nome_exibicao": "Olho d'Água das Cunhãs\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2107456,
+            "slug": "olinda-nova-do-maranhao",
+            "nome": "Olinda Nova do Maranhão",
+            "nome_exibicao": "Olinda Nova do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2107605,
+            "slug": "palmeirandia",
+            "nome": "Palmeirândia",
+            "nome_exibicao": "Palmeirândia\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2107704,
+            "slug": "paraibano",
+            "nome": "Paraibano",
+            "nome_exibicao": "Paraibano\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2107803,
+            "slug": "parnarama",
+            "nome": "Parnarama",
+            "nome_exibicao": "Parnarama\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2107902,
+            "slug": "passagem-franca",
+            "nome": "Passagem Franca",
+            "nome_exibicao": "Passagem Franca\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2108009,
+            "slug": "pastos-bons",
+            "nome": "Pastos Bons",
+            "nome_exibicao": "Pastos Bons\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2108058,
+            "slug": "paulino-neves",
+            "nome": "Paulino Neves",
+            "nome_exibicao": "Paulino Neves\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2108108,
+            "slug": "paulo-ramos",
+            "nome": "Paulo Ramos",
+            "nome_exibicao": "Paulo Ramos\/MA (4)",
+            "qty": 4,
+            "uf": "ma"
+        },
+        {
+            "id": 2107506,
+            "slug": "paco-do-lumiar",
+            "nome": "Paço do Lumiar",
+            "nome_exibicao": "Paço do Lumiar\/MA (20)",
+            "qty": 20,
+            "uf": "ma"
+        },
+        {
+            "id": 2108207,
+            "slug": "pedreiras",
+            "nome": "Pedreiras",
+            "nome_exibicao": "Pedreiras\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2108256,
+            "slug": "pedro-do-rosario",
+            "nome": "Pedro do Rosário",
+            "nome_exibicao": "Pedro do Rosário\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2108306,
+            "slug": "penalva",
+            "nome": "Penalva",
+            "nome_exibicao": "Penalva\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2108405,
+            "slug": "peri-mirim",
+            "nome": "Peri Mirim",
+            "nome_exibicao": "Peri Mirim\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2108454,
+            "slug": "peritoro",
+            "nome": "Peritoró",
+            "nome_exibicao": "Peritoró\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2108504,
+            "slug": "pindare-mirim",
+            "nome": "Pindaré-Mirim",
+            "nome_exibicao": "Pindaré-Mirim\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2108603,
+            "slug": "pinheiro",
+            "nome": "Pinheiro",
+            "nome_exibicao": "Pinheiro\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2108702,
+            "slug": "pio-xii",
+            "nome": "Pio XII",
+            "nome_exibicao": "Pio XII\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2108801,
+            "slug": "pirapemas",
+            "nome": "Pirapemas",
+            "nome_exibicao": "Pirapemas\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2109007,
+            "slug": "porto-franco",
+            "nome": "Porto Franco",
+            "nome_exibicao": "Porto Franco\/MA (3)",
+            "qty": 3,
+            "uf": "ma"
+        },
+        {
+            "id": 2109056,
+            "slug": "porto-rico-do-maranhao",
+            "nome": "Porto Rico do Maranhão",
+            "nome_exibicao": "Porto Rico do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2108900,
+            "slug": "pocao-de-pedras",
+            "nome": "Poção de Pedras",
+            "nome_exibicao": "Poção de Pedras\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2109106,
+            "slug": "presidente-dutra",
+            "nome": "Presidente Dutra",
+            "nome_exibicao": "Presidente Dutra\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2109205,
+            "slug": "presidente-juscelino",
+            "nome": "Presidente Juscelino",
+            "nome_exibicao": "Presidente Juscelino\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2109239,
+            "slug": "presidente-medici",
+            "nome": "Presidente Médici",
+            "nome_exibicao": "Presidente Médici\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2109270,
+            "slug": "presidente-sarney",
+            "nome": "Presidente Sarney",
+            "nome_exibicao": "Presidente Sarney\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2109304,
+            "slug": "presidente-vargas",
+            "nome": "Presidente Vargas",
+            "nome_exibicao": "Presidente Vargas\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2109403,
+            "slug": "primeira-cruz",
+            "nome": "Primeira Cruz",
+            "nome_exibicao": "Primeira Cruz\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2109452,
+            "slug": "raposa",
+            "nome": "Raposa",
+            "nome_exibicao": "Raposa\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2109502,
+            "slug": "riachao",
+            "nome": "Riachão",
+            "nome_exibicao": "Riachão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2109551,
+            "slug": "ribamar-fiquene",
+            "nome": "Ribamar Fiquene",
+            "nome_exibicao": "Ribamar Fiquene\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2109601,
+            "slug": "rosario",
+            "nome": "Rosário",
+            "nome_exibicao": "Rosário\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2109700,
+            "slug": "sambaiba",
+            "nome": "Sambaíba",
+            "nome_exibicao": "Sambaíba\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2109759,
+            "slug": "santa-filomena-do-maranhao",
+            "nome": "Santa Filomena do Maranhão",
+            "nome_exibicao": "Santa Filomena do Maranhão\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2109809,
+            "slug": "santa-helena",
+            "nome": "Santa Helena",
+            "nome_exibicao": "Santa Helena\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2109908,
+            "slug": "santa-ines",
+            "nome": "Santa Inês",
+            "nome_exibicao": "Santa Inês\/MA (4)",
+            "qty": 4,
+            "uf": "ma"
+        },
+        {
+            "id": 2110005,
+            "slug": "santa-luzia",
+            "nome": "Santa Luzia",
+            "nome_exibicao": "Santa Luzia\/MA (5)",
+            "qty": 5,
+            "uf": "ma"
+        },
+        {
+            "id": 2110039,
+            "slug": "santa-luzia-do-parua",
+            "nome": "Santa Luzia do Paruá",
+            "nome_exibicao": "Santa Luzia do Paruá\/MA (7)",
+            "qty": 7,
+            "uf": "ma"
+        },
+        {
+            "id": 2110104,
+            "slug": "santa-quiteria-do-maranhao",
+            "nome": "Santa Quitéria do Maranhão",
+            "nome_exibicao": "Santa Quitéria do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2110203,
+            "slug": "santa-rita",
+            "nome": "Santa Rita",
+            "nome_exibicao": "Santa Rita\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2110237,
+            "slug": "santana-do-maranhao",
+            "nome": "Santana do Maranhão",
+            "nome_exibicao": "Santana do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2110278,
+            "slug": "santo-amaro-do-maranhao",
+            "nome": "Santo Amaro do Maranhão",
+            "nome_exibicao": "Santo Amaro do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2110302,
+            "slug": "santo-antonio-dos-lopes",
+            "nome": "Santo Antônio dos Lopes",
+            "nome_exibicao": "Santo Antônio dos Lopes\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111722,
+            "slug": "satubinha",
+            "nome": "Satubinha",
+            "nome_exibicao": "Satubinha\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111748,
+            "slug": "senador-alexandre-costa",
+            "nome": "Senador Alexandre Costa",
+            "nome_exibicao": "Senador Alexandre Costa\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111763,
+            "slug": "senador-la-rocque",
+            "nome": "Senador La Rocque",
+            "nome_exibicao": "Senador La Rocque\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111789,
+            "slug": "serrano-do-maranhao",
+            "nome": "Serrano do Maranhão",
+            "nome_exibicao": "Serrano do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111904,
+            "slug": "sucupira-do-norte",
+            "nome": "Sucupira do Norte",
+            "nome_exibicao": "Sucupira do Norte\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2111953,
+            "slug": "sucupira-do-riachao",
+            "nome": "Sucupira do Riachão",
+            "nome_exibicao": "Sucupira do Riachão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2110401,
+            "slug": "sao-benedito-do-rio-preto",
+            "nome": "São Benedito do Rio Preto",
+            "nome_exibicao": "São Benedito do Rio Preto\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2110500,
+            "slug": "sao-bento",
+            "nome": "São Bento",
+            "nome_exibicao": "São Bento\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2110609,
+            "slug": "sao-bernardo",
+            "nome": "São Bernardo",
+            "nome_exibicao": "São Bernardo\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2110658,
+            "slug": "sao-domingos-do-azeitao",
+            "nome": "São Domingos do Azeitão",
+            "nome_exibicao": "São Domingos do Azeitão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2110708,
+            "slug": "sao-domingos-do-maranhao",
+            "nome": "São Domingos do Maranhão",
+            "nome_exibicao": "São Domingos do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2110856,
+            "slug": "sao-francisco-do-brejao",
+            "nome": "São Francisco do Brejão",
+            "nome_exibicao": "São Francisco do Brejão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2110906,
+            "slug": "sao-francisco-do-maranhao",
+            "nome": "São Francisco do Maranhão",
+            "nome_exibicao": "São Francisco do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2110807,
+            "slug": "sao-felix-de-balsas",
+            "nome": "São Félix de Balsas",
+            "nome_exibicao": "São Félix de Balsas\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2111201,
+            "slug": "sao-jose-de-ribamar",
+            "nome": "São José de Ribamar",
+            "nome_exibicao": "São José de Ribamar\/MA (39)",
+            "qty": 39,
+            "uf": "ma"
+        },
+        {
+            "id": 2111250,
+            "slug": "sao-jose-dos-basilios",
+            "nome": "São José dos Basílios",
+            "nome_exibicao": "São José dos Basílios\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111003,
+            "slug": "sao-joao-batista",
+            "nome": "São João Batista",
+            "nome_exibicao": "São João Batista\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111029,
+            "slug": "sao-joao-do-caru",
+            "nome": "São João do Carú",
+            "nome_exibicao": "São João do Carú\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111052,
+            "slug": "sao-joao-do-paraiso",
+            "nome": "São João do Paraíso",
+            "nome_exibicao": "São João do Paraíso\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2111078,
+            "slug": "sao-joao-do-soter",
+            "nome": "São João do Soter",
+            "nome_exibicao": "São João do Soter\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111102,
+            "slug": "sao-joao-dos-patos",
+            "nome": "São João dos Patos",
+            "nome_exibicao": "São João dos Patos\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2111300,
+            "slug": "sao-luis",
+            "nome": "São Luís",
+            "nome_exibicao": "São Luís\/MA (41)",
+            "qty": 41,
+            "uf": "ma"
+        },
+        {
+            "id": 2111409,
+            "slug": "sao-luis-gonzaga-do-maranhao",
+            "nome": "São Luís Gonzaga do Maranhão",
+            "nome_exibicao": "São Luís Gonzaga do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111508,
+            "slug": "sao-mateus-do-maranhao",
+            "nome": "São Mateus do Maranhão",
+            "nome_exibicao": "São Mateus do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111532,
+            "slug": "sao-pedro-da-agua-branca",
+            "nome": "São Pedro da Água Branca",
+            "nome_exibicao": "São Pedro da Água Branca\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111573,
+            "slug": "sao-pedro-dos-crentes",
+            "nome": "São Pedro dos Crentes",
+            "nome_exibicao": "São Pedro dos Crentes\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2111607,
+            "slug": "sao-raimundo-das-mangabeiras",
+            "nome": "São Raimundo das Mangabeiras",
+            "nome_exibicao": "São Raimundo das Mangabeiras\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111631,
+            "slug": "sao-raimundo-do-doca-bezerra",
+            "nome": "São Raimundo do Doca Bezerra",
+            "nome_exibicao": "São Raimundo do Doca Bezerra\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111672,
+            "slug": "sao-roberto",
+            "nome": "São Roberto",
+            "nome_exibicao": "São Roberto\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2111706,
+            "slug": "sao-vicente-ferrer",
+            "nome": "São Vicente Ferrer",
+            "nome_exibicao": "São Vicente Ferrer\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2111805,
+            "slug": "sitio-novo",
+            "nome": "Sítio Novo",
+            "nome_exibicao": "Sítio Novo\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2112001,
+            "slug": "tasso-fragoso",
+            "nome": "Tasso Fragoso",
+            "nome_exibicao": "Tasso Fragoso\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2112100,
+            "slug": "timbiras",
+            "nome": "Timbiras",
+            "nome_exibicao": "Timbiras\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2112209,
+            "slug": "timon",
+            "nome": "Timon",
+            "nome_exibicao": "Timon\/MA (66)",
+            "qty": 66,
+            "uf": "ma"
+        },
+        {
+            "id": 2112233,
+            "slug": "trizidela-do-vale",
+            "nome": "Trizidela do Vale",
+            "nome_exibicao": "Trizidela do Vale\/MA (4)",
+            "qty": 4,
+            "uf": "ma"
+        },
+        {
+            "id": 2112274,
+            "slug": "tufilandia",
+            "nome": "Tufilândia",
+            "nome_exibicao": "Tufilândia\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2112308,
+            "slug": "tuntum",
+            "nome": "Tuntum",
+            "nome_exibicao": "Tuntum\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2112407,
+            "slug": "turiacu",
+            "nome": "Turiaçu",
+            "nome_exibicao": "Turiaçu\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2112456,
+            "slug": "turilandia",
+            "nome": "Turilândia",
+            "nome_exibicao": "Turilândia\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2112506,
+            "slug": "tutoia",
+            "nome": "Tutóia",
+            "nome_exibicao": "Tutóia\/MA (3)",
+            "qty": 3,
+            "uf": "ma"
+        },
+        {
+            "id": 2112605,
+            "slug": "urbano-santos",
+            "nome": "Urbano Santos",
+            "nome_exibicao": "Urbano Santos\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2112704,
+            "slug": "vargem-grande",
+            "nome": "Vargem Grande",
+            "nome_exibicao": "Vargem Grande\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2112803,
+            "slug": "viana",
+            "nome": "Viana",
+            "nome_exibicao": "Viana\/MA (2)",
+            "qty": 2,
+            "uf": "ma"
+        },
+        {
+            "id": 2112852,
+            "slug": "vila-nova-dos-martirios",
+            "nome": "Vila Nova dos Martírios",
+            "nome_exibicao": "Vila Nova dos Martírios\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2113009,
+            "slug": "vitorino-freire",
+            "nome": "Vitorino Freire",
+            "nome_exibicao": "Vitorino Freire\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        },
+        {
+            "id": 2112902,
+            "slug": "vitoria-do-mearim",
+            "nome": "Vitória do Mearim",
+            "nome_exibicao": "Vitória do Mearim\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2114007,
+            "slug": "ze-doca",
+            "nome": "Zé Doca",
+            "nome_exibicao": "Zé Doca\/MA (1)",
+            "qty": 1,
+            "uf": "ma"
+        },
+        {
+            "id": 2100154,
+            "slug": "agua-doce-do-maranhao",
+            "nome": "Água Doce do Maranhão",
+            "nome_exibicao": "Água Doce do Maranhão\/MA (0)",
+            "qty": 0,
+            "uf": "ma"
+        }
+    ]
+}
