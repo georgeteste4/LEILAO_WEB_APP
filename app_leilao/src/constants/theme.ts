@@ -1,0 +1,40 @@
+export const COLORS = {
+  dark: {
+    bgCanvas: '#090d16',
+    bgSurface: '#0f172a',
+    bgSurfaceSubtle: '#1e293b',
+    borderSubtle: '#1e293b',
+    borderStrong: '#334155',
+    textMain: '#f8fafc',
+    textMuted: '#94a3b8',
+    textDim: '#64748b',
+    brand: '#0284c7',
+    brandLight: '#38bdf8',
+    success: '#059669',
+    successLight: '#34d399',
+    discount: '#e11d48',
+    discountLight: '#fb7185',
+    warning: '#d97706',
+    warningLight: '#fbbf24',
+    cardHover: '#131d35'
+  },
+  light: {
+    bgCanvas: '#f8fafc',
+    bgSurface: '#ffffff',
+    bgSurfaceSubtle: '#f1f5f9',
+    borderSubtle: '#e2e8f0',
+    borderStrong: '#cbd5e1',
+    textMain: '#0f172a',
+    textMuted: '#64748b',
+    textDim: '#94a3b8',
+    brand: '#0284c7',
+    brandLight: '#0369a1',
+    success: '#059669',
+    successLight: '#047857',
+    discount: '#e11d48',
+    discountLight: '#be123c',
+    warning: '#d97706',
+    warningLight: '#b45309',
+    cardHover: '#f8fafc'
+  }
+};

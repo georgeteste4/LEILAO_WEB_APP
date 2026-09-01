@@ -1,0 +1,52 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: app_leilao/package.json
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Dependencies
+        working-directory: ./app_leilao
+        run: npm install
+
+      - name: Setup Expo CLI
+        run: npm install -g eas-cli @expo/cli
+
+      - name: Prebuild Android
+        working-directory: ./app_leilao
+        run: npx expo prebuild --platform android --clean
+
+      - name: Build Android Release APK
+        working-directory: ./app_leilao/android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: app_leilao/android/app/build/outputs/apk/release/*.apk
+          retention-days: 30

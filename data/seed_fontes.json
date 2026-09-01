@@ -1,0 +1,98 @@
+[
+  {
+    "slug": "leilaoimovel",
+    "nome": "Leilão Imóvel",
+    "url_base": "https://www.leilaoimovel.com.br",
+    "descricao": "Portal agregador de leilões judiciais e extrajudiciais com dados enriquecidos.",
+    "ativo": 1,
+    "driver_class": "LeilaoImovelSource"
+  },
+  {
+    "slug": "caixa",
+    "nome": "Caixa Econômica Federal",
+    "url_base": "https://venda-imoveis.caixa.gov.br",
+    "descricao": "Imóveis adjudicados e leilões diretos da Caixa Econômica com matrículas oficiais.",
+    "ativo": 1,
+    "driver_class": "CaixaSource"
+  },
+  {
+    "slug": "zukerman",
+    "nome": "Portal Zuk (Zukerman)",
+    "url_base": "https://www.portalzuk.com.br",
+    "descricao": "Leilões de imóveis residenciais, comerciais e rurais em todo o Brasil.",
+    "ativo": 1,
+    "driver_class": "ZukermanSource"
+  },
+  {
+    "slug": "santander",
+    "nome": "Banco Santander (Imóveis & Leilões)",
+    "url_base": "https://www.santanderimoveis.com.br",
+    "descricao": "Oportunidades de leilões e venda direta de imóveis do Banco Santander.",
+    "ativo": 1,
+    "driver_class": "SantanderSource"
+  },
+  {
+    "slug": "bradesco",
+    "nome": "Banco Bradesco (Imóveis & Leilões)",
+    "url_base": "https://www.bradescoimoveis.com.br",
+    "descricao": "Imóveis desocupados e leilões oficiais do Banco Bradesco.",
+    "ativo": 1,
+    "driver_class": "BradescoSource"
+  },
+  {
+    "slug": "itau",
+    "nome": "Banco Itaú (Imóveis & Leilões)",
+    "url_base": "https://www.itau.com.br/imoveis-leilao",
+    "descricao": "Leilões oficiais e imóveis retomados do Banco Itaú Unibanco.",
+    "ativo": 1,
+    "driver_class": "BankSource"
+  },
+  {
+    "slug": "bancodobrasil",
+    "nome": "Banco do Brasil (Seu Imóvel BB)",
+    "url_base": "https://seuimovelbb.com.br",
+    "descricao": "Catálogo oficial de imóveis e leilões do Banco do Brasil.",
+    "ativo": 1,
+    "driver_class": "BancoDoBrasilSource"
+  },
+  {
+    "slug": "bancointer",
+    "nome": "Banco Inter (Imóveis & Leilões)",
+    "url_base": "https://inter.co",
+    "descricao": "Leilões e oportunidades imobiliárias com financiamento Banco Inter.",
+    "ativo": 1,
+    "driver_class": "BankSource"
+  },
+  {
+    "slug": "sicredi",
+    "nome": "Sicredi (Imóveis & Leilões)",
+    "url_base": "https://www.sicredi.com.br",
+    "descricao": "Imóveis recuperados e leilões cooperativos do Sicredi.",
+    "ativo": 1,
+    "driver_class": "BankSource"
+  },
+  {
+    "slug": "smartleiloescaixa",
+    "nome": "Smart Leilões Caixa",
+    "url_base": "https://smartleiloescaixa.com.br",
+    "descricao": "Portal especializado em leilões e oportunidades da Caixa Econômica Federal.",
+    "ativo": 1,
+    "driver_class": "SmartLeiloesCaixaSource"
+  },
+  {
+    "slug": "megaleiloes",
+    "nome": "Mega Leilões",
+    "url_base": "https://www.megaleiloes.com.br",
+    "descricao": "Um dos maiores portais de leilões judiciais e de bancos do Brasil.",
+    "ativo": 1,
+    "driver_class": "GenericSource"
+  },
+  {
+    "slug": "sodresantoro",
+    "nome": "Sodré Santoro",
+    "url_base": "https://www.sodresantoro.com.br",
+    "descricao": "Tradicional leiloeiro oficial com oportunidades judiciais e financeiras.",
+    "ativo": 1,
+    "driver_class": "GenericSource"
+  }
+]

@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "nome": "Maranhão Geral (Todos os Municípios)",
+    "uf": "MA",
+    "municipio": "",
+    "tipo": "",
+    "data_final_leilao": null,
+    "termo_busca": "",
+    "fontes": "[\"leilaoimovel\",\"caixa\",\"smartleiloescaixa\"]",
+    "ativo": 1,
+    "total_execucoes": 0,
+    "total_imoveis_salvos": 0
+  },
+  {
+    "id": 2,
+    "nome": "São Luís - Apartamentos e Casas",
+    "uf": "MA",
+    "municipio": "Sao Luis",
+    "tipo": "apartamento",
+    "data_final_leilao": null,
+    "termo_busca": "",
+    "fontes": "[\"leilaoimovel\",\"caixa\"]",
+    "ativo": 1,
+    "total_execucoes": 0,
+    "total_imoveis_salvos": 0
+  },
+  {
+    "id": 3,
+    "nome": "Imperatriz - Oportunidades com Alto Desconto",
+    "uf": "MA",
+    "municipio": "Imperatriz",
+    "tipo": "",
+    "data_final_leilao": null,
+    "termo_busca": "",
+    "fontes": "[\"leilaoimovel\"]",
+    "ativo": 1,
+    "total_execucoes": 0,
+    "total_imoveis_salvos": 0
+  }
+]
