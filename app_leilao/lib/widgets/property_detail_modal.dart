@@ -6,6 +6,7 @@ import '../constants/colors.dart';
 import '../database/db_helper.dart';
 import '../models/imovel.dart';
 import '../widgets/alert_config_modal.dart';
+import 'shad_components.dart';
 
 class PropertyDetailModal extends StatefulWidget {
   final Imovel imovel;
@@ -65,11 +66,10 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
     if (text.contains('suite') || text.contains('suíte')) feats.add('Suíte');
     if (text.contains('garagem') || text.contains('vaga')) feats.add('Vaga de Garagem');
     if (text.contains('area de servico') || text.contains('área de serviço')) feats.add('Área de Serviço');
-    if (text.contains('sala')) feats.add('Sala de Estar');
+    if (text.contains('sala')) feats.add('Sala');
     if (text.contains('cozinha')) feats.add('Cozinha');
-    if (text.contains('terraco') || text.contains('terraço') || text.contains('varanda')) feats.add('Varanda / Terraço');
+    if (text.contains('varanda') || text.contains('terraco') || text.contains('terraço')) feats.add('Varanda');
     if (text.contains('quintal')) feats.add('Quintal');
-    if (text.contains('piscina')) feats.add('Piscina');
 
     return feats;
   }
@@ -82,133 +82,85 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
     final hasInclusao = widget.imovel.dataInclusao != null && widget.imovel.dataInclusao!.trim().isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: const BoxDecoration(
         color: AppColors.canvas,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle de arrastar
             Center(
               child: Container(
-                width: 36,
+                width: 40,
                 height: 4,
-                margin: const EdgeInsets.only(bottom: 14),
+                margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(color: AppColors.borderSubtle, borderRadius: BorderRadius.circular(2)),
               ),
             ),
 
-            // Foto de Capa com Tags
+            // Foto com Badges Shadcn
             Stack(
               children: [
-                if (widget.imovel.imagem.isNotEmpty)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      widget.imovel.imagem,
-                      height: 190,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (c, e, s) => Container(
-                        height: 190,
-                        color: AppColors.surfaceElevated,
-                        child: const Center(child: Icon(Icons.home_work_outlined, size: 48, color: AppColors.textDim)),
-                      ),
-                    ),
-                  )
-                else
-                  Container(
-                    height: 190,
-                    decoration: BoxDecoration(color: AppColors.surfaceElevated, borderRadius: BorderRadius.circular(8)),
-                    child: const Center(child: Icon(Icons.home_work_outlined, size: 48, color: AppColors.textDim)),
-                  ),
-
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: widget.imovel.imagem.isNotEmpty
+                      ? Image.network(
+                          widget.imovel.imagem,
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (c, e, s) => Container(height: 200, color: AppColors.surfaceElevated, child: const Center(child: Icon(Icons.home_work_outlined, size: 48, color: AppColors.textDim))),
+                        )
+                      : Container(height: 200, color: AppColors.surfaceElevated, child: const Center(child: Icon(Icons.home_work_outlined, size: 48, color: AppColors.textDim))),
+                ),
                 if (widget.imovel.desconto != null && widget.imovel.desconto! > 0)
                   Positioned(
                     top: 10,
                     right: 10,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: AppColors.discount,
-                        borderRadius: BorderRadius.circular(4),
-                        boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 4, offset: Offset(0, 2))],
-                      ),
-                      child: Text(
-                        '-' + widget.imovel.desconto!.round().toString() + '% OFF',
-                        style: const TextStyle(color: Colors.white, fontFamily: 'JetBrains Mono', fontSize: 13, fontWeight: FontWeight.w900),
-                      ),
+                    child: ShadBadge.destructive(
+                      child: Text('-' + widget.imovel.desconto!.round().toString() + '% OFF', style: const TextStyle(fontFamily: 'JetBrains Mono', fontWeight: FontWeight.bold)),
                     ),
                   ),
-
                 Positioned(
                   bottom: 10,
                   left: 10,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(color: AppColors.canvas.withOpacity(0.9), borderRadius: BorderRadius.circular(4), border: Border.all(color: AppColors.border)),
-                    child: Text(
-                      widget.imovel.tipo.toUpperCase() + ' • FONTE: ' + widget.imovel.fonteSlug.toUpperCase(),
-                      style: const TextStyle(color: AppColors.brandLight, fontSize: 10, fontWeight: FontWeight.bold),
-                    ),
+                  child: ShadBadge.secondary(
+                    child: Text(widget.imovel.tipo.toUpperCase() + ' • ' + widget.imovel.fonteSlug.toUpperCase()),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
 
-            // Título Principal
-            Text(widget.imovel.titulo, style: const TextStyle(color: AppColors.textMain, fontSize: 16, fontWeight: FontWeight.w800, height: 1.3)),
-            const SizedBox(height: 8),
+            // Título
+            Text(widget.imovel.titulo, style: const TextStyle(color: AppColors.textMain, fontSize: 17, fontWeight: FontWeight.w800, height: 1.3)),
+            const SizedBox(height: 10),
 
-            // BANNER DESTACADO: DATA DE ENCERRAMENTO DO LEILÃO (SEMPRE EXIBIDO QUANDO HOUVER)
+            // Banner Encerramento
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: hasEncerramento ? AppColors.warning.withOpacity(0.15) : AppColors.surface,
+                color: hasEncerramento ? AppColors.warningBg : AppColors.surface,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: hasEncerramento ? AppColors.warningLight : AppColors.border,
-                  width: hasEncerramento ? 1.2 : 0.8,
-                ),
+                border: Border.all(color: hasEncerramento ? AppColors.warningLight.withOpacity(0.4) : AppColors.border),
               ),
               child: Row(
                 children: [
-                  Icon(
-                    hasEncerramento ? Icons.alarm_on : Icons.calendar_month_outlined,
-                    color: hasEncerramento ? AppColors.warningLight : AppColors.textDim,
-                    size: 22,
-                  ),
+                  Icon(hasEncerramento ? Icons.alarm_on : Icons.calendar_month_outlined, color: hasEncerramento ? AppColors.warningLight : AppColors.textDim, size: 20),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          hasEncerramento ? 'DATA DE ENCERRAMENTO DO LEILÃO' : 'CRONOGRAMA DO LEILÃO',
-                          style: TextStyle(
-                            color: hasEncerramento ? AppColors.warningLight : AppColors.textDim,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
+                        Text(hasEncerramento ? 'PRAZO FINAL DO LEILÃO' : 'CRONOGRAMA DO LEILÃO', style: const TextStyle(color: AppColors.textDim, fontSize: 10, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 2),
                         Text(
-                          hasEncerramento
-                              ? widget.imovel.dataEncerramento!
-                              : 'Data de encerramento sob consulta no edital oficial',
-                          style: TextStyle(
-                            color: hasEncerramento ? Colors.white : AppColors.textMuted,
-                            fontFamily: 'JetBrains Mono',
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                          ),
+                          hasEncerramento ? widget.imovel.dataEncerramento! : 'Consulte as datas no edital oficial',
+                          style: TextStyle(color: hasEncerramento ? AppColors.warningLight : AppColors.textMuted, fontFamily: 'JetBrains Mono', fontSize: 13, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -219,14 +171,13 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
 
             const SizedBox(height: 12),
 
-            // Resumo Financeiro em 4 Colunas
-            Container(
+            // Grid Financeiro 4 Colunas
+            ShadCard(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
-              child: Row(
+              content: Row(
                 children: [
                   Expanded(child: _metricBox('AVALIAÇÃO', widget.imovel.valorAvaliacao != null ? fmt.format(widget.imovel.valorAvaliacao) : '-', AppColors.textDim)),
-                  Expanded(child: _metricBox('LANCE INICIAL', widget.imovel.valorLeilao != null ? fmt.format(widget.imovel.valorLeilao) : '-', AppColors.successLight)),
+                  Expanded(child: _metricBox('LANCE MÍNIMO', widget.imovel.valorLeilao != null ? fmt.format(widget.imovel.valorLeilao) : '-', AppColors.successLight)),
                   Expanded(child: _metricBox('DESCONTO', widget.imovel.desconto != null ? '-' + widget.imovel.desconto!.round().toString() + '%' : '-', AppColors.discountLight)),
                   Expanded(child: _metricBox('ECONOMIA', widget.imovel.economia != null ? fmt.format(widget.imovel.economia) : '-', AppColors.brandLight)),
                 ],
@@ -235,14 +186,14 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
 
             const SizedBox(height: 12),
 
-            // Ações Rápidas: Favoritar & Me Avise
+            // Ações: Salvar & Alerta
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: isFavorito ? AppColors.discountLight : AppColors.borderSubtle),
-                      backgroundColor: isFavorito ? AppColors.discount.withOpacity(0.15) : AppColors.surface,
+                      backgroundColor: isFavorito ? AppColors.discountBg : AppColors.surface,
                     ),
                     onPressed: toggleFavorite,
                     icon: Icon(isFavorito ? Icons.favorite : Icons.favorite_border, color: isFavorito ? AppColors.discountLight : AppColors.textMain, size: 18),
@@ -266,14 +217,11 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
 
             const SizedBox(height: 16),
 
-            // SEÇÃO: DESCRIÇÃO COMPLETA DO IMÓVEL & LOCALIZAÇÃO
-            const Text('DESCRIÇÃO E LOCALIZAÇÃO DO IMÓVEL', style: TextStyle(color: AppColors.textDim, fontSize: 11, fontWeight: FontWeight.bold)),
+            // Localização & Endereço
+            const Text('LOCALIZAÇÃO & ENDEREÇO', style: TextStyle(color: AppColors.textDim, fontSize: 11, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
-              child: Column(
+            ShadCard(
+              content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -283,7 +231,7 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
                       const SizedBox(width: 6),
                       Expanded(
                         child: SelectableText(
-                          widget.imovel.endereco.isNotEmpty ? widget.imovel.endereco : 'Endereço registrado na matrícula oficial.',
+                          widget.imovel.endereco.isNotEmpty ? widget.imovel.endereco : 'Endereço disponível na matrícula oficial.',
                           style: const TextStyle(color: AppColors.textMain, fontSize: 12, height: 1.4),
                         ),
                       ),
@@ -291,26 +239,19 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
                         icon: const Icon(Icons.copy, size: 14, color: AppColors.textDim),
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: widget.imovel.endereco));
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Endereço copiado para a área de transferência!')));
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Endereço copiado!')));
                         },
                       ),
                     ],
                   ),
-
                   if (features.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     const Divider(color: AppColors.border, height: 1),
                     const SizedBox(height: 8),
-                    const Text('Composição e Cômodos Identificados:', style: TextStyle(color: AppColors.textDim, fontSize: 10, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 6),
                     Wrap(
                       spacing: 6,
                       runSpacing: 4,
-                      children: features.map((f) => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(color: AppColors.surfaceElevated, borderRadius: BorderRadius.circular(4), border: Border.all(color: AppColors.borderSubtle)),
-                        child: Text(f, style: const TextStyle(color: AppColors.textMain, fontSize: 10, fontWeight: FontWeight.bold)),
-                      )).toList(),
+                      children: features.map((f) => ShadBadge.secondary(child: Text(f))).toList(),
                     ),
                   ],
                 ],
@@ -319,27 +260,24 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
 
             const SizedBox(height: 16),
 
-            // SEÇÃO: FICHA JURÍDICA E DATAS
-            const Text('FICHA TÉCNICA, DATAS E JURÍDICO', style: TextStyle(color: AppColors.textDim, fontSize: 11, fontWeight: FontWeight.bold)),
+            // Ficha Técnica
+            const Text('FICHA TÉCNICA E JURÍDICA', style: TextStyle(color: AppColors.textDim, fontSize: 11, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
-              child: Column(
+            ShadCard(
+              content: Column(
                 children: [
-                  _infoRow('Data de Encerramento', hasEncerramento ? widget.imovel.dataEncerramento! : 'Consulte o Edital Oficial'),
-                  _infoRow('Data de Inclusão', hasInclusao ? widget.imovel.dataInclusao! : 'Recente no Sistema'),
                   _infoRow('Modalidade', widget.imovel.modalidade),
-                  _infoRow('Leiloeiro / Agente', (widget.imovel.nomeLeiloeiro != null && widget.imovel.nomeLeiloeiro!.isNotEmpty) ? widget.imovel.nomeLeiloeiro! : 'Caixa / Leiloeiro Oficial'),
-                  _infoRow('Nº da Matrícula', (widget.imovel.numeroMatricula != null && widget.imovel.numeroMatricula!.isNotEmpty) ? widget.imovel.numeroMatricula! : 'Disponível na Certidão de Matrícula'),
-                  _infoRow('Identificador (Hash)', widget.imovel.hashImovel.length > 12 ? widget.imovel.hashImovel.substring(0, 12) + '...' : widget.imovel.hashImovel),
+                  _infoRow('Leiloeiro / Agente', widget.imovel.nomeLeiloeiro ?? 'Oficial Credenciado'),
+                  _infoRow('Nº da Matrícula', widget.imovel.numeroMatricula ?? 'Disponível no PDF'),
+                  _infoRow('Data de Inclusão', widget.imovel.dataInclusao ?? 'Recente'),
+                  _infoRow('Identificador', widget.imovel.hashImovel.length > 14 ? widget.imovel.hashImovel.substring(0, 14) + '...' : widget.imovel.hashImovel),
                 ],
               ),
             ),
 
             const SizedBox(height: 16),
 
-            // DOCUMENTAÇÃO E EDITAIS
+            // Ações de Documentos
             Row(
               children: [
                 if (widget.imovel.edital != null && widget.imovel.edital!.isNotEmpty)
@@ -348,7 +286,7 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
                       style: OutlinedButton.styleFrom(side: const BorderSide(color: AppColors.brandLight)),
                       onPressed: () => launchUrl(Uri.parse(widget.imovel.edital!)),
                       icon: const Icon(Icons.picture_as_pdf, color: AppColors.brandLight, size: 16),
-                      label: const Text('Edital Oficial (PDF)', style: TextStyle(color: AppColors.brandLight, fontSize: 11)),
+                      label: const Text('Edital (PDF)', style: TextStyle(color: AppColors.brandLight, fontSize: 11)),
                     ),
                   ),
                 if (widget.imovel.edital != null && widget.imovel.edital!.isNotEmpty && widget.imovel.linkMatricula != null && widget.imovel.linkMatricula!.isNotEmpty)
@@ -364,7 +302,6 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
                   ),
               ],
             ),
-
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
@@ -372,7 +309,7 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.brand),
                 onPressed: () => launchUrl(Uri.parse(widget.imovel.linkOriginal)),
                 icon: const Icon(Icons.open_in_new, color: Colors.white, size: 16),
-                label: const Text('Acessar Anúncio Oficial no Portal', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                label: const Text('Abrir Anúncio Oficial no Portal', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
               ),
             ),
           ],
@@ -399,12 +336,7 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
         children: [
           Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
           Flexible(
-            child: Text(
-              val,
-              textAlign: TextAlign.end,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.textMain, fontSize: 12, fontWeight: FontWeight.w600),
-            ),
+            child: Text(val, textAlign: TextAlign.end, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.textMain, fontSize: 12, fontWeight: FontWeight.w600)),
           ),
         ],
       ),

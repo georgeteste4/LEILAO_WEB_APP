@@ -26,6 +26,22 @@ class GeoBuscaImoveisApp extends StatelessWidget {
           primary: AppColors.brand,
           surface: AppColors.surface,
           background: AppColors.canvas,
+          error: AppColors.discount,
+        ),
+        dividerTheme: const DividerThemeData(
+          color: AppColors.border,
+          thickness: 0.8,
+        ),
+        cardTheme: const CardTheme(
+          color: AppColors.surface,
+          elevation: 0,
+          margin: EdgeInsets.zero,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: AppColors.canvas,
+          elevation: 0,
+          centerTitle: false,
+          iconTheme: IconThemeData(color: AppColors.textMain),
         ),
       ),
       home: const MainNavigationScreen(),
@@ -62,40 +78,53 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       body: screens[currentIndex],
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: AppColors.border, width: 0.8)),
+          color: AppColors.canvas,
+          border: Border(top: BorderSide(color: AppColors.border, width: 0.9)),
         ),
-        child: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: (idx) => setState(() => currentIndex = idx),
-          backgroundColor: AppColors.surface,
-          selectedItemColor: AppColors.brandLight,
-          unselectedItemColor: AppColors.textDim,
-          type: BottomNavigationBarType.fixed,
-          selectedFontSize: 11,
-          unselectedFontSize: 11,
-          elevation: 8,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.apartment_outlined),
-              activeIcon: Icon(Icons.apartment),
-              label: 'Catálogo',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border),
-              activeIcon: Icon(Icons.favorite),
-              label: 'Favoritos',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bolt_outlined),
-              activeIcon: Icon(Icons.bolt),
-              label: 'Rotinas',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.tune_outlined),
-              activeIcon: Icon(Icons.tune),
-              label: 'Ajustes',
-            ),
-          ],
+        child: NavigationBarTheme(
+          data: NavigationBarThemeData(
+            height: 62,
+            backgroundColor: AppColors.canvas,
+            indicatorColor: AppColors.surfaceElevated,
+            labelTextStyle: MaterialStateProperty.resolveWith((states) {
+              if (states.contains(MaterialState.selected)) {
+                return const TextStyle(color: AppColors.brandLight, fontSize: 11, fontWeight: FontWeight.bold);
+              }
+              return const TextStyle(color: AppColors.textDim, fontSize: 11);
+            }),
+            iconTheme: MaterialStateProperty.resolveWith((states) {
+              if (states.contains(MaterialState.selected)) {
+                return const IconThemeData(color: AppColors.brandLight, size: 22);
+              }
+              return const IconThemeData(color: AppColors.textDim, size: 20);
+            }),
+          ),
+          child: NavigationBar(
+            selectedIndex: currentIndex,
+            onDestinationSelected: (idx) => setState(() => currentIndex = idx),
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.home_work_outlined),
+                selectedIcon: Icon(Icons.home_work),
+                label: 'Catálogo',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.favorite_border),
+                selectedIcon: Icon(Icons.favorite),
+                label: 'Favoritos',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.sync_alt_outlined),
+                selectedIcon: Icon(Icons.sync_alt),
+                label: 'Rotinas',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.tune_outlined),
+                selectedIcon: Icon(Icons.tune),
+                label: 'Ajustes',
+              ),
+            ],
+          ),
         ),
       ),
     );
