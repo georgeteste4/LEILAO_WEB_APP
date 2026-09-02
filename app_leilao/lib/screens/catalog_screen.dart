@@ -337,16 +337,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     : viewMode == 'table'
                         ? PropertyTable(
                             imoveis: imoveis,
-                            favoritosHashes: favoritosHashes,
-                            onToggleFavorito: toggleFavorite,
-                            onTap: openDetail,
+                            onSelect: openDetail,
                           )
                         : viewMode == 'list'
                             ? PropertyList(
                                 imoveis: imoveis,
-                                favoritosHashes: favoritosHashes,
-                                onToggleFavorito: toggleFavorite,
-                                onTap: openDetail,
+                                onSelect: openDetail,
                               )
                             : ListView.builder(
                                 padding: const EdgeInsets.all(16),
