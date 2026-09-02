@@ -144,6 +144,21 @@ class DBHelper {
     ''');
 
     await _seedInitialData(db);
+    await _updateSpecificDrivers(db);
+  }
+
+  Future _updateSpecificDrivers(Database db) async {
+    try {
+      await db.execute("UPDATE fontes_dados SET driver = 'CaixaSource' WHERE slug = 'caixa'");
+      await db.execute("UPDATE fontes_dados SET driver = 'LeilaoImovelSource' WHERE slug = 'leilaoimovel'");
+      await db.execute("UPDATE fontes_dados SET driver = 'BancoDoBrasilSource' WHERE slug = 'bancodobrasil'");
+      await db.execute("UPDATE fontes_dados SET driver = 'ZukermanSource' WHERE slug = 'zukerman'");
+      await db.execute("UPDATE fontes_dados SET driver = 'SantanderSource' WHERE slug = 'santander'");
+      await db.execute("UPDATE fontes_dados SET driver = 'BradescoSource' WHERE slug = 'bradesco'");
+      await db.execute("UPDATE fontes_dados SET driver = 'BankSource' WHERE slug IN ('itau', 'bancointer', 'sicredi')");
+      await db.execute("UPDATE fontes_dados SET driver = 'SmartLeiloesCaixaSource' WHERE slug = 'smartleiloescaixa'");
+      await db.execute("UPDATE fontes_dados SET driver = 'GenericSource' WHERE slug IN ('megaleiloes', 'sodresantoro')");
+    } catch (_) {}
   }
 
   Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
@@ -194,7 +209,7 @@ class DBHelper {
         fBatch.insert('fontes_dados', {
           'nome': f['nome'],
           'slug': f['slug'],
-          'driver': f['driver'] ?? 'GenericSource',
+          'driver': f['driver_class'] ?? f['driver'] ?? 'GenericSource',
           'url_base': f['url_base'] ?? '',
           'descricao': f['descricao'] ?? '',
           'ativo': 1,
@@ -588,5 +603,20 @@ class DBHelper {
     await db.delete('favoritos');
     await db.delete('alertas_imoveis');
     await _seedInitialData(db);
+    await _updateSpecificDrivers(db);
+  }
+
+  Future _updateSpecificDrivers(Database db) async {
+    try {
+      await db.execute("UPDATE fontes_dados SET driver = 'CaixaSource' WHERE slug = 'caixa'");
+      await db.execute("UPDATE fontes_dados SET driver = 'LeilaoImovelSource' WHERE slug = 'leilaoimovel'");
+      await db.execute("UPDATE fontes_dados SET driver = 'BancoDoBrasilSource' WHERE slug = 'bancodobrasil'");
+      await db.execute("UPDATE fontes_dados SET driver = 'ZukermanSource' WHERE slug = 'zukerman'");
+      await db.execute("UPDATE fontes_dados SET driver = 'SantanderSource' WHERE slug = 'santander'");
+      await db.execute("UPDATE fontes_dados SET driver = 'BradescoSource' WHERE slug = 'bradesco'");
+      await db.execute("UPDATE fontes_dados SET driver = 'BankSource' WHERE slug IN ('itau', 'bancointer', 'sicredi')");
+      await db.execute("UPDATE fontes_dados SET driver = 'SmartLeiloesCaixaSource' WHERE slug = 'smartleiloescaixa'");
+      await db.execute("UPDATE fontes_dados SET driver = 'GenericSource' WHERE slug IN ('megaleiloes', 'sodresantoro')");
+    } catch (_) {}
   }
 }

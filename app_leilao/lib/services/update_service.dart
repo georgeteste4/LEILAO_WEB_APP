@@ -13,7 +13,7 @@ class UpdateInfo {
 }
 
 class UpdateService {
-  static const String currentVersion = '1.0.8';
+  static const String currentVersion = '1.0.9';
   static const String githubRepo = 'georgeteste4/LEILAO_WEB_APP';
 
   static Future<UpdateInfo?> checkUpdate() async {
