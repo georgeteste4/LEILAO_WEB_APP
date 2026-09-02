@@ -546,6 +546,16 @@ class DBHelper {
     return await db.delete('filtros_salvos', where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<int> toggleFiltro(int id, bool currentStatus) async {
+    final db = await instance.database;
+    return await db.update(
+      'filtros_salvos',
+      {'ativo': currentStatus ? 0 : 1},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   Future<List<LogCron>> getLogs() async {
     final db = await instance.database;
     final res = await db.rawQuery('''
@@ -606,17 +616,4 @@ class DBHelper {
     await _updateSpecificDrivers(db);
   }
 
-  Future _updateSpecificDrivers(Database db) async {
-    try {
-      await db.execute("UPDATE fontes_dados SET driver = 'CaixaSource' WHERE slug = 'caixa'");
-      await db.execute("UPDATE fontes_dados SET driver = 'LeilaoImovelSource' WHERE slug = 'leilaoimovel'");
-      await db.execute("UPDATE fontes_dados SET driver = 'BancoDoBrasilSource' WHERE slug = 'bancodobrasil'");
-      await db.execute("UPDATE fontes_dados SET driver = 'ZukermanSource' WHERE slug = 'zukerman'");
-      await db.execute("UPDATE fontes_dados SET driver = 'SantanderSource' WHERE slug = 'santander'");
-      await db.execute("UPDATE fontes_dados SET driver = 'BradescoSource' WHERE slug = 'bradesco'");
-      await db.execute("UPDATE fontes_dados SET driver = 'BankSource' WHERE slug IN ('itau', 'bancointer', 'sicredi')");
-      await db.execute("UPDATE fontes_dados SET driver = 'SmartLeiloesCaixaSource' WHERE slug = 'smartleiloescaixa'");
-      await db.execute("UPDATE fontes_dados SET driver = 'GenericSource' WHERE slug IN ('megaleiloes', 'sodresantoro')");
-    } catch (_) {}
-  }
 }
