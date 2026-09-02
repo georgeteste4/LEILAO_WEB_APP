@@ -8,16 +8,16 @@ import 'services/notification_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const LeilaoApp());
+  runApp(const GeoBuscaImoveisApp());
 }
 
-class LeilaoApp extends StatelessWidget {
-  const LeilaoApp({super.key});
+class GeoBuscaImoveisApp extends StatelessWidget {
+  const GeoBuscaImoveisApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Leilão de Imóveis',
+      title: 'Geo Busca Imóveis',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: AppColors.canvas,
@@ -53,7 +53,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   void initState() {
     super.initState();
-    // Verificar alertas ao iniciar o aplicativo
     NotificationService.checkAlerts();
   }
 
@@ -61,21 +60,43 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: screens[currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (idx) => setState(() => currentIndex = idx),
-        backgroundColor: AppColors.surface,
-        selectedItemColor: AppColors.brandLight,
-        unselectedItemColor: AppColors.textDim,
-        type: BottomNavigationBarType.fixed,
-        selectedFontSize: 11,
-        unselectedFontSize: 11,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Catálogo'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite_border), activeIcon: Icon(Icons.favorite), label: 'Favoritos'),
-          BottomNavigationBarItem(icon: Icon(Icons.flash_on_outlined), activeIcon: Icon(Icons.flash_on), label: 'Rotinas'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), activeIcon: Icon(Icons.settings), label: 'Configurações'),
-        ],
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: AppColors.border, width: 0.8)),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (idx) => setState(() => currentIndex = idx),
+          backgroundColor: AppColors.surface,
+          selectedItemColor: AppColors.brandLight,
+          unselectedItemColor: AppColors.textDim,
+          type: BottomNavigationBarType.fixed,
+          selectedFontSize: 11,
+          unselectedFontSize: 11,
+          elevation: 8,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.apartment_outlined),
+              activeIcon: Icon(Icons.apartment),
+              label: 'Catálogo',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite_border),
+              activeIcon: Icon(Icons.favorite),
+              label: 'Favoritos',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bolt_outlined),
+              activeIcon: Icon(Icons.bolt),
+              label: 'Rotinas',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.tune_outlined),
+              activeIcon: Icon(Icons.tune),
+              label: 'Ajustes',
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -140,15 +140,19 @@ class _CatalogScreenState extends State<CatalogScreen> {
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
-              child: const Text('L', style: TextStyle(color: AppColors.canvas, fontWeight: FontWeight.w900)),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(colors: [AppColors.brand, AppColors.brandLight]),
+                borderRadius: BorderRadius.circular(6),
+                boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 1))],
+              ),
+              child: const Text('i', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900, fontFamily: 'JetBrains Mono')),
             ),
             const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Leilão de Imóveis', style: TextStyle(color: AppColors.textMain, fontSize: 15, fontWeight: FontWeight.bold)),
+                const Text('Geo Busca Imóveis', style: TextStyle(color: AppColors.textMain, fontSize: 15, fontWeight: FontWeight.bold)),
                 Text(imoveis.length.toString() + ' no SQLite local', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
               ],
             ),

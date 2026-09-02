@@ -213,7 +213,7 @@ class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStat
       appBar: AppBar(
         backgroundColor: AppColors.canvas,
         elevation: 0,
-        title: const Text('Painel de Administração & Tarefas', style: TextStyle(color: AppColors.textMain, fontSize: 15, fontWeight: FontWeight.bold)),
+        title: const Text('Geo Busca — Tarefas & Scrapers', style: TextStyle(color: AppColors.textMain, fontSize: 15, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(icon: const Icon(Icons.refresh, color: AppColors.brandLight), onPressed: loadAllAdminData),
         ],
