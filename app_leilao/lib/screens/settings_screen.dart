@@ -27,7 +27,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (info == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Você já está na versão mais recente (v1.0.7)!')),
+        const SnackBar(content: Text('Você já está na versão mais recente (v1.0.8)!')),
       );
     }
   }
@@ -89,7 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(color: AppColors.surfaceElevated, borderRadius: BorderRadius.circular(4)),
-                      child: const Text('v1.0.7', style: TextStyle(color: AppColors.brandLight, fontFamily: 'JetBrains Mono', fontSize: 11, fontWeight: FontWeight.bold)),
+                      child: const Text('v1.0.8', style: TextStyle(color: AppColors.brandLight, fontFamily: 'JetBrains Mono', fontSize: 11, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
