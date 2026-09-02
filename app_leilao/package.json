@@ -7,8 +7,10 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "build:android": "eas build -p android --profile release"
+    "build:android": "eas build -p android --profile release",
+    "postinstall": "node ./scripts/ci-setup.js"
   },
+
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
     "clsx": "^2.1.1",
