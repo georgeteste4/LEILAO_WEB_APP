@@ -20,6 +20,18 @@ class _FonteFormModalState extends State<FonteFormModal> {
   String selectedDriver = 'GenericSource';
   bool ativo = true;
 
+  static const List<Map<String, String>> driversDisponiveis = [
+    {'class': 'CaixaSource', 'label': 'CaixaSource (Caixa Econômica - CSV Oficial)'},
+    {'class': 'LeilaoImovelSource', 'label': 'LeilaoImovelSource (Portal Leilão Imóvel)'},
+    {'class': 'BancoDoBrasilSource', 'label': 'BancoDoBrasilSource (Seu Imóvel BB)'},
+    {'class': 'ZukermanSource', 'label': 'ZukermanSource (Portal Zuk)'},
+    {'class': 'SantanderSource', 'label': 'SantanderSource (Banco Santander)'},
+    {'class': 'BradescoSource', 'label': 'BradescoSource (Banco Bradesco)'},
+    {'class': 'BankSource', 'label': 'BankSource (Itaú, Inter, Sicredi)'},
+    {'class': 'SmartLeiloesCaixaSource', 'label': 'SmartLeiloesCaixaSource (Smart Leilões API)'},
+    {'class': 'GenericSource', 'label': 'GenericSource (Driver Genérico de Fallback)'},
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -34,15 +46,18 @@ class _FonteFormModalState extends State<FonteFormModal> {
   }
 
   Future saveFonte() async {
-    if (nomeController.text.trim().isEmpty || slugController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preencha nome e slug!')));
+    final nome = nomeController.text.trim();
+    final slug = slugController.text.trim().toLowerCase().replaceAll(' ', '-');
+
+    if (nome.isEmpty || slug.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preencha o nome e o slug da fonte!')));
       return;
     }
 
     final f = FonteDados(
       id: widget.fonte?.id,
-      nome: nomeController.text.trim(),
-      slug: slugController.text.trim().toLowerCase().replaceAll(' ', '-'),
+      nome: nome,
+      slug: slug,
       driver: selectedDriver,
       urlBase: urlController.text.trim(),
       descricao: descController.text.trim(),
@@ -54,11 +69,16 @@ class _FonteFormModalState extends State<FonteFormModal> {
     await DBHelper.instance.saveFonte(f);
     if (mounted) {
       Navigator.pop(context, true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(widget.fonte != null ? 'Fonte atualizada com sucesso!' : 'Fonte conectada com sucesso!')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = widget.fonte != null;
+
     return Container(
       padding: EdgeInsets.only(
         left: 16,
@@ -83,7 +103,16 @@ class _FonteFormModalState extends State<FonteFormModal> {
                 decoration: BoxDecoration(color: AppColors.borderSubtle, borderRadius: BorderRadius.circular(2)),
               ),
             ),
-            Text(widget.fonte != null ? 'Editar Fonte de Dados' : 'Conectar Nova Fonte', style: const TextStyle(color: AppColors.textMain, fontSize: 16, fontWeight: FontWeight.bold)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  isEditing ? 'Editar Fonte de Dados' : 'Conectar Nova Fonte de Dados',
+                  style: const TextStyle(color: AppColors.textMain, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                IconButton(icon: const Icon(Icons.close, color: AppColors.textDim), onPressed: () => Navigator.pop(context)),
+              ],
+            ),
             const SizedBox(height: 14),
 
             _label('NOME DO PORTAL / FONTE *'),
@@ -110,20 +139,20 @@ class _FonteFormModalState extends State<FonteFormModal> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(6), border: Border.all(color: AppColors.border)),
-                        child: DropdownButton<String>(
-                          value: selectedDriver,
-                          dropdownColor: AppColors.surface,
-                          underline: const SizedBox(),
-                          isExpanded: true,
-                          style: const TextStyle(color: AppColors.textMain, fontSize: 12),
-                          items: const [
-                            DropdownMenuItem(value: 'GenericSource', child: Text('GenericSource')),
-                            DropdownMenuItem(value: 'LeilaoImovelSource', child: Text('LeilaoImovelSource')),
-                            DropdownMenuItem(value: 'CaixaSource', child: Text('CaixaSource')),
-                          ],
-                          onChanged: (val) {
-                            if (val != null) setState(() => selectedDriver = val);
-                          },
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: driversDisponiveis.any((d) => d['class'] == selectedDriver) ? selectedDriver : 'GenericSource',
+                            dropdownColor: AppColors.surface,
+                            isExpanded: true,
+                            style: const TextStyle(color: AppColors.textMain, fontSize: 12),
+                            items: driversDisponiveis.map((d) => DropdownMenuItem(
+                              value: d['class'],
+                              child: Text(d['class']!, style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 11)),
+                            )).toList(),
+                            onChanged: (val) {
+                              if (val != null) setState(() => selectedDriver = val);
+                            },
+                          ),
                         ),
                       ),
                     ],
@@ -137,25 +166,26 @@ class _FonteFormModalState extends State<FonteFormModal> {
             _input(urlController, 'https://www.portal.com.br'),
 
             const SizedBox(height: 10),
-            _label('DESCRIÇÃO'),
-            _input(descController, 'Foco em imóveis de bancos...'),
+            _label('DESCRIÇÃO / OBSERVAÇÕES'),
+            _input(descController, 'Foco em leilões judiciais e extrajudiciais...'),
 
             const SizedBox(height: 10),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Fonte Ativa para Captura', style: TextStyle(color: AppColors.textMain, fontSize: 12)),
+              title: const Text('Fonte Ativa para Captura Automática', style: TextStyle(color: AppColors.textMain, fontSize: 12)),
               value: ativo,
               activeColor: AppColors.brandLight,
               onChanged: (val) => setState(() => ativo = val),
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.brand),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.brand, padding: const EdgeInsets.symmetric(vertical: 12)),
                 onPressed: saveFonte,
-                child: const Text('Salvar Fonte de Dados', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                icon: const Icon(Icons.save, color: Colors.white, size: 16),
+                label: Text(isEditing ? 'Salvar Alterações da Fonte' : 'Cadastrar e Conectar Fonte', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -167,21 +197,22 @@ class _FonteFormModalState extends State<FonteFormModal> {
   Widget _label(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      child: Text(text, style: const TextStyle(color: AppColors.textDim, fontSize: 10, fontWeight: FontWeight.bold)),
+      child: Text(text, style: const TextStyle(color: AppColors.textDim, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
     );
   }
 
-  Widget _input(TextEditingController ctrl, String hint) {
-    return TextField(
-      controller: ctrl,
-      style: const TextStyle(color: AppColors.textMain, fontSize: 12),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: AppColors.textDim, fontSize: 12),
-        filled: true,
-        fillColor: AppColors.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: const BorderSide(color: AppColors.border)),
+  Widget _input(TextEditingController controller, String hint) {
+    return Container(
+      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(6), border: Border.all(color: AppColors.border)),
+      child: TextField(
+        controller: controller,
+        style: const TextStyle(color: AppColors.textMain, fontSize: 12),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(color: AppColors.textDim, fontSize: 12),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          border: InputBorder.none,
+        ),
       ),
     );
   }

@@ -160,15 +160,40 @@ class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStat
     }
   }
 
-  void openNewFonte() {
+  void openFonteModal({FonteDados? fonte}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => const FonteFormModal(),
+      builder: (ctx) => FonteFormModal(fonte: fonte),
     ).then((val) {
       if (val == true) loadAllAdminData();
     });
+  }
+
+  Future confirmDeleteFonte(FonteDados f) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text('Remover Fonte?'),
+        content: Text('Deseja realmente excluir a fonte de dados "' + f.nome + '" (' + f.slug + ')?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.discount),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Excluir', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && f.id != null) {
+      await DBHelper.instance.deleteFonte(f.id!);
+      await loadAllAdminData();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fonte de dados removida com sucesso!')));
+    }
   }
 
   void openNewToken() {
@@ -527,7 +552,7 @@ class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStat
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.brand, padding: const EdgeInsets.symmetric(horizontal: 10)),
-              onPressed: openNewFonte,
+              onPressed: () => openFonteModal(),
               icon: const Icon(Icons.add, size: 14, color: Colors.white),
               label: const Text('Conectar Fonte', style: TextStyle(color: Colors.white, fontSize: 11)),
             ),
@@ -554,6 +579,16 @@ class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStat
                         icon: const Icon(Icons.play_circle_outline, color: AppColors.successLight, size: 20),
                         tooltip: 'Testar Driver Específico',
                         onPressed: () => testFonteScraper(f),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined, color: AppColors.brandLight, size: 18),
+                        tooltip: 'Editar Fonte',
+                        onPressed: () => openFonteModal(fonte: f),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, color: AppColors.discountLight, size: 18),
+                        tooltip: 'Remover Fonte',
+                        onPressed: () => confirmDeleteFonte(f),
                       ),
                       Switch(
                         value: f.ativo,
