@@ -12,7 +12,7 @@ class PropertyDetailModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R$', decimalDigits: 0);
+    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: r'R$', decimalDigits: 0);
 
     return Container(
       padding: const EdgeInsets.all(16),

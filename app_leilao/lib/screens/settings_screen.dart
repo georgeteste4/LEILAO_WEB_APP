@@ -51,11 +51,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future syncFromGitHub() async {
     setState(() => syncingDb = true);
     try {
+      final res = await SyncService.syncFromGitHub();
       final novos = res['novos'];
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Base atualizada com sucesso! $novos novos imóveis.')),
       );
-
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: $e')));
     } finally {
