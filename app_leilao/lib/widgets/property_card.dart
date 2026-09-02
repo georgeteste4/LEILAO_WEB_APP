@@ -20,6 +20,8 @@ class PropertyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: r'R$', decimalDigits: 0);
+    final hasEncerramento = imovel.dataEncerramento != null && imovel.dataEncerramento!.trim().isNotEmpty;
+    final hasInclusao = imovel.dataInclusao != null && imovel.dataInclusao!.trim().isNotEmpty;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -162,6 +164,52 @@ class PropertyCard extends StatelessWidget {
                       ),
                     ],
                   ),
+
+                  // INFORMAÇÕES DE DATAS: ENCERRAMENTO E INCLUSÃO
+                  if (hasEncerramento || hasInclusao) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: hasEncerramento ? AppColors.warning.withOpacity(0.12) : AppColors.surfaceElevated,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                          color: hasEncerramento ? AppColors.warningLight.withOpacity(0.35) : AppColors.border,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            hasEncerramento ? Icons.alarm : Icons.calendar_today_outlined,
+                            color: hasEncerramento ? AppColors.warningLight : AppColors.textMuted,
+                            size: 13,
+                          ),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              hasEncerramento
+                                  ? 'Encerramento: ' + imovel.dataEncerramento!
+                                  : 'Inclusão: ' + imovel.dataInclusao!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: hasEncerramento ? AppColors.warningLight : AppColors.textMuted,
+                                fontFamily: 'JetBrains Mono',
+                                fontSize: 11,
+                                fontWeight: hasEncerramento ? FontWeight.bold : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                          if (hasEncerramento && hasInclusao)
+                            Text(
+                              'Inc: ' + imovel.dataInclusao!,
+                              style: const TextStyle(color: AppColors.textDim, fontSize: 10),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+
                   const SizedBox(height: 10),
                   const Divider(color: AppColors.border, height: 1),
                   const SizedBox(height: 8),

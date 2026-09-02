@@ -78,6 +78,8 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
   Widget build(BuildContext context) {
     final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: r'R$', decimalDigits: 0);
     final features = extractFeatures(widget.imovel);
+    final hasEncerramento = widget.imovel.dataEncerramento != null && widget.imovel.dataEncerramento!.trim().isNotEmpty;
+    final hasInclusao = widget.imovel.dataInclusao != null && widget.imovel.dataInclusao!.trim().isNotEmpty;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -162,49 +164,50 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
 
             // Título Principal
             Text(widget.imovel.titulo, style: const TextStyle(color: AppColors.textMain, fontSize: 16, fontWeight: FontWeight.w800, height: 1.3)),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
 
-            // BANNER DESTACADO: DATA DE ENCERRAMENTO DO LEILÃO
+            // BANNER DESTACADO: DATA DE ENCERRAMENTO DO LEILÃO (SEMPRE EXIBIDO QUANDO HOUVER)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: (widget.imovel.dataEncerramento != null && widget.imovel.dataEncerramento!.isNotEmpty)
-                    ? AppColors.warning.withOpacity(0.12)
-                    : AppColors.surface,
-                borderRadius: BorderRadius.circular(6),
+                color: hasEncerramento ? AppColors.warning.withOpacity(0.15) : AppColors.surface,
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: (widget.imovel.dataEncerramento != null && widget.imovel.dataEncerramento!.isNotEmpty)
-                      ? AppColors.warningLight.withOpacity(0.4)
-                      : AppColors.border,
+                  color: hasEncerramento ? AppColors.warningLight : AppColors.border,
+                  width: hasEncerramento ? 1.2 : 0.8,
                 ),
               ),
               child: Row(
                 children: [
                   Icon(
-                    Icons.alarm,
-                    color: (widget.imovel.dataEncerramento != null && widget.imovel.dataEncerramento!.isNotEmpty)
-                        ? AppColors.warningLight
-                        : AppColors.textDim,
-                    size: 18,
+                    hasEncerramento ? Icons.alarm_on : Icons.calendar_month_outlined,
+                    color: hasEncerramento ? AppColors.warningLight : AppColors.textDim,
+                    size: 22,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('DATA E HORA DE ENCERRAMENTO', style: TextStyle(color: AppColors.textDim, fontSize: 9, fontWeight: FontWeight.bold)),
+                        Text(
+                          hasEncerramento ? 'DATA DE ENCERRAMENTO DO LEILÃO' : 'CRONOGRAMA DO LEILÃO',
+                          style: TextStyle(
+                            color: hasEncerramento ? AppColors.warningLight : AppColors.textDim,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                         const SizedBox(height: 2),
                         Text(
-                          (widget.imovel.dataEncerramento != null && widget.imovel.dataEncerramento!.isNotEmpty)
+                          hasEncerramento
                               ? widget.imovel.dataEncerramento!
-                              : 'Consulte o cronograma no edital oficial',
+                              : 'Data de encerramento sob consulta no edital oficial',
                           style: TextStyle(
-                            color: (widget.imovel.dataEncerramento != null && widget.imovel.dataEncerramento!.isNotEmpty)
-                                ? AppColors.warningLight
-                                : AppColors.textMuted,
+                            color: hasEncerramento ? Colors.white : AppColors.textMuted,
                             fontFamily: 'JetBrains Mono',
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ],
@@ -316,18 +319,19 @@ class _PropertyDetailModalState extends State<PropertyDetailModal> {
 
             const SizedBox(height: 16),
 
-            // SEÇÃO: FICHA JURÍDICA E NOTARIAL
-            const Text('FICHA TÉCNICA E JURÍDICA', style: TextStyle(color: AppColors.textDim, fontSize: 11, fontWeight: FontWeight.bold)),
+            // SEÇÃO: FICHA JURÍDICA E DATAS
+            const Text('FICHA TÉCNICA, DATAS E JURÍDICO', style: TextStyle(color: AppColors.textDim, fontSize: 11, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
               child: Column(
                 children: [
+                  _infoRow('Data de Encerramento', hasEncerramento ? widget.imovel.dataEncerramento! : 'Consulte o Edital Oficial'),
+                  _infoRow('Data de Inclusão', hasInclusao ? widget.imovel.dataInclusao! : 'Recente no Sistema'),
                   _infoRow('Modalidade', widget.imovel.modalidade),
                   _infoRow('Leiloeiro / Agente', (widget.imovel.nomeLeiloeiro != null && widget.imovel.nomeLeiloeiro!.isNotEmpty) ? widget.imovel.nomeLeiloeiro! : 'Caixa / Leiloeiro Oficial'),
                   _infoRow('Nº da Matrícula', (widget.imovel.numeroMatricula != null && widget.imovel.numeroMatricula!.isNotEmpty) ? widget.imovel.numeroMatricula! : 'Disponível na Certidão de Matrícula'),
-                  _infoRow('Data de Inclusão', (widget.imovel.dataInclusao != null && widget.imovel.dataInclusao!.isNotEmpty) ? widget.imovel.dataInclusao! : 'Recente'),
                   _infoRow('Identificador (Hash)', widget.imovel.hashImovel.length > 12 ? widget.imovel.hashImovel.substring(0, 12) + '...' : widget.imovel.hashImovel),
                 ],
               ),

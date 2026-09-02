@@ -7,7 +7,11 @@ class PropertyList extends StatelessWidget {
   final List<Imovel> imoveis;
   final Function(Imovel) onSelect;
 
-  const PropertyList({super.key, required this.imoveis, required this.onSelect});
+  const PropertyList({
+    super.key,
+    required this.imoveis,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +23,10 @@ class PropertyList extends StatelessWidget {
       itemCount: imoveis.length,
       itemBuilder: (ctx, i) {
         final im = imoveis[i];
+        final hasEncerramento = im.dataEncerramento != null && im.dataEncerramento!.trim().isNotEmpty;
+
         return Container(
-          margin: const EdgeInsets.only(bottom: 8),
+          margin: const EdgeInsets.only(bottom: 6),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(8),
@@ -35,13 +41,32 @@ class PropertyList extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(color: AppColors.textMain, fontSize: 13, fontWeight: FontWeight.bold),
             ),
-            subtitle: Row(
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(im.fonteSlug.toUpperCase(), style: const TextStyle(color: AppColors.brandLight, fontSize: 10, fontWeight: FontWeight.bold)),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text('${im.cidade}/${im.uf}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Text(im.fonteSlug.toUpperCase(), style: const TextStyle(color: AppColors.brandLight, fontSize: 10, fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(im.cidade + '/' + im.uf, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                    ),
+                  ],
                 ),
+                if (hasEncerramento) ...[
+                  const SizedBox(height: 3),
+                  Row(
+                    children: [
+                      const Icon(Icons.alarm, color: AppColors.warningLight, size: 11),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Encerramento: ' + im.dataEncerramento!,
+                        style: const TextStyle(color: AppColors.warningLight, fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
             trailing: Column(
@@ -54,7 +79,7 @@ class PropertyList extends StatelessWidget {
                 ),
                 if (im.desconto != null && im.desconto! > 0)
                   Text(
-                    '-${im.desconto!.round()}%',
+                    '-' + im.desconto!.round().toString() + '%',
                     style: const TextStyle(color: AppColors.discountLight, fontFamily: 'JetBrains Mono', fontSize: 11, fontWeight: FontWeight.bold),
                   ),
               ],
