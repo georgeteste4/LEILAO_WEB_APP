@@ -217,6 +217,28 @@ class DBHelper {
         }, conflictAlgorithm: ConflictAlgorithm.ignore);
       }
       await filBatch.commit(noResult: true);
+
+      // Seed inicial do pool de chaves (Scrape.do & Firecrawl) se a tabela estiver vazia
+      final tokCountRes = await db.rawQuery('SELECT COUNT(*) as c FROM tokens_pool');
+      final tokCount = Sqflite.firstIntValue(tokCountRes) ?? 0;
+      if (tokCount == 0) {
+        final tokBatch = db.batch();
+        tokBatch.insert('tokens_pool', {
+          'provedor': 'scrape.do',
+          'token': '40a83d8791a8412a8eeeb57046f34b2e3b9b9532d8b',
+          'limite_mensal': 1000,
+          'requisicoes_usadas': 0,
+          'ativo': 1,
+        });
+        tokBatch.insert('tokens_pool', {
+          'provedor': 'firecrawl',
+          'token': 'fc-02bb7f91511144a4a550f149ff566c95',
+          'limite_mensal': 500,
+          'requisicoes_usadas': 0,
+          'ativo': 1,
+        });
+        await tokBatch.commit(noResult: true);
+      }
     } catch (e) {
       // Ignorar erros de seed duplicado
     }
@@ -514,6 +536,33 @@ class DBHelper {
       ORDER BY l.id DESC LIMIT 40
     ''');
     return res.map((e) => LogCron.fromMap(e)).toList();
+  }
+
+  Future clearLogs() async {
+    final db = await instance.database;
+    await db.delete('logs_cron');
+  }
+
+  Future ensureTokensSeeded() async {
+    final db = await instance.database;
+    final res = await db.rawQuery('SELECT COUNT(*) as c FROM tokens_pool');
+    final c = Sqflite.firstIntValue(res) ?? 0;
+    if (c == 0) {
+      await db.insert('tokens_pool', {
+        'provedor': 'scrape.do',
+        'token': '40a83d8791a8412a8eeeb57046f34b2e3b9b9532d8b',
+        'limite_mensal': 1000,
+        'requisicoes_usadas': 0,
+        'ativo': 1,
+      });
+      await db.insert('tokens_pool', {
+        'provedor': 'firecrawl',
+        'token': 'fc-02bb7f91511144a4a550f149ff566c95',
+        'limite_mensal': 500,
+        'requisicoes_usadas': 0,
+        'ativo': 1,
+      });
+    }
   }
 
   Future<int> insertLog(LogCron log) async {

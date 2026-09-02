@@ -79,6 +79,57 @@ class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStat
     }
   }
 
+  Future clearAllLogs() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text('Limpar Histórico de Logs?'),
+        content: const Text('Deseja realmente apagar todos os logs de execução registrados?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.discount),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Limpar Tudo', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await DBHelper.instance.clearLogs();
+      await loadAllAdminData();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Histórico de logs limpo com sucesso!')));
+    }
+  }
+
+  Future testRegisteredToken(TokenPool t) async {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Testando chave ' + t.tokenMascarado + '...')));
+    final res = await ScraperService.testarChave(t.provedor, t.token);
+    final success = res['success'] == true;
+    final msg = res['message'] ?? 'Resposta recebida';
+    final latency = res['latency_ms'] != null ? ' (' + res['latency_ms'].toString() + 'ms)' : '';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Row(
+          children: [
+            Icon(success ? Icons.check_circle : Icons.error, color: success ? AppColors.successLight : AppColors.discountLight),
+            const SizedBox(width: 8),
+            Text(success ? 'Chave Operacional' : 'Falha no Teste'),
+          ],
+        ),
+        content: Text(msg + latency, style: const TextStyle(fontSize: 13)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Fechar')),
+        ],
+      ),
+    );
+  }
+
   Future runAllRoutines() async {
     if (filtros.isEmpty) return;
     setState(() {
@@ -454,21 +505,57 @@ class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStat
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(t.provedor.toUpperCase(), style: const TextStyle(color: AppColors.brandLight, fontWeight: FontWeight.bold, fontSize: 12)),
-                    const SizedBox(height: 2),
-                    Text('Chave: ' + t.tokenMascarado, style: const TextStyle(color: AppColors.textMain, fontFamily: 'JetBrains Mono', fontSize: 11)),
-                    Text('Limite: ' + t.limiteMensal.toString() + ' req/mês', style: const TextStyle(color: AppColors.textDim, fontSize: 10)),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(color: AppColors.surfaceElevated, borderRadius: BorderRadius.circular(4)),
+                            child: Text(t.provedor.toUpperCase(), style: const TextStyle(color: AppColors.brandLight, fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold)),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(shape: BoxShape.circle, color: t.ativo ? AppColors.successLight : AppColors.discountLight),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(t.ativo ? 'Ativa' : 'Pausada', style: TextStyle(color: t.ativo ? AppColors.successLight : AppColors.discountLight, fontSize: 10)),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text('Chave: ' + t.tokenMascarado, style: const TextStyle(color: AppColors.textMain, fontFamily: 'JetBrains Mono', fontSize: 11)),
+                      Text('Limite: ' + t.limiteMensal.toString() + ' req/mês', style: const TextStyle(color: AppColors.textDim, fontSize: 10)),
+                    ],
+                  ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: AppColors.discountLight, size: 18),
-                  onPressed: () async {
-                    await DBHelper.instance.deleteToken(t.id!);
-                    loadAllAdminData();
-                  },
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.speed, color: AppColors.brandLight, size: 18),
+                      tooltip: 'Testar Conexão',
+                      onPressed: () => testRegisteredToken(t),
+                    ),
+                    Switch(
+                      value: t.ativo,
+                      activeColor: AppColors.brandLight,
+                      onChanged: (val) async {
+                        await DBHelper.instance.toggleToken(t.id!, t.ativo);
+                        loadAllAdminData();
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: AppColors.discountLight, size: 18),
+                      tooltip: 'Excluir Chave',
+                      onPressed: () async {
+                        await DBHelper.instance.deleteToken(t.id!);
+                        loadAllAdminData();
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -487,40 +574,81 @@ class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStat
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Histórico de Execuções de Rotina', style: TextStyle(color: AppColors.textMain, fontSize: 13, fontWeight: FontWeight.bold)),
-            TextButton(
-              onPressed: loadAllAdminData,
-              child: const Text('Atualizar', style: TextStyle(color: AppColors.brandLight, fontSize: 11)),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Histórico de Execuções de Rotina', style: TextStyle(color: AppColors.textMain, fontSize: 13, fontWeight: FontWeight.bold)),
+                Text(logs.length.toString() + ' execuções registradas', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+              ],
+            ),
+            Row(
+              children: [
+                if (logs.isNotEmpty)
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(side: const BorderSide(color: AppColors.discountLight), padding: const EdgeInsets.symmetric(horizontal: 8)),
+                    onPressed: clearAllLogs,
+                    icon: const Icon(Icons.delete_sweep, size: 14, color: AppColors.discountLight),
+                    label: const Text('Limpar', style: TextStyle(color: AppColors.discountLight, fontSize: 11)),
+                  ),
+                const SizedBox(width: 8),
+                TextButton(
+                  onPressed: loadAllAdminData,
+                  child: const Text('Atualizar', style: TextStyle(color: AppColors.brandLight, fontSize: 11)),
+                ),
+              ],
             ),
           ],
         ),
         const SizedBox(height: 8),
 
-        ...logs.map((l) => Container(
-          margin: const EdgeInsets.only(bottom: 6),
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(l.filtroNome, style: const TextStyle(color: AppColors.textMain, fontSize: 12, fontWeight: FontWeight.bold)),
-                  Text(l.status.toUpperCase(), style: TextStyle(color: l.status == 'sucesso' ? AppColors.successLight : AppColors.discountLight, fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold)),
+        if (logs.isEmpty)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                children: const [
+                  Icon(Icons.history_outlined, size: 48, color: AppColors.textDim),
+                  SizedBox(height: 8),
+                  Text('Nenhum log registrado ainda', style: TextStyle(color: AppColors.textMain, fontSize: 13, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 4),
+                  Text('Execute uma rotina de cron para registrar o histórico.', style: TextStyle(color: AppColors.textDim, fontSize: 11)),
                 ],
               ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('+' + l.novos.toString() + ' novos • ' + l.totalImoveis.toString() + ' total', style: const TextStyle(color: AppColors.brandLight, fontFamily: 'JetBrains Mono', fontSize: 11)),
-                  Text(l.tempoSegundos.toString() + 's', style: const TextStyle(color: AppColors.textDim, fontFamily: 'JetBrains Mono', fontSize: 11)),
-                ],
-              ),
-            ],
-          ),
-        )),
+            ),
+          )
+        else
+          ...logs.map((l) => Container(
+            margin: const EdgeInsets.only(bottom: 6),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(l.filtroNome, style: const TextStyle(color: AppColors.textMain, fontSize: 12, fontWeight: FontWeight.bold)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: l.status == 'sucesso' ? AppColors.success.withOpacity(0.2) : AppColors.discount.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(l.status.toUpperCase(), style: TextStyle(color: l.status == 'sucesso' ? AppColors.successLight : AppColors.discountLight, fontFamily: 'JetBrains Mono', fontSize: 9, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('+' + l.novos.toString() + ' novos • ' + l.totalImoveis.toString() + ' total processados', style: const TextStyle(color: AppColors.brandLight, fontFamily: 'JetBrains Mono', fontSize: 11)),
+                    Text(l.tempoSegundos.toString() + 's • ' + (l.executadoEm.length >= 16 ? l.executadoEm.substring(0, 16).replaceAll('T', ' ') : l.executadoEm), style: const TextStyle(color: AppColors.textDim, fontFamily: 'JetBrains Mono', fontSize: 10)),
+                  ],
+                ),
+              ],
+            ),
+          )),
       ],
     );
   }

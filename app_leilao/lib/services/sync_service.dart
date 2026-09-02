@@ -32,46 +32,93 @@ class SyncService {
     return {'total': list.length, 'novos': novos, 'atualizados': atualizados};
   }
 
-  static Future<Map<String, dynamic>> executeRoutine(FiltroSalvo f, {Function(int, int)? onProgress}) async {
+  /// Executa a rotina para todas as fontes configuradas no filtro (Caixa, Leilão Imóvel, etc.)
+  static Future<Map<String, dynamic>> executeRoutine(FiltroSalvo f, {Function(String status, int novos)? onProgress}) async {
     final stopwatch = Stopwatch()..start();
     int novos = 0;
     int atualizados = 0;
-    int totalPaginas = 1;
+    int totalProcessados = 0;
 
-    for (int p = 1; p <= 2; p++) {
-      final imoveis = await ScraperService.buscarLeilaoImovel(
-        uf: f.uf,
-        municipio: f.municipio,
-        tipo: f.tipo,
-        pagina: p,
-      );
+    // Determinar fontes a executar
+    List<String> fontes = f.fontesList;
+    if (fontes.isEmpty) {
+      fontes = ['caixa', 'leilaoimovel'];
+    }
 
-      for (var im in imoveis) {
-        final res = await DBHelper.instance.upsertImovel(im);
-        if (res == 'inserted') novos++;
-        if (res == 'updated') atualizados++;
+    for (final fonteSlug in fontes) {
+      if (onProgress != null) {
+        onProgress('Iniciando extração na fonte: ' + fonteSlug.toUpperCase(), novos);
       }
 
-      totalPaginas = p;
-      if (onProgress != null) onProgress(p, novos);
-      if (imoveis.isEmpty) break;
+      List<Imovel> loteFonte = [];
+
+      if (fonteSlug == 'caixa') {
+        loteFonte = await ScraperService.scrapeCaixa(
+          uf: f.uf,
+          municipio: f.municipio,
+          tipo: f.tipo,
+          termoBusca: f.termoBusca,
+          dataFinal: f.dataFinalLeilao,
+          filtroId: f.id,
+        );
+      } else if (fonteSlug == 'leilaoimovel') {
+        for (int p = 1; p <= 2; p++) {
+          final pagItems = await ScraperService.scrapeLeilaoImovel(
+            uf: f.uf,
+            municipio: f.municipio,
+            tipo: f.tipo,
+            pagina: p,
+            termoBusca: f.termoBusca,
+            dataFinal: f.dataFinalLeilao,
+            filtroId: f.id,
+          );
+          loteFonte.addAll(pagItems);
+          if (pagItems.isEmpty) break;
+        }
+      } else {
+        loteFonte = await ScraperService.scrapePortalGenerico(
+          slug: fonteSlug,
+          nomeFonte: fonteSlug,
+          uf: f.uf,
+          municipio: f.municipio,
+          tipo: f.tipo,
+          filtroId: f.id,
+        );
+      }
+
+      for (var im in loteFonte) {
+        final res = await DBHelper.instance.upsertImovel(im, filtroId: f.id);
+        if (res == 'inserted') novos++;
+        if (res == 'updated') atualizados++;
+        totalProcessados++;
+      }
+
+      if (onProgress != null) {
+        onProgress('Fonte ' + fonteSlug.toUpperCase() + ' concluída: ' + loteFonte.length.toString() + ' imóveis analisados', novos);
+      }
     }
 
     stopwatch.stop();
     final tempo = stopwatch.elapsed.inSeconds;
 
+    // Gravar log institucional
     await DBHelper.instance.insertLog(LogCron(
       filtroId: f.id,
       filtroNome: f.nome,
       status: 'sucesso',
-      totalPaginas: totalPaginas,
-      totalImoveis: novos + atualizados,
+      totalPaginas: fontes.length,
+      totalImoveis: totalProcessados,
       novos: novos,
       atualizados: atualizados,
       tempoSegundos: tempo,
       executadoEm: DateTime.now().toIso8601String(),
     ));
 
-    return {'novos': novos, 'atualizados': atualizados, 'tempo': tempo};
+    return {
+      'novos': novos,
+      'atualizados': atualizados,
+      'total': totalProcessados,
+      'tempo': tempo,
+    };
   }
 }
