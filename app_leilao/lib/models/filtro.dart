@@ -4,7 +4,9 @@ class FiltroSalvo {
   final String uf;
   final String? municipio;
   final String? tipo;
+  final String? dataFinal;
   final String? termoBusca;
+  final String? fontesSlugs;
   final bool ativo;
 
   FiltroSalvo({
@@ -13,7 +15,9 @@ class FiltroSalvo {
     required this.uf,
     this.municipio,
     this.tipo,
+    this.dataFinal,
     this.termoBusca,
+    this.fontesSlugs,
     this.ativo = true,
   });
 
@@ -24,7 +28,9 @@ class FiltroSalvo {
       uf: (map['uf'] ?? 'MA').toString().toUpperCase(),
       municipio: map['municipio'],
       tipo: map['tipo'],
+      dataFinal: map['data_final'],
       termoBusca: map['termo_busca'],
+      fontesSlugs: map['fontes_slugs'],
       ativo: (map['ativo'] == 1 || map['ativo'] == true),
     );
   }
@@ -36,7 +42,9 @@ class FiltroSalvo {
       'uf': uf,
       'municipio': municipio,
       'tipo': tipo,
+      'data_final': dataFinal,
       'termo_busca': termoBusca,
+      'fontes_slugs': fontesSlugs,
       'ativo': ativo ? 1 : 0,
     };
   }

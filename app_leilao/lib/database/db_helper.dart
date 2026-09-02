@@ -4,6 +4,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/imovel.dart';
 import '../models/filtro.dart';
+import '../models/fonte_dados.dart';
+import '../models/token_pool.dart';
 import '../models/log_cron.dart';
 import '../models/alerta_imovel.dart';
 
@@ -25,7 +27,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
@@ -69,7 +71,36 @@ class DBHelper {
         uf TEXT NOT NULL,
         municipio TEXT,
         tipo TEXT,
+        data_final TEXT,
         termo_busca TEXT,
+        fontes_slugs TEXT,
+        ativo INTEGER DEFAULT 1,
+        criado_em TEXT DEFAULT CURRENT_TIMESTAMP
+      );
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS fontes_dados (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        slug TEXT UNIQUE NOT NULL,
+        driver TEXT NOT NULL,
+        url_base TEXT NOT NULL,
+        descricao TEXT,
+        ativo INTEGER DEFAULT 1,
+        total_coletados INTEGER DEFAULT 0,
+        ultima_coleta TEXT,
+        criado_em TEXT DEFAULT CURRENT_TIMESTAMP
+      );
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS tokens_pool (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        provedor TEXT NOT NULL,
+        token TEXT NOT NULL,
+        limite_mensal INTEGER DEFAULT 1000,
+        requisicoes_usadas INTEGER DEFAULT 0,
         ativo INTEGER DEFAULT 1,
         criado_em TEXT DEFAULT CURRENT_TIMESTAMP
       );
@@ -89,17 +120,6 @@ class DBHelper {
       );
     ''');
 
-    await _createFavoritesAndAlertsTables(db);
-    await _seedInitialData(db);
-  }
-
-  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 2) {
-      await _createFavoritesAndAlertsTables(db);
-    }
-  }
-
-  Future _createFavoritesAndAlertsTables(Database db) async {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS favoritos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -122,13 +142,44 @@ class DBHelper {
         criado_em TEXT DEFAULT CURRENT_TIMESTAMP
       );
     ''');
+
+    await _seedInitialData(db);
+  }
+
+  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 3) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS fontes_dados (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          nome TEXT NOT NULL,
+          slug TEXT UNIQUE NOT NULL,
+          driver TEXT NOT NULL,
+          url_base TEXT NOT NULL,
+          descricao TEXT,
+          ativo INTEGER DEFAULT 1,
+          total_coletados INTEGER DEFAULT 0,
+          ultima_coleta TEXT,
+          criado_em TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+      ''');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS tokens_pool (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          provedor TEXT NOT NULL,
+          token TEXT NOT NULL,
+          limite_mensal INTEGER DEFAULT 1000,
+          requisicoes_usadas INTEGER DEFAULT 0,
+          ativo INTEGER DEFAULT 1,
+          criado_em TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+      ''');
+    }
   }
 
   Future _seedInitialData(Database db) async {
     try {
       final String seedJson = await rootBundle.loadString('assets/seed_imoveis.json');
       final List<dynamic> list = jsonDecode(seedJson);
-
       final batch = db.batch();
       for (var item in list) {
         final imovel = Imovel.fromMap(item as Map<String, dynamic>);
@@ -136,11 +187,27 @@ class DBHelper {
       }
       await batch.commit(noResult: true);
 
-      final String filtrosJson = await rootBundle.loadString('assets/seed_filtros.json');
-      final List<dynamic> fList = jsonDecode(filtrosJson);
+      final String fJson = await rootBundle.loadString('assets/seed_fontes.json');
+      final List<dynamic> fontesList = jsonDecode(fJson);
       final fBatch = db.batch();
-      for (var f in fList) {
-        fBatch.insert('filtros_salvos', {
+      for (var f in fontesList) {
+        fBatch.insert('fontes_dados', {
+          'nome': f['nome'],
+          'slug': f['slug'],
+          'driver': f['driver'] ?? 'GenericSource',
+          'url_base': f['url_base'] ?? '',
+          'descricao': f['descricao'] ?? '',
+          'ativo': 1,
+          'total_coletados': f['total_coletados'] ?? 0,
+        }, conflictAlgorithm: ConflictAlgorithm.ignore);
+      }
+      await fBatch.commit(noResult: true);
+
+      final String filtrosJson = await rootBundle.loadString('assets/seed_filtros.json');
+      final List<dynamic> filList = jsonDecode(filtrosJson);
+      final filBatch = db.batch();
+      for (var f in filList) {
+        filBatch.insert('filtros_salvos', {
           'nome': f['nome'],
           'uf': f['uf'],
           'municipio': f['municipio'],
@@ -149,10 +216,98 @@ class DBHelper {
           'ativo': 1
         }, conflictAlgorithm: ConflictAlgorithm.ignore);
       }
-      await fBatch.commit(noResult: true);
+      await filBatch.commit(noResult: true);
     } catch (e) {
       // Ignorar erros de seed duplicado
     }
+  }
+
+  // ==========================================
+  // DASHBOARD STATS (IGUAL AO ADMIN.HTML)
+  // ==========================================
+  Future<Map<String, dynamic>> getDashboardStats() async {
+    final db = await instance.database;
+    final resImoveis = await db.rawQuery('SELECT COUNT(*) as c FROM imoveis');
+    final totalImoveis = Sqflite.firstIntValue(resImoveis) ?? 0;
+
+    final resFiltros = await db.rawQuery('SELECT COUNT(*) as c FROM filtros_salvos WHERE ativo = 1');
+    final totalFiltros = Sqflite.firstIntValue(resFiltros) ?? 0;
+
+    final resExecucoes = await db.rawQuery('SELECT COUNT(*) as c FROM logs_cron');
+    final totalExecucoes = Sqflite.firstIntValue(resExecucoes) ?? 0;
+
+    final resUltima = await db.rawQuery('SELECT executado_em FROM logs_cron ORDER BY id DESC LIMIT 1');
+    String ultimaSync = '-';
+    if (resUltima.isNotEmpty && resUltima.first['executado_em'] != null) {
+      ultimaSync = resUltima.first['executado_em'].toString();
+    }
+
+    return {
+      'total_imoveis': totalImoveis,
+      'total_filtros': totalFiltros,
+      'total_execucoes': totalExecucoes,
+      'ultima_sync': ultimaSync,
+    };
+  }
+
+  // ==========================================
+  // GESTÃO DE FONTES DE DADOS
+  // ==========================================
+  Future<List<FonteDados>> getFontes() async {
+    final db = await instance.database;
+    final res = await db.query('fontes_dados', orderBy: 'id ASC');
+    return res.map((e) => FonteDados.fromMap(e)).toList();
+  }
+
+  Future<int> saveFonte(FonteDados f) async {
+    final db = await instance.database;
+    if (f.id != null) {
+      return await db.update('fontes_dados', f.toMap(), where: 'id = ?', whereArgs: [f.id]);
+    } else {
+      return await db.insert('fontes_dados', f.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+  }
+
+  Future<bool> toggleFonte(int id, bool currentStatus) async {
+    final db = await instance.database;
+    final nextStatus = currentStatus ? 0 : 1;
+    await db.update('fontes_dados', {'ativo': nextStatus}, where: 'id = ?', whereArgs: [id]);
+    return nextStatus == 1;
+  }
+
+  Future<int> deleteFonte(int id) async {
+    final db = await instance.database;
+    return await db.delete('fontes_dados', where: 'id = ?', whereArgs: [id]);
+  }
+
+  // ==========================================
+  // GESTÃO DE CHAVES / TOKENS
+  // ==========================================
+  Future<List<TokenPool>> getTokens() async {
+    final db = await instance.database;
+    final res = await db.query('tokens_pool', orderBy: 'id DESC');
+    return res.map((e) => TokenPool.fromMap(e)).toList();
+  }
+
+  Future<int> saveToken(TokenPool t) async {
+    final db = await instance.database;
+    if (t.id != null) {
+      return await db.update('tokens_pool', t.toMap(), where: 'id = ?', whereArgs: [t.id]);
+    } else {
+      return await db.insert('tokens_pool', t.toMap());
+    }
+  }
+
+  Future<bool> toggleToken(int id, bool currentStatus) async {
+    final db = await instance.database;
+    final nextStatus = currentStatus ? 0 : 1;
+    await db.update('tokens_pool', {'ativo': nextStatus}, where: 'id = ?', whereArgs: [id]);
+    return nextStatus == 1;
+  }
+
+  Future<int> deleteToken(int id) async {
+    final db = await instance.database;
+    return await db.delete('tokens_pool', where: 'id = ?', whereArgs: [id]);
   }
 
   // ==========================================
@@ -233,6 +388,7 @@ class DBHelper {
     List<String>? municipios,
     String? tipo,
     String? fonte,
+    String? dataFinal,
     String? busca,
     bool apenasFavoritos = false,
     String ordem = 'desconto_desc',
@@ -256,6 +412,11 @@ class DBHelper {
       whereArgs.add('%' + tipo + '%');
     }
 
+    if (dataFinal != null && dataFinal.isNotEmpty) {
+      whereClauses.add("(data_encerramento IS NOT NULL AND data_encerramento <= ?)");
+      whereArgs.add(dataFinal);
+    }
+
     if (municipios != null && municipios.isNotEmpty) {
       final mClauses = municipios.map((_) => "cidade LIKE ?").join(" OR ");
       whereClauses.add("(" + mClauses + ")");
@@ -276,6 +437,7 @@ class DBHelper {
       case 'valor_asc': orderBy = 'COALESCE(valor_leilao, 999999999) ASC, id DESC'; break;
       case 'valor_desc': orderBy = 'COALESCE(valor_leilao, 0) DESC, id DESC'; break;
       case 'avaliacao_desc': orderBy = 'COALESCE(valor_avaliacao, 0) DESC, id DESC'; break;
+      case 'encerramento_asc': orderBy = 'data_encerramento ASC, id DESC'; break;
       case 'recentes': orderBy = 'id DESC'; break;
     }
 
@@ -331,7 +493,11 @@ class DBHelper {
 
   Future<int> insertFiltro(FiltroSalvo f) async {
     final db = await instance.database;
-    return await db.insert('filtros_salvos', f.toMap());
+    if (f.id != null) {
+      return await db.update('filtros_salvos', f.toMap(), where: 'id = ?', whereArgs: [f.id]);
+    } else {
+      return await db.insert('filtros_salvos', f.toMap());
+    }
   }
 
   Future<int> deleteFiltro(int id) async {
@@ -345,7 +511,7 @@ class DBHelper {
       SELECT l.*, COALESCE(f.nome, 'Rotina Manual') as filtro_nome
       FROM logs_cron l
       LEFT JOIN filtros_salvos f ON f.id = l.filtro_id
-      ORDER BY l.id DESC LIMIT 30
+      ORDER BY l.id DESC LIMIT 40
     ''');
     return res.map((e) => LogCron.fromMap(e)).toList();
   }
