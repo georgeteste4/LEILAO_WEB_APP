@@ -489,19 +489,23 @@ class DBHelper {
     return Sqflite.firstIntValue(res) ?? 0;
   }
 
-  Future<String> upsertImovel(Imovel imovel) async {
+  Future<String> upsertImovel(Imovel imovel, {int? filtroId}) async {
     final db = await instance.database;
     final hash = imovel.hashImovel.isNotEmpty
         ? imovel.hashImovel
         : 'hash_' + imovel.linkOriginal.hashCode.abs().toString();
 
+    final map = imovel.toMap();
+    map['hash_imovel'] = hash;
+    if (filtroId != null) {
+      map['filtro_id'] = filtroId;
+    }
+
     final existing = await db.query('imoveis', where: 'hash_imovel = ?', whereArgs: [hash], limit: 1);
     if (existing.isNotEmpty) {
-      await db.update('imoveis', imovel.toMap(), where: 'hash_imovel = ?', whereArgs: [hash]);
+      await db.update('imoveis', map, where: 'hash_imovel = ?', whereArgs: [hash]);
       return 'updated';
     } else {
-      final map = imovel.toMap();
-      map['hash_imovel'] = hash;
       await db.insert('imoveis', map);
       return 'inserted';
     }

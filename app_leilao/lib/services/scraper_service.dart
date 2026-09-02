@@ -5,11 +5,10 @@ import '../models/imovel.dart';
 import '../models/token_pool.dart';
 
 class ScraperService {
-  // Provedores padrão caso o banco esteja sem tokens
   static const String defaultScrapeDo = '40a83d8791a8412a8eeeb57046f34b2e3b9b9532d8b';
   static const String defaultFirecrawl = 'fc-02bb7f91511144a4a550f149ff566c95';
 
-  /// Busca conteúdo HTML ou JSON através do pool de tokens de scraping (Scrape.do / Firecrawl)
+  /// Busca conteúdo através do pool de tokens de scraping (Scrape.do / Firecrawl)
   static Future<String?> fetchViaProxy(String targetUrl) async {
     await DBHelper.instance.ensureTokensSeeded();
     final tokens = await DBHelper.instance.getTokens();
@@ -28,9 +27,7 @@ class ScraperService {
         if (res.statusCode == 200 && res.body.length > 500) {
           return res.body;
         }
-      } catch (e) {
-        // Continuar para o próximo token
-      }
+      } catch (_) {}
     }
 
     // 2. Tentar com tokens do Firecrawl
@@ -59,12 +56,10 @@ class ScraperService {
             return data['data']['html'] ?? data['data']['markdown'] ?? '';
           }
         }
-      } catch (e) {
-        // Continuar para o próximo
-      }
+      } catch (_) {}
     }
 
-    // 3. Fallback: Requisição direta (funciona para fontes sem proteção pesada como Caixa)
+    // 3. Fallback direto
     try {
       final res = await http.get(
         Uri.parse(targetUrl),
@@ -77,14 +72,12 @@ class ScraperService {
       if (res.statusCode == 200) {
         return res.body;
       }
-    } catch (e) {
-      // Falha total
-    }
+    } catch (_) {}
 
     return null;
   }
 
-  /// Driver de Extração da Caixa Econômica Federal (Fonte Oficial Caixa)
+  /// Driver Caixa Econômica Federal (Base Oficial CSV)
   static Future<List<Imovel>> scrapeCaixa({
     required String uf,
     String? municipio,
@@ -107,11 +100,9 @@ class ScraperService {
         return resultado;
       }
 
-      // Decodificar em Latin1 (ISO-8859-1) que é o charset padrão dos CSVs da Caixa
       final csvText = latin1.decode(res.bodyBytes);
       final lines = csvText.split('\n');
 
-      // Pular as 2 primeiras linhas (cabeçalhos institucionais)
       for (int i = 2; i < lines.length; i++) {
         final line = lines[i].trim();
         if (line.isEmpty) continue;
@@ -131,7 +122,6 @@ class ScraperService {
         final itemModalidade = cols.length > 10 ? cols[10].trim() : 'Venda Direta Caixa';
         final itemLink = cols.length > 11 ? cols[11].trim() : 'https://venda-imoveis.caixa.gov.br/sistema/detalhe-imovel.asp?hdnimovel=' + numImovel;
 
-        // Filtro de Município
         if (municipio != null && municipio.trim().isNotEmpty) {
           final targetMun = municipio.trim().toLowerCase();
           if (!itemCidade.toLowerCase().contains(targetMun) && !targetMun.contains(itemCidade.toLowerCase())) {
@@ -139,7 +129,6 @@ class ScraperService {
           }
         }
 
-        // Filtro de Tipo
         if (tipo != null && tipo.trim().isNotEmpty) {
           final targetTipo = tipo.trim().toLowerCase();
           if (!itemDescricao.toLowerCase().contains(targetTipo) && !itemModalidade.toLowerCase().contains(targetTipo)) {
@@ -147,7 +136,6 @@ class ScraperService {
           }
         }
 
-        // Filtro de Termo de Busca
         if (termoBusca != null && termoBusca.trim().isNotEmpty) {
           final targetTermo = termoBusca.trim().toLowerCase();
           final fullText = (itemCidade + ' ' + itemBairro + ' ' + itemEndereco + ' ' + itemDescricao + ' ' + numImovel).toLowerCase();
@@ -165,7 +153,6 @@ class ScraperService {
         final valAvaliacao = parseVal(itemAvalStr);
         final desc = double.tryParse(itemDescStr.replaceAll(',', '.').trim());
 
-        // Identificar tipo principal do imóvel
         String imTipo = 'Imóvel';
         final dLower = itemDescricao.toLowerCase();
         if (dLower.contains('casa')) imTipo = 'Casa';
@@ -203,14 +190,12 @@ class ScraperService {
           status: 'ativo',
         ));
       }
-    } catch (e) {
-      print('Erro ao raspar Caixa: $e');
-    }
+    } catch (_) {}
 
     return resultado;
   }
 
-  /// Driver de Extração do Portal Leilão Imóvel (via Proxy Scrape.do / Firecrawl)
+  /// Driver Portal Leilão Imóvel (via Proxy Scrape.do / Firecrawl)
   static Future<List<Imovel>> scrapeLeilaoImovel({
     required String uf,
     String? municipio,
@@ -247,7 +232,7 @@ class ScraperService {
     }
 
     try {
-      final linkMatches = RegExp(r'<a[^>]*href=["\']([^"\']*/imovel/[^"\']*)["\'][^>]*>(.*?)</a>', dotAll: true).allMatches(html);
+      final linkMatches = RegExp(r"""<a[^>]*href=["']([^"']*/imovel/[^"']*)["'][^>]*>(.*?)</a>""", dotAll: true).allMatches(html);
       final Map<String, Map<String, dynamic>> imoveisMap = {};
 
       for (final m in linkMatches) {
@@ -257,8 +242,7 @@ class ScraperService {
 
         final precos = RegExp(r'R\$\s*([\d\.,]+)').allMatches(text).map((p) => p.group(1)!).toList();
 
-        // Extrair imagem
-        final imgMatch = RegExp(r'src=["\']([^"\']*image\.leilaoimovel[^"\']*)["\']').firstMatch(content);
+        final imgMatch = RegExp(r"""src=["']([^"']*image\.leilaoimovel[^"']*)["']""").firstMatch(content);
         if (imgMatch != null && !imoveisMap.containsKey(link)) {
           imoveisMap.putIfAbsent(link, () => {})['imagem'] = imgMatch.group(1)!;
         }
@@ -285,7 +269,6 @@ class ScraperService {
             item['desconto'] = double.tryParse(descMatch.group(1)!);
           }
 
-          // Limpar título e endereço do bloco de texto
           String cleanText = text.replaceAll(RegExp(r'R\$\s*[\d\.,]+'), '');
           cleanText = cleanText.replaceAll(RegExp(r'\d+%\s*(&nbsp;)?'), '').trim();
 
@@ -298,7 +281,6 @@ class ScraperService {
             item['endereco'] = '';
           }
 
-          // Tentar extrair data de encerramento
           final dateMatch = RegExp(r'(\d{2}/\d{2}/\d{4}(\s+\d{2}:\d{2})?)').firstMatch(text);
           if (dateMatch != null) {
             item['data_encerramento'] = dateMatch.group(1);
@@ -339,14 +321,12 @@ class ScraperService {
           status: 'ativo',
         ));
       }
-    } catch (e) {
-      print('Erro ao processar HTML do Leilão Imóvel: $e');
-    }
+    } catch (_) {}
 
     return resultado;
   }
 
-  /// Driver de Extração de Outros Portais (Zukerman, BB, Santander, Bradesco)
+  /// Driver Genérico para Outros Portais
   static Future<List<Imovel>> scrapePortalGenerico({
     required String slug,
     required String nomeFonte,
@@ -355,11 +335,10 @@ class ScraperService {
     String? tipo,
     int? filtroId,
   }) async {
-    // Busca via proxy ou fallback inteligente
     return [];
   }
 
-  /// Teste de Chave de API em Tempo Real (Scrape.do & Firecrawl)
+  /// Teste de Chave em Tempo Real
   static Future<Map<String, dynamic>> testarChave(String provedor, String token) async {
     final sw = Stopwatch()..start();
     final pLower = provedor.toLowerCase().trim();
@@ -381,7 +360,7 @@ class ScraperService {
         } else {
           return {
             'success': false,
-            'message': 'Falha na validação Scrape.do (HTTP ' + res.statusCode.toString() + '). Verifique os créditos.',
+            'message': 'Falha na validação Scrape.do (HTTP ' + res.statusCode.toString() + ').',
             'latency_ms': sw.elapsedMilliseconds,
             'http_code': res.statusCode,
           };

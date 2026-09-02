@@ -12,7 +12,7 @@ class SyncService {
   static Future<Map<String, int>> syncFromGitHub({Function(int, int)? onProgress}) async {
     final response = await http.get(Uri.parse(githubSeedUrl));
     if (response.statusCode != 200) {
-      throw Exception('Falha ao baixar dados do GitHub: HTTP ${response.statusCode}');
+      throw Exception('Falha ao baixar dados do GitHub: HTTP ' + response.statusCode.toString());
     }
 
     final List<dynamic> list = jsonDecode(response.body);
@@ -32,14 +32,13 @@ class SyncService {
     return {'total': list.length, 'novos': novos, 'atualizados': atualizados};
   }
 
-  /// Executa a rotina para todas as fontes configuradas no filtro (Caixa, Leilão Imóvel, etc.)
+  /// Executa a rotina para todas as fontes configuradas no filtro
   static Future<Map<String, dynamic>> executeRoutine(FiltroSalvo f, {Function(String status, int novos)? onProgress}) async {
     final stopwatch = Stopwatch()..start();
     int novos = 0;
     int atualizados = 0;
     int totalProcessados = 0;
 
-    // Determinar fontes a executar
     List<String> fontes = f.fontesList;
     if (fontes.isEmpty) {
       fontes = ['caixa', 'leilaoimovel'];
@@ -47,7 +46,7 @@ class SyncService {
 
     for (final fonteSlug in fontes) {
       if (onProgress != null) {
-        onProgress('Iniciando extração na fonte: ' + fonteSlug.toUpperCase(), novos);
+        onProgress('Extraindo na fonte: ' + fonteSlug.toUpperCase(), novos);
       }
 
       List<Imovel> loteFonte = [];
@@ -94,14 +93,13 @@ class SyncService {
       }
 
       if (onProgress != null) {
-        onProgress('Fonte ' + fonteSlug.toUpperCase() + ' concluída: ' + loteFonte.length.toString() + ' imóveis analisados', novos);
+        onProgress('Fonte ' + fonteSlug.toUpperCase() + ': ' + loteFonte.length.toString() + ' imóveis analisados', novos);
       }
     }
 
     stopwatch.stop();
     final tempo = stopwatch.elapsed.inSeconds;
 
-    // Gravar log institucional
     await DBHelper.instance.insertLog(LogCron(
       filtroId: f.id,
       filtroNome: f.nome,

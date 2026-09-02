@@ -21,6 +21,15 @@ class FiltroSalvo {
     this.ativo = true,
   });
 
+  String? get dataFinalLeilao => dataFinal;
+
+  List<String> get fontesList {
+    if (fontesSlugs == null || fontesSlugs!.trim().isEmpty) {
+      return ['caixa', 'leilaoimovel'];
+    }
+    return fontesSlugs!.split(',').map((s) => s.trim().toLowerCase()).where((s) => s.isNotEmpty).toList();
+  }
+
   factory FiltroSalvo.fromMap(Map<String, dynamic> map) {
     return FiltroSalvo(
       id: map['id'],
@@ -28,9 +37,9 @@ class FiltroSalvo {
       uf: (map['uf'] ?? 'MA').toString().toUpperCase(),
       municipio: map['municipio'],
       tipo: map['tipo'],
-      dataFinal: map['data_final'],
+      dataFinal: map['data_final'] ?? map['data_final_leilao'],
       termoBusca: map['termo_busca'],
-      fontesSlugs: map['fontes_slugs'],
+      fontesSlugs: map['fontes_slugs'] ?? map['fontes'],
       ativo: (map['ativo'] == 1 || map['ativo'] == true),
     );
   }

@@ -1,3 +1,4 @@
+import '../services/scraper_service.dart';
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../database/db_helper.dart';
