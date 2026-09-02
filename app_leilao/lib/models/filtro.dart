@@ -21,7 +21,7 @@ class FiltroSalvo {
     return FiltroSalvo(
       id: map['id'],
       nome: map['nome'] ?? 'Rotina',
-      uf: map['uf'] ?? 'MA',
+      uf: (map['uf'] ?? 'MA').toString().toUpperCase(),
       municipio: map['municipio'],
       tipo: map['tipo'],
       termoBusca: map['termo_busca'],

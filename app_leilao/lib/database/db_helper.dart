@@ -14,7 +14,7 @@ class DBHelper {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB('leilao_flutter.db');
+    _database = await _initDB('leilao_app.db');
     return _database!;
   }
 
@@ -87,11 +87,10 @@ class DBHelper {
       );
     ''');
 
-    // Auto-seed
-    await _seedDefaultData(db);
+    await _seedInitialData(db);
   }
 
-  Future _seedDefaultData(Database db) async {
+  Future _seedInitialData(Database db) async {
     try {
       final String seedJson = await rootBundle.loadString('assets/seed_imoveis.json');
       final List<dynamic> list = jsonDecode(seedJson);
@@ -102,9 +101,7 @@ class DBHelper {
         batch.insert('imoveis', imovel.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
       }
       await batch.commit(noResult: true);
-      print('✅ Auto-seed concluído com \${list.length} imóveis!');
 
-      // Seed filtros
       final String filtrosJson = await rootBundle.loadString('assets/seed_filtros.json');
       final List<dynamic> fList = jsonDecode(filtrosJson);
       final fBatch = db.batch();
@@ -120,16 +117,18 @@ class DBHelper {
       }
       await fBatch.commit(noResult: true);
     } catch (e) {
-      print('Erro no seed: \$e');
+      print('Aviso seed: \$e');
     }
   }
 
   Future<List<Imovel>> getImoveis({
     required String uf,
+    List<String>? municipios,
     String? tipo,
     String? fonte,
     String? busca,
     String ordem = 'desconto_desc',
+    int limit = 50,
   }) async {
     final db = await instance.database;
     List<String> whereClauses = ["uf = ? AND status = 'ativo'"];
@@ -140,9 +139,17 @@ class DBHelper {
       whereArgs.add(fonte.toLowerCase());
     }
 
-    if (tipo != null && tipo.isNotEmpty) {
+    if (tipo != null && tipo.isNotEmpty && tipo != 'todos') {
       whereClauses.add("tipo LIKE ?");
       whereArgs.add('%\$tipo%');
+    }
+
+    if (municipios != null && municipios.isNotEmpty) {
+      final mClauses = municipios.map((_) => "cidade LIKE ?").join(" OR ");
+      whereClauses.add("(\$mClauses)");
+      for (var m in municipios) {
+        whereArgs.add('%\$m%');
+      }
     }
 
     if (busca != null && busca.trim().isNotEmpty) {
@@ -151,12 +158,12 @@ class DBHelper {
       whereArgs.addAll([b, b, b, b]);
     }
 
-    String orderBy = 'COALESCE(desconto, 0) DESC';
+    String orderBy = 'COALESCE(desconto, 0) DESC, id DESC';
     switch (ordem) {
-      case 'desconto_asc': orderBy = 'COALESCE(desconto, 0) ASC'; break;
-      case 'valor_asc': orderBy = 'COALESCE(valor_leilao, 999999999) ASC'; break;
-      case 'valor_desc': orderBy = 'COALESCE(valor_leilao, 0) DESC'; break;
-      case 'avaliacao_desc': orderBy = 'COALESCE(valor_avaliacao, 0) DESC'; break;
+      case 'desconto_asc': orderBy = 'COALESCE(desconto, 0) ASC, id DESC'; break;
+      case 'valor_asc': orderBy = 'COALESCE(valor_leilao, 999999999) ASC, id DESC'; break;
+      case 'valor_desc': orderBy = 'COALESCE(valor_leilao, 0) DESC, id DESC'; break;
+      case 'avaliacao_desc': orderBy = 'COALESCE(valor_avaliacao, 0) DESC, id DESC'; break;
       case 'recentes': orderBy = 'id DESC'; break;
     }
 
@@ -165,10 +172,19 @@ class DBHelper {
       where: whereClauses.join(' AND '),
       whereArgs: whereArgs,
       orderBy: orderBy,
-      limit: 100,
+      limit: limit,
     );
 
     return result.map((json) => Imovel.fromMap(json)).toList();
+  }
+
+  Future<List<String>> getCidadesByUf(String uf) async {
+    final db = await instance.database;
+    final res = await db.rawQuery(
+      "SELECT DISTINCT cidade FROM imoveis WHERE uf = ? AND cidade IS NOT NULL AND cidade != '' ORDER BY cidade ASC",
+      [uf.toUpperCase()],
+    );
+    return res.map((r) => r['cidade'] as String).toList();
   }
 
   Future<int> countImoveis() async {
@@ -238,6 +254,6 @@ class DBHelper {
   Future resetDatabase() async {
     final db = await instance.database;
     await db.delete('imoveis');
-    await _seedDefaultData(db);
+    await _seedInitialData(db);
   }
 }

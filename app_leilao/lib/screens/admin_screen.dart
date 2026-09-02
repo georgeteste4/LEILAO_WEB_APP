@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/colors.dart';
 import '../database/db_helper.dart';
 import '../models/filtro.dart';
 import '../models/log_cron.dart';
@@ -38,7 +39,7 @@ class _AdminScreenState extends State<AdminScreen> {
   Future runCapture(FiltroSalvo f) async {
     setState(() {
       running = true;
-      runningStatus = 'Capturando \${f.nome}...';
+      runningStatus = 'Extraindo imóveis para \${f.nome}...';
     });
 
     try {
@@ -46,7 +47,7 @@ class _AdminScreenState extends State<AdminScreen> {
         setState(() => runningStatus = 'Página \$pag processada (\$novos novos salvos no SQLite)');
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sucesso! \${res['novos']} novos imóveis gravados no SQLite.')),
+        SnackBar(content: Text('Concluído em \${res['tempo']}s! \${res['novos']} novos salvos no SQLite.')),
       );
       await loadAdminData();
     } catch (e) {
@@ -62,26 +63,25 @@ class _AdminScreenState extends State<AdminScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF090D16),
+      backgroundColor: AppColors.canvas,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF090D16),
+        backgroundColor: AppColors.canvas,
         elevation: 0,
-        title: const Text('Administração & Rotinas', style: TextStyle(color: Color(0xFFF8FAFC), fontSize: 16, fontWeight: FontWeight.bold)),
+        title: const Text('Administração & Rotinas', style: TextStyle(color: AppColors.textMain, fontSize: 16, fontWeight: FontWeight.bold)),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Métricas
           Row(
             children: [
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(color: const Color(0xFF0F172A), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFF1E293B))),
+                  decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
                   child: Column(children: [
-                    const Text('TOTAL NO SQLITE', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 10)),
+                    const Text('TOTAL NO SQLITE', style: TextStyle(color: AppColors.textDim, fontSize: 9, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                    Text('\$totalDb', style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 20, fontWeight: FontWeight.w900)),
+                    Text('\$totalDb', style: const TextStyle(color: AppColors.brandLight, fontFamily: 'JetBrains Mono', fontSize: 20, fontWeight: FontWeight.bold)),
                   ]),
                 ),
               ),
@@ -89,11 +89,11 @@ class _AdminScreenState extends State<AdminScreen> {
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(color: const Color(0xFF0F172A), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFF1E293B))),
+                  decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
                   child: Column(children: [
-                    const Text('ROTINAS ATIVAS', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 10)),
+                    const Text('ROTINAS ATIVAS', style: TextStyle(color: AppColors.textDim, fontSize: 9, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                    Text('\${filtros.length}', style: const TextStyle(color: Color(0xFF34D399), fontSize: 20, fontWeight: FontWeight.w900)),
+                    Text('\${filtros.length}', style: const TextStyle(color: AppColors.successLight, fontFamily: 'JetBrains Mono', fontSize: 20, fontWeight: FontWeight.bold)),
                   ]),
                 ),
               ),
@@ -104,18 +104,18 @@ class _AdminScreenState extends State<AdminScreen> {
             Container(
               margin: const EdgeInsets.only(top: 12),
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF38BDF8))),
-              child: Text(runningStatus!, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 12, fontWeight: FontWeight.bold)),
+              decoration: BoxDecoration(color: AppColors.surfaceElevated, borderRadius: BorderRadius.circular(6), border: Border.all(color: AppColors.brandLight)),
+              child: Text(runningStatus!, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.brandLight, fontSize: 12, fontWeight: FontWeight.bold)),
             ),
 
           const SizedBox(height: 18),
-          const Text('Rotinas de Captura', style: TextStyle(color: Color(0xFFF8FAFC), fontSize: 14, fontWeight: FontWeight.bold)),
+          const Text('Rotinas de Captura', style: TextStyle(color: AppColors.textMain, fontSize: 14, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
 
           ...filtros.map((f) => Container(
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: const Color(0xFF0F172A), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFF1E293B))),
+            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -123,14 +123,14 @@ class _AdminScreenState extends State<AdminScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(f.nome, style: const TextStyle(color: Color(0xFFF8FAFC), fontSize: 13, fontWeight: FontWeight.bold)),
+                      Text(f.nome, style: const TextStyle(color: AppColors.textMain, fontSize: 13, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 2),
-                      Text('UF: \${f.uf} \${f.municipio != null ? "• Cidade: \${f.municipio}" : ""}', style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11)),
+                      Text('UF: \${f.uf} \${f.municipio != null ? "• Cidade: \${f.municipio}" : ""}', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
                     ],
                   ),
                 ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0284C7)),
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.brand),
                   onPressed: running ? null : () => runCapture(f),
                   child: const Text('Baixar Tudo', style: TextStyle(color: Colors.white, fontSize: 11)),
                 ),
@@ -139,18 +139,18 @@ class _AdminScreenState extends State<AdminScreen> {
           )),
 
           const SizedBox(height: 18),
-          const Text('Histórico de Execuções', style: TextStyle(color: Color(0xFFF8FAFC), fontSize: 14, fontWeight: FontWeight.bold)),
+          const Text('Histórico de Execuções', style: TextStyle(color: AppColors.textMain, fontSize: 14, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
 
           ...logs.map((l) => Container(
             margin: const EdgeInsets.only(bottom: 6),
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: const Color(0xFF0F172A), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF1E293B))),
+            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l.filtroNome, style: const TextStyle(color: Color(0xFFF8FAFC), fontSize: 12)),
-                Text('\${l.novos} novos • \${l.tempoSegundos}s', style: const TextStyle(color: Color(0xFF34D399), fontSize: 11, fontWeight: FontWeight.bold)),
+                Text(l.filtroNome, style: const TextStyle(color: AppColors.textMain, fontSize: 12)),
+                Text('\${l.novos} novos • \${l.tempoSegundos}s', style: const TextStyle(color: AppColors.successLight, fontFamily: 'JetBrains Mono', fontSize: 11, fontWeight: FontWeight.bold)),
               ],
             ),
           )),

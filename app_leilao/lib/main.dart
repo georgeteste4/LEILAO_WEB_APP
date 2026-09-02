@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'constants/colors.dart';
 import 'screens/catalog_screen.dart';
 import 'screens/admin_screen.dart';
 import 'screens/settings_screen.dart';
@@ -17,8 +18,13 @@ class LeilaoApp extends StatelessWidget {
       title: 'Leilão de Imóveis',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF090D16),
-        primaryColor: const Color(0xFF0284C7),
+        scaffoldBackgroundColor: AppColors.canvas,
+        primaryColor: AppColors.brand,
+        colorScheme: const ColorScheme.dark(
+          primary: AppColors.brand,
+          surface: AppColors.surface,
+          background: AppColors.canvas,
+        ),
       ),
       home: const MainNavigationScreen(),
     );
@@ -48,9 +54,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (idx) => setState(() => currentIndex = idx),
-        backgroundColor: const Color(0xFF0F172A),
-        selectedItemColor: const Color(0xFF38BDF8),
-        unselectedItemColor: const Color(0xFF64748B),
+        backgroundColor: AppColors.surface,
+        selectedItemColor: AppColors.brandLight,
+        unselectedItemColor: AppColors.textDim,
+        selectedFontSize: 11,
+        unselectedFontSize: 11,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Catálogo'),
           BottomNavigationBarItem(icon: Icon(Icons.flash_on_outlined), activeIcon: Icon(Icons.flash_on), label: 'Rotinas'),

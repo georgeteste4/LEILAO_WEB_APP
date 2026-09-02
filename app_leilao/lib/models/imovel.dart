@@ -49,6 +49,13 @@ class Imovel {
     this.status = 'ativo',
   });
 
+  double? get economia {
+    if (valorAvaliacao != null && valorLeilao != null && valorAvaliacao! > valorLeilao!) {
+      return valorAvaliacao! - valorLeilao!;
+    }
+    return null;
+  }
+
   factory Imovel.fromMap(Map<String, dynamic> map) {
     return Imovel(
       id: map['id'],
