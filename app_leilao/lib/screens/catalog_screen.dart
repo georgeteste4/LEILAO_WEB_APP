@@ -17,10 +17,12 @@ class CatalogScreen extends StatefulWidget {
 
 class _CatalogScreenState extends State<CatalogScreen> {
   List<Imovel> imoveis = [];
+  Set<String> favoritosHashes = {};
   List<String> cidadesDisponiveis = [];
   List<String> cidadesSelecionadas = [];
   bool loading = true;
-  String viewMode = 'grid'; // grid, table, list
+  bool apenasSalvos = false;
+  String viewMode = 'grid';
   String uf = 'MA';
   String tipo = 'todos';
   String fonte = 'todas';
@@ -35,20 +37,34 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
   Future loadProperties() async {
     setState(() => loading = true);
+    final favs = await DBHelper.instance.getFavoritosHashes();
     final list = await DBHelper.instance.getImoveis(
       uf: uf,
       municipios: cidadesSelecionadas.isNotEmpty ? cidadesSelecionadas : null,
       tipo: tipo != 'todos' ? tipo : null,
       fonte: fonte != 'todas' ? fonte : null,
       busca: searchController.text,
+      apenasFavoritos: apenasSalvos,
       ordem: ordem,
     );
     final cidades = await DBHelper.instance.getCidadesByUf(uf);
 
     setState(() {
       imoveis = list;
+      favoritosHashes = favs;
       cidadesDisponiveis = cidades;
       loading = false;
+    });
+  }
+
+  Future toggleFavorite(String hash) async {
+    final res = await DBHelper.instance.toggleFavorito(hash);
+    setState(() {
+      if (res) {
+        favoritosHashes.add(hash);
+      } else {
+        favoritosHashes.remove(hash);
+      }
     });
   }
 
@@ -58,7 +74,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => PropertyDetailModal(imovel: imovel),
-    );
+    ).then((_) => loadProperties());
   }
 
   void openUfPicker() {
@@ -68,7 +84,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
       builder: (ctx) => ListView(
         padding: const EdgeInsets.symmetric(vertical: 12),
         children: kEstadosBrasil.map((e) => ListTile(
-          title: Text('${e.sigla} — ${e.nome}', style: TextStyle(color: uf == e.sigla ? AppColors.brandLight : AppColors.textMain, fontWeight: uf == e.sigla ? FontWeight.bold : FontWeight.normal)),
+          title: Text(e.sigla + ' — ' + e.nome, style: TextStyle(color: uf == e.sigla ? AppColors.brandLight : AppColors.textMain, fontWeight: uf == e.sigla ? FontWeight.bold : FontWeight.normal)),
           trailing: uf == e.sigla ? const Icon(Icons.check, color: AppColors.brandLight) : null,
           onTap: () {
             setState(() {
@@ -133,7 +149,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text('Leilão de Imóveis', style: TextStyle(color: AppColors.textMain, fontSize: 15, fontWeight: FontWeight.bold)),
-                Text('${imoveis.length} no SQLite local', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                Text(imoveis.length.toString() + ' no SQLite local', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
               ],
             ),
           ],
@@ -147,7 +163,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
       ),
       body: Column(
         children: [
-          // Barra de Pesquisa & Alternador de Visualização
+          // Barra de Pesquisa & Visualização
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Row(
@@ -196,14 +212,33 @@ class _CatalogScreenState extends State<CatalogScreen> {
             ),
           ),
 
-          // Chips de Filtro (UF, Ordenação, Tipo)
+          // Chips de Filtro
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Row(
               children: [
+                FilterChip(
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(apenasSalvos ? Icons.favorite : Icons.favorite_border, size: 14, color: apenasSalvos ? Colors.white : AppColors.discountLight),
+                      const SizedBox(width: 4),
+                      Text('SALVOS (' + favoritosHashes.length.toString() + ')', style: TextStyle(color: apenasSalvos ? Colors.white : AppColors.textMain, fontSize: 10, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  selected: apenasSalvos,
+                  selectedColor: AppColors.discount,
+                  backgroundColor: AppColors.surface,
+                  side: const BorderSide(color: AppColors.border),
+                  onSelected: (sel) {
+                    setState(() => apenasSalvos = sel);
+                    loadProperties();
+                  },
+                ),
+                const SizedBox(width: 6),
                 ActionChip(
-                  label: Text('UF: $uf', style: const TextStyle(color: AppColors.brandLight, fontWeight: FontWeight.bold, fontSize: 11)),
+                  label: Text('UF: ' + uf, style: const TextStyle(color: AppColors.brandLight, fontWeight: FontWeight.bold, fontSize: 11)),
                   backgroundColor: AppColors.surface,
                   side: const BorderSide(color: AppColors.border),
                   onPressed: openUfPicker,
@@ -216,7 +251,6 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   onPressed: openSortPicker,
                 ),
                 const SizedBox(width: 6),
-                // Chips de Tipos
                 ...['todos', 'apartamento', 'casa', 'terreno', 'rural', 'comercial'].map((t) => Padding(
                   padding: const EdgeInsets.only(right: 6),
                   child: FilterChip(
@@ -235,12 +269,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
             ),
           ),
 
-          // Resultados
+          // Lista de Resultados
           Expanded(
             child: loading
                 ? const Center(child: CircularProgressIndicator(color: AppColors.brandLight))
                 : imoveis.isEmpty
-                    ? const Center(child: Text('Nenhum imóvel encontrado no SQLite local', style: TextStyle(color: AppColors.textDim)))
+                    ? const Center(child: Text('Nenhum imóvel encontrado', style: TextStyle(color: AppColors.textDim)))
                     : RefreshIndicator(
                         onRefresh: loadProperties,
                         color: AppColors.brandLight,
@@ -248,7 +282,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           padding: const EdgeInsets.all(16),
                           children: [
                             if (viewMode == 'grid')
-                              ...imoveis.map((im) => PropertyCard(imovel: im, onTap: () => openDetail(im)))
+                              ...imoveis.map((im) => PropertyCard(
+                                imovel: im,
+                                isFavorito: favoritosHashes.contains(im.hashImovel),
+                                onTap: () => openDetail(im),
+                                onToggleFavorito: () => toggleFavorite(im.hashImovel),
+                              ))
                             else if (viewMode == 'table')
                               PropertyTable(imoveis: imoveis, onSelect: openDetail)
                             else

@@ -5,9 +5,17 @@ import '../models/imovel.dart';
 
 class PropertyCard extends StatelessWidget {
   final Imovel imovel;
+  final bool isFavorito;
   final VoidCallback onTap;
+  final VoidCallback onToggleFavorito;
 
-  const PropertyCard({super.key, required this.imovel, required this.onTap});
+  const PropertyCard({
+    super.key,
+    required this.imovel,
+    this.isFavorito = false,
+    required this.onTap,
+    required this.onToggleFavorito,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +34,6 @@ class PropertyCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagem com Badge de Desconto em Destaque
             Stack(
               children: [
                 if (imovel.imagem.isNotEmpty)
@@ -56,7 +63,7 @@ class PropertyCard extends StatelessWidget {
                 if (imovel.desconto != null && imovel.desconto! > 0)
                   Positioned(
                     top: 8,
-                    right: 8,
+                    right: 48,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
@@ -67,7 +74,7 @@ class PropertyCard extends StatelessWidget {
                         ],
                       ),
                       child: Text(
-                        '-${imovel.desconto!.round()}% OFF',
+                        '-' + imovel.desconto!.round().toString() + '% OFF',
                         style: const TextStyle(
                           color: Colors.white,
                           fontFamily: 'JetBrains Mono',
@@ -77,6 +84,28 @@ class PropertyCard extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                // Botão de Favoritar Superior Direito
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: InkWell(
+                    onTap: onToggleFavorito,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppColors.canvas.withOpacity(0.85),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Icon(
+                        isFavorito ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorito ? AppColors.discountLight : Colors.white70,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ),
 
                 // Badge Fonte Superior Esquerdo
                 Positioned(
@@ -102,7 +131,6 @@ class PropertyCard extends StatelessWidget {
               ],
             ),
 
-            // Conteúdo
             Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -126,7 +154,7 @@ class PropertyCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          imovel.cidade.isNotEmpty ? '${imovel.cidade} / ${imovel.uf}' : imovel.uf,
+                          imovel.cidade.isNotEmpty ? imovel.cidade + ' / ' + imovel.uf : imovel.uf,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
@@ -138,7 +166,6 @@ class PropertyCard extends StatelessWidget {
                   const Divider(color: AppColors.border, height: 1),
                   const SizedBox(height: 8),
 
-                  // Preços
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,

@@ -5,6 +5,7 @@ import 'package:path/path.dart';
 import '../models/imovel.dart';
 import '../models/filtro.dart';
 import '../models/log_cron.dart';
+import '../models/alerta_imovel.dart';
 
 class DBHelper {
   static final DBHelper instance = DBHelper._init();
@@ -24,8 +25,9 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
     );
   }
 
@@ -87,7 +89,39 @@ class DBHelper {
       );
     ''');
 
+    await _createFavoritesAndAlertsTables(db);
     await _seedInitialData(db);
+  }
+
+  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await _createFavoritesAndAlertsTables(db);
+    }
+  }
+
+  Future _createFavoritesAndAlertsTables(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS favoritos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        hash_imovel TEXT UNIQUE NOT NULL,
+        criado_em TEXT DEFAULT CURRENT_TIMESTAMP
+      );
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS alertas_imoveis (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        hash_imovel TEXT NOT NULL,
+        titulo_imovel TEXT NOT NULL,
+        tipo_alerta TEXT NOT NULL,
+        antecedencia_horas INTEGER DEFAULT 24,
+        recorrencia_horas INTEGER DEFAULT 24,
+        anotacao TEXT,
+        ativo INTEGER DEFAULT 1,
+        ultimo_disparo TEXT,
+        criado_em TEXT DEFAULT CURRENT_TIMESTAMP
+      );
+    ''');
   }
 
   Future _seedInitialData(Database db) async {
@@ -117,22 +151,100 @@ class DBHelper {
       }
       await fBatch.commit(noResult: true);
     } catch (e) {
-      print('Aviso seed: $e');
+      // Ignorar erros de seed duplicado
     }
   }
 
+  // ==========================================
+  // FAVORITOS
+  // ==========================================
+  Future<bool> toggleFavorito(String hashImovel) async {
+    final db = await instance.database;
+    final exists = await db.query('favoritos', where: 'hash_imovel = ?', whereArgs: [hashImovel], limit: 1);
+    if (exists.isNotEmpty) {
+      await db.delete('favoritos', where: 'hash_imovel = ?', whereArgs: [hashImovel]);
+      return false;
+    } else {
+      await db.insert('favoritos', {'hash_imovel': hashImovel});
+      return true;
+    }
+  }
+
+  Future<bool> isFavorito(String hashImovel) async {
+    final db = await instance.database;
+    final res = await db.query('favoritos', where: 'hash_imovel = ?', whereArgs: [hashImovel], limit: 1);
+    return res.isNotEmpty;
+  }
+
+  Future<Set<String>> getFavoritosHashes() async {
+    final db = await instance.database;
+    final res = await db.query('favoritos');
+    return res.map((e) => e['hash_imovel'] as String).toSet();
+  }
+
+  Future<List<Imovel>> getImoveisFavoritos() async {
+    final db = await instance.database;
+    final res = await db.rawQuery('''
+      SELECT i.* FROM imoveis i
+      INNER JOIN favoritos f ON f.hash_imovel = i.hash_imovel
+      ORDER BY f.id DESC
+    ''');
+    return res.map((e) => Imovel.fromMap(e)).toList();
+  }
+
+  // ==========================================
+  // ALERTAS "ME AVISE"
+  // ==========================================
+  Future<int> saveAlerta(AlertaImovel alerta) async {
+    final db = await instance.database;
+    final existing = await db.query('alertas_imoveis', where: 'hash_imovel = ?', whereArgs: [alerta.hashImovel], limit: 1);
+    if (existing.isNotEmpty) {
+      return await db.update('alertas_imoveis', alerta.toMap(), where: 'hash_imovel = ?', whereArgs: [alerta.hashImovel]);
+    } else {
+      return await db.insert('alertas_imoveis', alerta.toMap());
+    }
+  }
+
+  Future<int> deleteAlerta(String hashImovel) async {
+    final db = await instance.database;
+    return await db.delete('alertas_imoveis', where: 'hash_imovel = ?', whereArgs: [hashImovel]);
+  }
+
+  Future<AlertaImovel?> getAlertaByHash(String hashImovel) async {
+    final db = await instance.database;
+    final res = await db.query('alertas_imoveis', where: 'hash_imovel = ?', whereArgs: [hashImovel], limit: 1);
+    if (res.isNotEmpty) {
+      return AlertaImovel.fromMap(res.first);
+    }
+    return null;
+  }
+
+  Future<List<AlertaImovel>> getAlertasAtivos() async {
+    final db = await instance.database;
+    final res = await db.query('alertas_imoveis', where: 'ativo = 1', orderBy: 'id DESC');
+    return res.map((e) => AlertaImovel.fromMap(e)).toList();
+  }
+
+  // ==========================================
+  // CONSULTAS GERAIS DE IMÓVEIS
+  // ==========================================
   Future<List<Imovel>> getImoveis({
     required String uf,
     List<String>? municipios,
     String? tipo,
     String? fonte,
     String? busca,
+    bool apenasFavoritos = false,
     String ordem = 'desconto_desc',
     int limit = 50,
   }) async {
     final db = await instance.database;
     List<String> whereClauses = ["uf = ? AND status = 'ativo'"];
     List<dynamic> whereArgs = [uf.toUpperCase()];
+
+    if (apenasFavoritos) {
+      whereClauses.add("hash_imovel IN (SELECT hash_imovel FROM favoritos)");
+    }
 
     if (fonte != null && fonte != 'todas') {
       whereClauses.add("fonte_slug = ?");
@@ -141,20 +253,20 @@ class DBHelper {
 
     if (tipo != null && tipo.isNotEmpty && tipo != 'todos') {
       whereClauses.add("tipo LIKE ?");
-      whereArgs.add('%$tipo%');
+      whereArgs.add('%' + tipo + '%');
     }
 
     if (municipios != null && municipios.isNotEmpty) {
       final mClauses = municipios.map((_) => "cidade LIKE ?").join(" OR ");
-      whereClauses.add("($mClauses)");
+      whereClauses.add("(" + mClauses + ")");
       for (var m in municipios) {
-        whereArgs.add('%$m%');
+        whereArgs.add('%' + m + '%');
       }
     }
 
     if (busca != null && busca.trim().isNotEmpty) {
       whereClauses.add("(titulo LIKE ? OR endereco LIKE ? OR cidade LIKE ? OR nome_leiloeiro LIKE ?)");
-      final b = '%${busca.trim()}%';
+      final b = '%' + busca.trim() + '%';
       whereArgs.addAll([b, b, b, b]);
     }
 
@@ -197,7 +309,7 @@ class DBHelper {
     final db = await instance.database;
     final hash = imovel.hashImovel.isNotEmpty
         ? imovel.hashImovel
-        : 'hash_${imovel.linkOriginal.hashCode.abs()}';
+        : 'hash_' + imovel.linkOriginal.hashCode.abs().toString();
 
     final existing = await db.query('imoveis', where: 'hash_imovel = ?', whereArgs: [hash], limit: 1);
     if (existing.isNotEmpty) {
@@ -254,6 +366,8 @@ class DBHelper {
   Future resetDatabase() async {
     final db = await instance.database;
     await db.delete('imoveis');
+    await db.delete('favoritos');
+    await db.delete('alertas_imoveis');
     await _seedInitialData(db);
   }
 }

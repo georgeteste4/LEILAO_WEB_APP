@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "flutter-development": {
+      "source": "aj-geddes/useful-ai-prompts",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-development/SKILL.md",
+      "computedHash": "fccbc77348d1e9c7cfa64829c013ff706afc8c9d28900967a8969511912c55be"
+    }
+  }
+}
