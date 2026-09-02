@@ -32,7 +32,7 @@ class SyncService {
     return {'total': list.length, 'novos': novos, 'atualizados': atualizados};
   }
 
-  /// Executa a rotina para todas as fontes configuradas no filtro
+  /// Executa a rotina despachando para os drivers específicos de cada fonte configurada
   static Future<Map<String, dynamic>> executeRoutine(FiltroSalvo f, {Function(String status, int novos)? onProgress}) async {
     final stopwatch = Stopwatch()..start();
     int novos = 0;
@@ -46,44 +46,20 @@ class SyncService {
 
     for (final fonteSlug in fontes) {
       if (onProgress != null) {
-        onProgress('Extraindo na fonte: ' + fonteSlug.toUpperCase(), novos);
+        onProgress('Executando driver específico: ' + fonteSlug.toUpperCase(), novos);
       }
 
-      List<Imovel> loteFonte = [];
-
-      if (fonteSlug == 'caixa') {
-        loteFonte = await ScraperService.scrapeCaixa(
-          uf: f.uf,
-          municipio: f.municipio,
-          tipo: f.tipo,
-          termoBusca: f.termoBusca,
-          dataFinal: f.dataFinalLeilao,
-          filtroId: f.id,
-        );
-      } else if (fonteSlug == 'leilaoimovel') {
-        for (int p = 1; p <= 2; p++) {
-          final pagItems = await ScraperService.scrapeLeilaoImovel(
-            uf: f.uf,
-            municipio: f.municipio,
-            tipo: f.tipo,
-            pagina: p,
-            termoBusca: f.termoBusca,
-            dataFinal: f.dataFinalLeilao,
-            filtroId: f.id,
-          );
-          loteFonte.addAll(pagItems);
-          if (pagItems.isEmpty) break;
-        }
-      } else {
-        loteFonte = await ScraperService.scrapePortalGenerico(
-          slug: fonteSlug,
-          nomeFonte: fonteSlug,
-          uf: f.uf,
-          municipio: f.municipio,
-          tipo: f.tipo,
-          filtroId: f.id,
-        );
-      }
+      // Chama o despachador com driver dedicado
+      final loteFonte = await ScraperService.scrapeByFonte(
+        fonteSlug,
+        uf: f.uf,
+        municipio: f.municipio,
+        tipo: f.tipo,
+        pagina: 1,
+        termoBusca: f.termoBusca,
+        dataFinal: f.dataFinalLeilao,
+        filtroId: f.id,
+      );
 
       for (var im in loteFonte) {
         final res = await DBHelper.instance.upsertImovel(im, filtroId: f.id);
