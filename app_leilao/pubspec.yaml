@@ -1,0 +1,30 @@
+name: leilao_app
+description: "Aplicativo de Leilões de Imóveis com SQLite interno e motores de busca."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sqflite: ^2.3.3+1
+  path_provider: ^2.1.3
+  path: ^1.9.0
+  http: ^1.2.1
+  url_launcher: ^6.3.0
+  open_filex: ^4.4.0
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/seed_imoveis.json
+    - assets/seed_fontes.json
+    - assets/seed_filtros.json
