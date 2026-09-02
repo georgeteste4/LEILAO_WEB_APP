@@ -39,19 +39,22 @@ class _AdminScreenState extends State<AdminScreen> {
   Future runCapture(FiltroSalvo f) async {
     setState(() {
       running = true;
-      runningStatus = 'Extraindo imóveis para \${f.nome}...';
+      runningStatus = 'Extraindo imóveis para ${f.nome}...';
     });
 
     try {
       final res = await SyncService.executeRoutine(f, onProgress: (pag, novos) {
-        setState(() => runningStatus = 'Página \$pag processada (\$novos novos salvos no SQLite)');
+        setState(() => runningStatus = 'Página $pag processada ($novos novos salvos no SQLite)');
       });
+      final novos = res['novos'];
+      final tempo = res['tempo'];
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Concluído em \${res['tempo']}s! \${res['novos']} novos salvos no SQLite.')),
+        SnackBar(content: Text('Concluído em ${tempo}s! $novos novos salvos no SQLite.')),
       );
+
       await loadAdminData();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: \$e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: $e')));
     } finally {
       setState(() {
         running = false;
@@ -81,7 +84,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   child: Column(children: [
                     const Text('TOTAL NO SQLITE', style: TextStyle(color: AppColors.textDim, fontSize: 9, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                    Text('\$totalDb', style: const TextStyle(color: AppColors.brandLight, fontFamily: 'JetBrains Mono', fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text('$totalDb', style: const TextStyle(color: AppColors.brandLight, fontFamily: 'JetBrains Mono', fontSize: 20, fontWeight: FontWeight.bold)),
                   ]),
                 ),
               ),
@@ -93,7 +96,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   child: Column(children: [
                     const Text('ROTINAS ATIVAS', style: TextStyle(color: AppColors.textDim, fontSize: 9, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                    Text('\${filtros.length}', style: const TextStyle(color: AppColors.successLight, fontFamily: 'JetBrains Mono', fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text('${filtros.length}', style: const TextStyle(color: AppColors.successLight, fontFamily: 'JetBrains Mono', fontSize: 20, fontWeight: FontWeight.bold)),
                   ]),
                 ),
               ),
@@ -125,7 +128,7 @@ class _AdminScreenState extends State<AdminScreen> {
                     children: [
                       Text(f.nome, style: const TextStyle(color: AppColors.textMain, fontSize: 13, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 2),
-                      Text('UF: \${f.uf} \${f.municipio != null ? "• Cidade: \${f.municipio}" : ""}', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                      Text('UF: ${f.uf} ${f.municipio != null ? "• Cidade: ${f.municipio}" : ""}', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
                     ],
                   ),
                 ),
@@ -150,7 +153,7 @@ class _AdminScreenState extends State<AdminScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(l.filtroNome, style: const TextStyle(color: AppColors.textMain, fontSize: 12)),
-                Text('\${l.novos} novos • \${l.tempoSegundos}s', style: const TextStyle(color: AppColors.successLight, fontFamily: 'JetBrains Mono', fontSize: 11, fontWeight: FontWeight.bold)),
+                Text('${l.novos} novos • ${l.tempoSegundos}s', style: const TextStyle(color: AppColors.successLight, fontFamily: 'JetBrains Mono', fontSize: 11, fontWeight: FontWeight.bold)),
               ],
             ),
           )),

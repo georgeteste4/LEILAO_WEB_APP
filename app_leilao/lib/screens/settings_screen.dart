@@ -51,12 +51,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future syncFromGitHub() async {
     setState(() => syncingDb = true);
     try {
-      final res = await SyncService.syncFromGitHub();
+      final novos = res['novos'];
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Base atualizada com sucesso! \${res['novos']} novos imóveis.')),
+        SnackBar(content: Text('Base atualizada com sucesso! $novos novos imóveis.')),
       );
+
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: \$e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: $e')));
     } finally {
       setState(() => syncingDb = false);
     }
@@ -103,7 +104,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Nova versão v\${updateInfo!.version} disponível!', style: const TextStyle(color: AppColors.successLight, fontWeight: FontWeight.bold, fontSize: 12)),
+                        Text('Nova versão v${updateInfo!.version} disponível!', style: const TextStyle(color: AppColors.successLight, fontWeight: FontWeight.bold, fontSize: 12)),
                         const SizedBox(height: 4),
                         Text(updateInfo!.releaseNotes, style: const TextStyle(color: AppColors.textMain, fontSize: 11)),
                       ],
@@ -115,7 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (downloadProgress != null) ...[
                   LinearProgressIndicator(value: downloadProgress, color: AppColors.brandLight, backgroundColor: AppColors.surfaceElevated),
                   const SizedBox(height: 6),
-                  Text('Baixando APK: \${(downloadProgress! * 100).round()}%', textAlign: TextAlign.center, style: const TextStyle(color: AppColors.brandLight, fontSize: 11)),
+                  Text('Baixando APK: ${(downloadProgress! * 100).round()}%', textAlign: TextAlign.center, style: const TextStyle(color: AppColors.brandLight, fontSize: 11)),
                   const SizedBox(height: 10),
                 ],
 

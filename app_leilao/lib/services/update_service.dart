@@ -17,7 +17,7 @@ class UpdateService {
   static const String githubRepo = 'georgeteste4/LEILAO_WEB_APP';
 
   static Future<UpdateInfo?> checkUpdate() async {
-    final url = 'https://api.github.com/repos/\$githubRepo/releases/latest';
+    final url = 'https://api.github.com/repos/$githubRepo/releases/latest';
     try {
       final res = await http.get(Uri.parse(url), headers: {
         'Accept': 'application/vnd.github.v3+json',
@@ -46,7 +46,7 @@ class UpdateService {
         }
       }
     } catch (e) {
-      print('Erro ao checar update: \$e');
+      print('Erro ao checar update: $e');
     }
     return null;
   }
@@ -61,7 +61,7 @@ class UpdateService {
       int receivedBytes = 0;
 
       final dir = await getExternalStorageDirectory() ?? await getTemporaryDirectory();
-      final file = File('\${dir.path}/leilao_update.apk');
+      final file = File('${dir.path}/leilao_update.apk');
       final sink = file.openWrite();
 
       await response.stream.listen((chunk) {
@@ -79,7 +79,7 @@ class UpdateService {
       await OpenFilex.open(file.path, type: 'application/vnd.android.package-archive');
       return file;
     } catch (e) {
-      print('Erro ao baixar APK: \$e');
+      print('Erro ao baixar APK: $e');
       return null;
     }
   }

@@ -11,7 +11,7 @@ class PropertyTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$', decimalDigits: 0);
+    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R$', decimalDigits: 0);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -46,7 +46,7 @@ class PropertyTable extends StatelessWidget {
                   ),
                 )),
                 DataCell(Text(im.fonteSlug.toUpperCase(), style: const TextStyle(color: AppColors.brandLight, fontSize: 11))),
-                DataCell(Text('\${im.cidade}/\${im.uf}', style: const TextStyle(color: AppColors.textMuted, fontSize: 11))),
+                DataCell(Text('${im.cidade}/${im.uf}', style: const TextStyle(color: AppColors.textMuted, fontSize: 11))),
                 DataCell(Text(
                   im.valorAvaliacao != null ? fmt.format(im.valorAvaliacao) : '-',
                   style: const TextStyle(color: AppColors.textDim, fontFamily: 'JetBrains Mono', fontSize: 12, decoration: TextDecoration.lineThrough),
@@ -56,7 +56,7 @@ class PropertyTable extends StatelessWidget {
                   style: const TextStyle(color: AppColors.successLight, fontFamily: 'JetBrains Mono', fontSize: 13, fontWeight: FontWeight.bold),
                 )),
                 DataCell(Text(
-                  im.desconto != null ? '-\${im.desconto!.round()}%' : '-',
+                  im.desconto != null ? '-${im.desconto!.round()}%' : '-',
                   style: const TextStyle(color: AppColors.discountLight, fontFamily: 'JetBrains Mono', fontSize: 12, fontWeight: FontWeight.bold),
                 )),
               ],

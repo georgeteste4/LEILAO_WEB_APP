@@ -11,14 +11,14 @@ class ScraperService {
   }) async {
     final List<Imovel> lista = [];
     try {
-      String url = 'https://www.leilaoimovel.com.br/imoveis/\${uf.toLowerCase()}';
+      String url = 'https://www.leilaoimovel.com.br/imoveis/${uf.toLowerCase()}';
       if (municipio != null && municipio.isNotEmpty) {
         final munSlug = municipio.toLowerCase().replaceAll(' ', '-');
-        url += '/\$munSlug';
+        url += '/$munSlug';
       }
-      url += '?pagina=\$pagina';
+      url += '?pagina=$pagina';
       if (tipo != null && tipo.isNotEmpty) {
-        url += '&tipo=\$tipo';
+        url += '&tipo=$tipo';
       }
 
       final response = await http.get(Uri.parse(url), headers: {
@@ -37,8 +37,8 @@ class ScraperService {
           final titleMatch = RegExp(r'<h[23][^>]*>(.*?)</h[23]>').firstMatch(content);
           final title = titleMatch?.group(1)?.replaceAll(RegExp(r'<[^>]*>'), '').trim() ?? 'Imóvel Leilão';
 
-          final valAvalMatch = RegExp(r'Avalia[çc][ãa]o:[^R]*R\$\s*([\d\.,]+)', caseSensitive: false).firstMatch(content);
-          final valLeilaoMatch = RegExp(r'Lance[^R]*R\$\s*([\d\.,]+)', caseSensitive: false).firstMatch(content);
+          final valAvalMatch = RegExp(r'Avalia[çc][ãa]o:[^R]*R$\s*([\d\.,]+)', caseSensitive: false).firstMatch(content);
+          final valLeilaoMatch = RegExp(r'Lance[^R]*R$\s*([\d\.,]+)', caseSensitive: false).firstMatch(content);
           final descMatch = RegExp(r'(\d+)%\s*desconto', caseSensitive: false).firstMatch(content);
           final imgMatch = RegExp(r'<img[^>]*src="([^"]*)"').firstMatch(content);
 
@@ -52,7 +52,7 @@ class ScraperService {
           final desc = descMatch != null ? double.tryParse(descMatch.group(1)!) : (aval != null && leilao != null && aval > 0 ? ((aval - leilao) / aval) * 100 : null);
 
           lista.add(Imovel(
-            hashImovel: 'hash_\${link.hashCode.abs()}',
+            hashImovel: 'hash_${link.hashCode.abs()}',
             fonteSlug: 'leilaoimovel',
             titulo: title,
             tipo: tipo ?? 'Imóvel',
@@ -63,13 +63,13 @@ class ScraperService {
             valorLeilao: leilao,
             desconto: desc,
             modalidade: 'Leilão',
-            linkOriginal: link.startsWith('http') ? link : 'https://www.leilaoimovel.com.br\$link',
+            linkOriginal: link.startsWith('http') ? link : 'https://www.leilaoimovel.com.br$link',
             imagem: imgMatch?.group(1) ?? '',
           ));
         }
       }
     } catch (e) {
-      print('Erro ao raspar Leilão Imóvel: \$e');
+      print('Erro ao raspar Leilão Imóvel: $e');
     }
     return lista;
   }

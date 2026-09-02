@@ -12,7 +12,7 @@ class SyncService {
   static Future<Map<String, int>> syncFromGitHub({Function(int, int)? onProgress}) async {
     final response = await http.get(Uri.parse(githubSeedUrl));
     if (response.statusCode != 200) {
-      throw Exception('Falha ao baixar dados do GitHub: HTTP \${response.statusCode}');
+      throw Exception('Falha ao baixar dados do GitHub: HTTP ${response.statusCode}');
     }
 
     final List<dynamic> list = jsonDecode(response.body);

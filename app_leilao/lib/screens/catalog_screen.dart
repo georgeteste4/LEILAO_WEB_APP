@@ -68,7 +68,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
       builder: (ctx) => ListView(
         padding: const EdgeInsets.symmetric(vertical: 12),
         children: kEstadosBrasil.map((e) => ListTile(
-          title: Text('\${e.sigla} — \${e.nome}', style: TextStyle(color: uf == e.sigla ? AppColors.brandLight : AppColors.textMain, fontWeight: uf == e.sigla ? FontWeight.bold : FontWeight.normal)),
+          title: Text('${e.sigla} — ${e.nome}', style: TextStyle(color: uf == e.sigla ? AppColors.brandLight : AppColors.textMain, fontWeight: uf == e.sigla ? FontWeight.bold : FontWeight.normal)),
           trailing: uf == e.sigla ? const Icon(Icons.check, color: AppColors.brandLight) : null,
           onTap: () {
             setState(() {
@@ -133,7 +133,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text('Leilão de Imóveis', style: TextStyle(color: AppColors.textMain, fontSize: 15, fontWeight: FontWeight.bold)),
-                Text('\${imoveis.length} no SQLite local', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                Text('${imoveis.length} no SQLite local', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
               ],
             ),
           ],
@@ -203,7 +203,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
             child: Row(
               children: [
                 ActionChip(
-                  label: Text('UF: \$uf', style: const TextStyle(color: AppColors.brandLight, fontWeight: FontWeight.bold, fontSize: 11)),
+                  label: Text('UF: $uf', style: const TextStyle(color: AppColors.brandLight, fontWeight: FontWeight.bold, fontSize: 11)),
                   backgroundColor: AppColors.surface,
                   side: const BorderSide(color: AppColors.border),
                   onPressed: openUfPicker,

@@ -12,7 +12,7 @@ class PropertyDetailModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$', decimalDigits: 0);
+    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R$', decimalDigits: 0);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -41,7 +41,7 @@ class PropertyDetailModal extends StatelessWidget {
             const SizedBox(height: 12),
             Text(imovel.titulo, style: const TextStyle(color: AppColors.textMain, fontSize: 16, fontWeight: FontWeight.w800)),
             const SizedBox(height: 4),
-            Text('\${imovel.cidade} / \${imovel.uf} • Fonte: \${imovel.fonteSlug.toUpperCase()}', style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+            Text('${imovel.cidade} / ${imovel.uf} • Fonte: ${imovel.fonteSlug.toUpperCase()}', style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
             const SizedBox(height: 14),
 
             // Painel de 4 Métricas Financeiras (Leilão Design System)
@@ -56,7 +56,7 @@ class PropertyDetailModal extends StatelessWidget {
                 children: [
                   Expanded(child: _metricBox('AVALIAÇÃO', imovel.valorAvaliacao != null ? fmt.format(imovel.valorAvaliacao) : '-', AppColors.textDim)),
                   Expanded(child: _metricBox('LANCE', imovel.valorLeilao != null ? fmt.format(imovel.valorLeilao) : '-', AppColors.successLight)),
-                  Expanded(child: _metricBox('DESCONTO', imovel.desconto != null ? '-\${imovel.desconto!.round()}%' : '-', AppColors.discountLight)),
+                  Expanded(child: _metricBox('DESCONTO', imovel.desconto != null ? '-${imovel.desconto!.round()}%' : '-', AppColors.discountLight)),
                   Expanded(child: _metricBox('ECONOMIA', imovel.economia != null ? fmt.format(imovel.economia) : '-', AppColors.brandLight)),
                 ],
               ),

@@ -117,7 +117,7 @@ class DBHelper {
       }
       await fBatch.commit(noResult: true);
     } catch (e) {
-      print('Aviso seed: \$e');
+      print('Aviso seed: $e');
     }
   }
 
@@ -141,20 +141,20 @@ class DBHelper {
 
     if (tipo != null && tipo.isNotEmpty && tipo != 'todos') {
       whereClauses.add("tipo LIKE ?");
-      whereArgs.add('%\$tipo%');
+      whereArgs.add('%$tipo%');
     }
 
     if (municipios != null && municipios.isNotEmpty) {
       final mClauses = municipios.map((_) => "cidade LIKE ?").join(" OR ");
-      whereClauses.add("(\$mClauses)");
+      whereClauses.add("($mClauses)");
       for (var m in municipios) {
-        whereArgs.add('%\$m%');
+        whereArgs.add('%$m%');
       }
     }
 
     if (busca != null && busca.trim().isNotEmpty) {
       whereClauses.add("(titulo LIKE ? OR endereco LIKE ? OR cidade LIKE ? OR nome_leiloeiro LIKE ?)");
-      final b = '%\${busca.trim()}%';
+      final b = '%${busca.trim()}%';
       whereArgs.addAll([b, b, b, b]);
     }
 
@@ -197,7 +197,7 @@ class DBHelper {
     final db = await instance.database;
     final hash = imovel.hashImovel.isNotEmpty
         ? imovel.hashImovel
-        : 'hash_\${imovel.linkOriginal.hashCode.abs()}';
+        : 'hash_${imovel.linkOriginal.hashCode.abs()}';
 
     final existing = await db.query('imoveis', where: 'hash_imovel = ?', whereArgs: [hash], limit: 1);
     if (existing.isNotEmpty) {

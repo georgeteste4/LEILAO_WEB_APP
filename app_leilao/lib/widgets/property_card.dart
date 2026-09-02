@@ -11,7 +11,7 @@ class PropertyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$', decimalDigits: 0);
+    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R$', decimalDigits: 0);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -67,7 +67,7 @@ class PropertyCard extends StatelessWidget {
                         ],
                       ),
                       child: Text(
-                        '-\${imovel.desconto!.round()}% OFF',
+                        '-${imovel.desconto!.round()}% OFF',
                         style: const TextStyle(
                           color: Colors.white,
                           fontFamily: 'JetBrains Mono',
@@ -126,7 +126,7 @@ class PropertyCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          imovel.cidade.isNotEmpty ? '\${imovel.cidade} / \${imovel.uf}' : imovel.uf,
+                          imovel.cidade.isNotEmpty ? '${imovel.cidade} / ${imovel.uf}' : imovel.uf,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(color: AppColors.textMuted, fontSize: 11),

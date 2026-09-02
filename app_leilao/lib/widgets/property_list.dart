@@ -11,7 +11,7 @@ class PropertyList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$', decimalDigits: 0);
+    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R$', decimalDigits: 0);
 
     return ListView.builder(
       shrinkWrap: true,
@@ -40,7 +40,7 @@ class PropertyList extends StatelessWidget {
                 Text(im.fonteSlug.toUpperCase(), style: const TextStyle(color: AppColors.brandLight, fontSize: 10, fontWeight: FontWeight.bold)),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text('\${im.cidade}/\${im.uf}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                  child: Text('${im.cidade}/${im.uf}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
                 ),
               ],
             ),
@@ -54,7 +54,7 @@ class PropertyList extends StatelessWidget {
                 ),
                 if (im.desconto != null && im.desconto! > 0)
                   Text(
-                    '-\${im.desconto!.round()}%',
+                    '-${im.desconto!.round()}%',
                     style: const TextStyle(color: AppColors.discountLight, fontFamily: 'JetBrains Mono', fontSize: 11, fontWeight: FontWeight.bold),
                   ),
               ],
